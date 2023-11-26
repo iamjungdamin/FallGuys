@@ -16,6 +16,9 @@
     <Filter Include="GameObject">
       <UniqueIdentifier>{26903b97-9bf7-419e-9a9d-c50327cf6e8c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Character">
+      <UniqueIdentifier>{5acbaadc-fff1-4882-a248-baaf05bf5e17}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CubeObject.cpp">
@@ -36,6 +39,9 @@
     <ClCompile Include="Timer.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="Character.cpp">
+      <Filter>Character</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CubeObject.h">
@@ -53,5 +59,16 @@
     <ClInclude Include="Timer.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="Character.h">
+      <Filter>Character</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Shader\fragment.glsl">
+      <Filter>리소스 파일</Filter>
+    </None>
+    <None Include="Shader\vertex.glsl">
+      <Filter>리소스 파일</Filter>
+    </None>
   </ItemGroup>
 </Project>

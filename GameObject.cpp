@@ -83,6 +83,12 @@ void CGameObject::SetProjectMat(glm::mat4 project)
 	projectMat = project;
 }
 
+void CGameObject::SetModelMat(glm::mat4 model)
+{
+	modelMat = model;
+}
+
+
 void CGameObject::SetCameraPos(glm::vec3 cameraPos)
 {
 	GLint cameraPosLoc = glGetUniformLocation(m_shader, "cameraPos");
@@ -126,3 +132,4 @@ void CGameObject::SetScale(glm::vec3 scale)
 {
 	scaleMat = glm::scale(glm::mat4(1.f), scale);
 }
+

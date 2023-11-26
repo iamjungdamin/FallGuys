@@ -56,6 +56,7 @@ void main(int argc, char** argv)								//--- 윈도우 출력하고 콜백함수 설정
 	// 씬을 생성한다.
 	g_pscene = new CScene{ winWidth, winHeight };
 
+
 	//	콜백함수 설정
 	glutDisplayFunc(Display);									// 출력 함수의 지정
 	glutReshapeFunc(Reshape);									// 다시 그리기 함수 지정
@@ -133,6 +134,9 @@ GLvoid SpecialKeyboardUp(int key, int x, int y)
 		g_pscene->SpecialKeyEvent(GLUT_UP, key);
 
 	switch (key) {
+	case GLUT_KEY_F8:			// F9 누르면 전체화면
+		
+		break;
 	case GLUT_KEY_F9:			// F9 누르면 전체화면
 		glutFullScreenToggle();
 		break;

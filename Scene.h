@@ -1,5 +1,5 @@
 #pragma once
-
+class CCharacter;
 class CGameObject;
 class CScene
 {
@@ -8,6 +8,7 @@ private:
 	int& w_height;
 
 	CGameObject* m_Cube;
+	CCharacter* m_Character;
 
 	glm::vec3 cameraPos;
 	glm::vec3 cameraLook;
@@ -30,4 +31,10 @@ public:
 	void SpecialKeyEvent(int state, int key);
 
 	std::pair<GLuint, GLsizei> InitCube(GLuint shader);
+	std::pair<GLuint, GLsizei> InitFace(GLuint shader);
+	std::pair<GLuint, GLsizei> InitBody(GLuint shader);
+	std::pair<GLuint, GLsizei> InitLeft_arm(GLuint shader);
+	std::pair<GLuint, GLsizei> InitRight_arm(GLuint shader);
+	std::pair<GLuint, GLsizei> Initleft_leg(GLuint shader);
+	std::pair<GLuint, GLsizei> InitRight_leg(GLuint shader);
 };

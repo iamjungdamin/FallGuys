@@ -44,5 +44,7 @@ public:
 
 	void SetScale(float x, float y, float z);
 	void SetScale(glm::vec3 scale);
+
+	void SetModelMat(glm::mat4 modelMat);
 };
 
