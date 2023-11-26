@@ -130,7 +130,7 @@ std::pair<GLuint, GLsizei> CScene::InitCube(GLuint shader)
 	glGenBuffers(1, &VBO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);	// VBO를 정점버퍼로 설정 및 바인딩
 
-	std::vector<glm::vec3> data = ReadObjWithRColorNormal("./Resources/fall.obj");
+	std::vector<glm::vec3> data = ReadObjWithRColorNormal("./Resources/left_leg.obj");
 
 	glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(glm::vec3), data.data(), GL_STATIC_DRAW);	// VBO(GPU)로 정점 데이터 복사
 
