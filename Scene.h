@@ -40,4 +40,6 @@ public:
 	std::pair<GLuint, GLsizei> InitRight_arm(GLuint shader);
 	std::pair<GLuint, GLsizei> Initleft_leg(GLuint shader);
 	std::pair<GLuint, GLsizei> InitRight_leg(GLuint shader);
+	std::pair<GLuint, GLsizei> InitEyes(GLuint shader);
+	void RotateSceneY(float angle);
 };

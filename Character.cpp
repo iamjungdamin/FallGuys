@@ -9,6 +9,7 @@ CCharacter::CCharacter()
 	right_arm = new CGameObject;
 	left_leg = new CGameObject;
 	right_leg = new CGameObject;
+	eyes = new CGameObject;
 }
 
 CCharacter::~CCharacter()
@@ -24,6 +25,8 @@ void CCharacter::Render()
 	right_arm->Render();
 	left_leg->Render();
 	right_leg->Render();
+	eyes->Render();
+
 }
 
 void CCharacter::Update(float ElapsedTime)
@@ -32,16 +35,27 @@ void CCharacter::Update(float ElapsedTime)
 	glm::mat4 tr;
 	glm::mat4 sc;
 	glm::mat4 rot;
-
+	//얼굴 초기값
 	rot = glm::rotate(glm::mat4(1.f), glm::radians(45.f), glm::vec3(0.f, 0.f, 1.f));
 	tr = glm::translate(glm::mat4(1.f), glm::vec3(-0.1f, 0.f, 1.4f));
 	//sc = glm::scale(glm::mat4(1.f), glm::vec3(1.f, 0.3f, 1.f));
 	face->SetModelMat(final_tr  * tr);
 	
+	// 눈 초기값
+	rot = glm::rotate(glm::mat4(1.f), glm::radians(45.f), glm::vec3(0.f, 0.f, 1.f));
+	tr = glm::translate(glm::mat4(1.f), glm::vec3(0.0f, 0.f, 0.15f));
+	//sc = glm::scale(glm::mat4(1.f), glm::vec3(1.f, 0.3f, 1.f));
+	eyes->SetModelMat(final_tr * tr);
+	
+	//여기까지 위치 초기값
+
+
 
 
 
 	face->Update(ElapsedTime);
+	eyes->Update(ElapsedTime);
+	left_arm->Update(ElapsedTime);
 }
 
 
@@ -53,6 +67,8 @@ void CCharacter::SetShader(GLuint shader)
 	right_arm->SetShader(shader);
 	left_leg->SetShader(shader);
 	right_leg->SetShader(shader);
+	eyes->SetShader(shader);
+
 }
 
 void CCharacter::SetVao_face(GLuint vao, int vertexCount)
@@ -84,6 +100,10 @@ void CCharacter::SetVao_right_leg(GLuint vao, int vertexCount)
 {
 	right_leg->SetVao(vao, vertexCount);
 }
+void CCharacter::SetVao_eyes(GLuint vao, int vertexCount)
+{
+	eyes->SetVao(vao, vertexCount);
+}
 
 
 
@@ -95,6 +115,8 @@ void CCharacter::SetCameraMat(glm::mat4 cameraMat)
 	right_arm->SetCameraMat(cameraMat);
 	left_leg->SetCameraMat(cameraMat);
 	right_leg->SetCameraMat(cameraMat);
+	eyes->SetCameraMat(cameraMat);
+
 }
 
 void CCharacter::SetProjectMat(glm::mat4 projectMat)
@@ -105,6 +127,7 @@ void CCharacter::SetProjectMat(glm::mat4 projectMat)
 	right_arm->SetProjectMat(projectMat);
 	left_leg->SetProjectMat(projectMat);
 	right_leg->SetProjectMat(projectMat);
+	eyes->SetProjectMat(projectMat);
 }
 
 void CCharacter::SetCameraPos(glm::vec3 cameraPos)
@@ -115,6 +138,7 @@ void CCharacter::SetCameraPos(glm::vec3 cameraPos)
 	right_arm->SetCameraPos(cameraPos);
 	left_leg->SetCameraPos(cameraPos);
 	right_leg->SetCameraPos(cameraPos);
+	eyes->SetCameraPos(cameraPos);
 }
 
 void CCharacter::SetLightPos(glm::vec3 lightPos)
@@ -125,6 +149,7 @@ void CCharacter::SetLightPos(glm::vec3 lightPos)
 	right_arm->SetLightPos(lightPos);
 	left_leg->SetLightPos(lightPos);
 	right_leg->SetLightPos(lightPos);
+	eyes ->SetLightPos(lightPos);
 }
 
 void CCharacter::SetLightColor(glm::vec3 lightColor)
@@ -135,4 +160,11 @@ void CCharacter::SetLightColor(glm::vec3 lightColor)
 	right_arm->SetLightColor(lightColor);
 	left_leg->SetLightColor(lightColor);
 	right_leg->SetLightColor(lightColor);
+	eyes->SetLightColor(lightColor);
 }
+
+void CCharacter::SetPos(float x)
+{
+	m_pos.x += x;
+}
+

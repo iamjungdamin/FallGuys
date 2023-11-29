@@ -34,12 +34,13 @@ void CScene::Initialize()
 	auto la_vao = InitLeft_arm(shader);
 	m_Character->SetVao_left_arm(la_vao.first, la_vao.second);
 	auto ra_vao = InitRight_arm(shader);
-	m_Character->SetVao_right_leg(ra_vao.first, ra_vao.second);
+	m_Character->SetVao_right_arm(ra_vao.first, ra_vao.second);
 	auto ll_vao = Initleft_leg(shader);
-	m_Character->SetVao_left_arm(ll_vao.first, ll_vao.second);
+	m_Character->SetVao_left_leg(ll_vao.first, ll_vao.second);
 	auto rl_vao = InitRight_leg(shader);
-	m_Character->SetVao_right_arm(rl_vao.first, rl_vao.second);
-
+	m_Character->SetVao_right_leg(rl_vao.first, rl_vao.second);
+	auto e_vao = InitEyes(shader);
+	m_Character->SetVao_eyes(e_vao.first, e_vao.second);
 	
 	cameraRot.x = 0.f, cameraRot.y = 2.f, cameraRot.z = 5.f;
 	cameraPos = glm::vec3{ cameraRot.x, cameraRot.y, cameraRot.z };
@@ -111,8 +112,10 @@ void CScene::MouseEvent(int button, int state, int x, int y)
 	case GLUT_DOWN:
 		switch (button) {
 		case GLUT_LEFT_BUTTON:
+			m_Character->SetPos(-1.f);
 			break;
 		case GLUT_RIGHT_BUTTON:
+			m_Character->SetPos(1.f);
 			break;
 		case GLUT_MIDDLE_BUTTON:
 			break;
@@ -135,18 +138,13 @@ void CScene::KeyboardEvent(int state, unsigned char key)
 	case GLUT_DOWN:
 		switch (key) {
 		case 'a':
-			cameraRot.x += 1.f;
+			RotateSceneY(1.0f);
 			break;
 		case 's':
-			cameraRot.y += 1.f;
+			RotateSceneY(-1.0f);
 			break;
 		case 'd':
-			cameraRot.z += 1.f;
-		case 'q':
-			cameraRot.x -= 1.f;
-			break;
-		case 'w':
-			cameraRot.y -= 1.f;
+			cameraRot.z += 1.f;			
 			break;
 		case 'e':
 			cameraRot.z -= 1.f;
@@ -389,4 +387,47 @@ std::pair<GLuint, GLsizei> CScene::InitRight_leg(GLuint shader)
 	glEnableVertexAttribArray(AttribNormalLoc);										// Attribute 활성화
 
 	return { VAO, static_cast<int>(data.size()) };
+}
+
+std::pair<GLuint, GLsizei> CScene::InitEyes(GLuint shader)
+{
+	GLuint VAO, VBO;					// 정점 데이터를 GPU에 넘겨줄 VAO, VBO 생성
+	glGenVertexArrays(1, &VAO);
+	glBindVertexArray(VAO);
+	glGenBuffers(1, &VBO);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);	// VBO를 정점버퍼로 설정 및 바인딩
+
+	glm::vec3 fixedColor = { 0.0f, 0.0f, 0.f }; // 검은색
+	std::vector<glm::vec3> data = ReadObjWithRColorNormal("./Resources/eyes.obj", fixedColor);
+
+	glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(glm::vec3), data.data(), GL_STATIC_DRAW);	// VBO(GPU)로 정점 데이터 복사
+
+	GLint AttribPosLoc = glGetAttribLocation(shader, "vPos");						// 셰이더에서 vPos의 위치 가져온다.
+	GLint AttribColorLoc = glGetAttribLocation(shader, "vColor");					// 셰이더에서 vColor의 위치 가져온다.
+	GLint AttribNormalLoc = glGetAttribLocation(shader, "vNormal");					// 셰이더에서 vNormal의 위치 가져온다.
+	if (AttribPosLoc < 0 or AttribColorLoc < 0 or AttribNormalLoc < 0) {
+		std::cerr << "AttribLoc 찾기 실패" << std::endl;
+	}
+	// glVertexAttribPointer(attrib 위치, vertex 몇개씩 읽을건지, gl_float, gl_false, stride(간격), 시작 위치(포인터));
+	glVertexAttribPointer(AttribPosLoc, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), reinterpret_cast<void*>(0));	// 현재 VBO에 있는 데이터 속성 정의
+	glEnableVertexAttribArray(AttribPosLoc);										// Attribute 활성화
+	glVertexAttribPointer(AttribColorLoc, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), reinterpret_cast<void*>(3 * sizeof(float)));
+	glEnableVertexAttribArray(AttribColorLoc);										// Attribute 활성화
+	glVertexAttribPointer(AttribNormalLoc, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), reinterpret_cast<void*>(6 * sizeof(float)));
+	glEnableVertexAttribArray(AttribNormalLoc);										// Attribute 활성화
+
+	return { VAO, static_cast<int>(data.size()) };
+}
+void CScene::RotateSceneY(float angle)
+{
+	// Rotate the scene around the Y-axis
+	glm::mat4 rotationMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(angle), glm::vec3(0.0f, 1.0f, 0.0f));
+
+	// Apply the rotation to the camera position
+	glm::vec4 rotatedCameraPos = rotationMatrix * glm::vec4(cameraRot.x, cameraRot.y, cameraRot.z, 1.0f);
+
+	// Update the camera position
+	cameraRot.x = rotatedCameraPos.x;
+	cameraRot.y = rotatedCameraPos.y;
+	cameraRot.z = rotatedCameraPos.z;
 }
