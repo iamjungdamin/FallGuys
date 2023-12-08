@@ -58,7 +58,7 @@ void CScene::Update(float ElapsedTime)
 	cameraPos = glm::vec3{ cameraRot.x, cameraRot.y, cameraRot.z };
 
 	glm::mat4 cameraMat = glm::lookAt(cameraPos, cameraLook, glm::vec3{ 0.f, 1.f, 0.f });
-	glm::mat4 projectMat = glm::perspective(glm::radians(45.f), (float)w_width / (float)w_height, 0.1f, 50.f);
+	glm::mat4 projectMat = glm::perspective(glm::radians(45.f), (float)w_width / (float)w_height, 0.1f, 1000.f);
 
 	//if (m_Cube) {
 	//	m_Cube->SetCameraMat(cameraMat);

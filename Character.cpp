@@ -224,6 +224,7 @@ void CCharacter::State_Running()
 	// Body and eyes animation
 	glm::mat4 rot_body = glm::rotate(glm::mat4(1.f), bodyRotationAngle, glm::vec3(-1.f, 0.f, 0.f));
 	body->SetModelMat(final_tr * rot_body);
+	face->SetModelMat(final_tr * rot_body);
 	eyes->SetModelMat(final_tr * rot_body);
 }
 
