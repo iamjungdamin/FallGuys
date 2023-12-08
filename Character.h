@@ -16,6 +16,14 @@ class CCharacter
 	glm::mat4 final_tr;
 	float  animationTime;
 
+	float armRotationAngle_RUNNING;
+	float bodyRotationAngle_RUNNING;
+	float armTranslationOffset_RUNNING;
+	float legleftRotationAngle_RUNNING;
+	float legleftTranslationOffset_RUNNING;
+	float legrightRotationAngle_RUNNING;
+	float legrightTranslationOffset_RUNNING;
+
 	int state;
 public:
 	CCharacter();

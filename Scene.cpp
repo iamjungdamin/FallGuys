@@ -165,7 +165,23 @@ void CScene::KeyboardEvent(int state, unsigned char key)
 		break;
 	case GLUT_UP:
 		switch (key) {
+		case 'a':
+		case 'A':
 			m_Character->State(STATE_IDLE);
+			break;
+		case 's':
+		case 'S':
+			m_Character->State(STATE_IDLE);
+			break;
+		case 'd':
+		case 'D':
+			m_Character->State(STATE_IDLE);
+			break;
+		case 'w':
+		case 'W':
+			m_Character->State(STATE_IDLE);
+			break;
+			break;
 		default:
 			break;
 		}
