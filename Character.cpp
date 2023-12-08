@@ -10,6 +10,11 @@ CCharacter::CCharacter()
 	left_leg = new CGameObject;
 	right_leg = new CGameObject;
 	eyes = new CGameObject;
+	final_tr = glm::translate(glm::mat4(1.f), m_pos);
+	state = 0;
+
+	animationTime = 0.0f;
+
 }
 
 CCharacter::~CCharacter()
@@ -31,31 +36,38 @@ void CCharacter::Render()
 
 void CCharacter::Update(float ElapsedTime)
 {
-	auto final_tr = glm::translate(glm::mat4(1.f), m_pos);
-	glm::mat4 tr;
+	final_tr = glm::translate(glm::mat4(1.f), m_pos);
+	glm::mat4 tr; 
 	glm::mat4 sc;
 	glm::mat4 rot;
-	//얼굴 초기값
-	rot = glm::rotate(glm::mat4(1.f), glm::radians(45.f), glm::vec3(0.f, 0.f, 1.f));
-	tr = glm::translate(glm::mat4(1.f), glm::vec3(-0.1f, 0.f, 1.4f));
-	//sc = glm::scale(glm::mat4(1.f), glm::vec3(1.f, 0.3f, 1.f));
-	face->SetModelMat(final_tr  * tr);
+
+	// 처음 초기값
+	glm:: mat4 first_rot = glm::rotate(glm::mat4(1.f), glm::radians(180.f), glm::vec3(0.f, 1.f, 0.f));
 	
-	// 눈 초기값
-	rot = glm::rotate(glm::mat4(1.f), glm::radians(45.f), glm::vec3(0.f, 0.f, 1.f));
-	tr = glm::translate(glm::mat4(1.f), glm::vec3(0.0f, 0.f, 0.15f));
-	//sc = glm::scale(glm::mat4(1.f), glm::vec3(1.f, 0.3f, 1.f));
-	eyes->SetModelMat(final_tr * tr);
+
 	
 	//여기까지 위치 초기값
 
+	//상태 따라 행동하는 함수
+	CheckState();
 
-
-
+	//face->SetModelMat(first_rot);
+	//body->SetModelMat(first_rot);
+	//left_arm->SetModelMat(first_rot);
+	//right_arm->SetModelMat(first_rot);
+	//left_leg->SetModelMat(first_rot);
+	//right_leg->SetModelMat(first_rot);
+	//eyes->SetModelMat(first_rot);
+	
 
 	face->Update(ElapsedTime);
-	eyes->Update(ElapsedTime);
+	body->Update(ElapsedTime);
 	left_arm->Update(ElapsedTime);
+	right_arm->Update(ElapsedTime);
+	left_leg->Update(ElapsedTime);
+	right_leg->Update(ElapsedTime);
+	eyes->Update(ElapsedTime);
+
 }
 
 
@@ -168,3 +180,54 @@ void CCharacter::SetPos(float x)
 	m_pos.x += x;
 }
 
+void CCharacter::CheckState() {	//	enum State {STATE_IDLE, STATE_RUNNING, STATE_JUMPING  };
+	switch (state)
+	{
+	case 0:
+		State_Idle();
+		break;
+	case 1:
+		State_Running();
+		break;
+	case 2:
+		State_Jumping();
+		break;
+	}
+}
+
+void CCharacter::State(int a)
+{
+	state = a;
+}
+
+void CCharacter::State_Idle()
+{
+	
+	
+}
+
+void CCharacter::State_Running()
+{
+	float armRotationAngle = glm::radians(90.f) + glm::radians(45.f) * glm::sin(animationTime);
+	float bodyRotationAngle = glm::radians(5.f) + glm::radians(2.5f) * glm::sin(animationTime);
+	float armTranslationOffset = 0.3f * glm::sin(animationTime);
+
+	// Update animation time
+	animationTime += 0.001f; // You can adjust the speed of the animation by changing this value
+
+	// Arms animation
+	glm::mat4 rot_arm = glm::rotate(glm::mat4(1.f), armRotationAngle, glm::vec3(-1.f, 0.f, 0.f));
+	glm::mat4 tr_arm = glm::translate(glm::mat4(1.f), glm::vec3(0.f, -0.5f + armTranslationOffset, 0.f));
+	left_arm->SetModelMat(final_tr * rot_arm * tr_arm);
+	right_arm->SetModelMat(final_tr * rot_arm * tr_arm);
+
+	// Body and eyes animation
+	glm::mat4 rot_body = glm::rotate(glm::mat4(1.f), bodyRotationAngle, glm::vec3(-1.f, 0.f, 0.f));
+	body->SetModelMat(final_tr * rot_body);
+	eyes->SetModelMat(final_tr * rot_body);
+}
+
+void CCharacter::State_Jumping()
+{
+	
+}

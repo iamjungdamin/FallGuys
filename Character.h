@@ -13,8 +13,10 @@ class CCharacter
 	CGameObject* right_leg;
 	CGameObject* eyes;
 	glm::vec3 m_pos;
+	glm::mat4 final_tr;
+	float  animationTime;
 
-
+	int state;
 public:
 	CCharacter();
 	~CCharacter();
@@ -44,5 +46,14 @@ public:
 	void SetPos(float x);
 
 	
+	// 캐릭터 상태 관련 함수
+	void State(int a);
+	void State_Idle();
+	void State_Running();
+	void State_Jumping();
+	void CheckState();
+	
+
+
 };
 

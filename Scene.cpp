@@ -42,9 +42,9 @@ void CScene::Initialize()
 	auto e_vao = InitEyes(shader);
 	m_Character->SetVao_eyes(e_vao.first, e_vao.second);
 	
-	cameraRot.x = 0.f, cameraRot.y = 2.f, cameraRot.z = 5.f;
+	cameraRot.x = 0.f, cameraRot.y = 10.f, cameraRot.z = 20.f;
 	cameraPos = glm::vec3{ cameraRot.x, cameraRot.y, cameraRot.z };
-	cameraLook = glm::vec3{ 0.f };
+	cameraLook = glm::vec3{ 0.f ,4.f,0.f};
 
 	lightPos = glm::vec3{ 5.f, 5.f, 0.f };
 	lightColor = glm::vec3{ 1.f, 1.f, 1.f };
@@ -112,10 +112,10 @@ void CScene::MouseEvent(int button, int state, int x, int y)
 	case GLUT_DOWN:
 		switch (button) {
 		case GLUT_LEFT_BUTTON:
-			m_Character->SetPos(-1.f);
+			
 			break;
 		case GLUT_RIGHT_BUTTON:
-			m_Character->SetPos(1.f);
+			
 			break;
 		case GLUT_MIDDLE_BUTTON:
 			break;
@@ -138,13 +138,23 @@ void CScene::KeyboardEvent(int state, unsigned char key)
 	case GLUT_DOWN:
 		switch (key) {
 		case 'a':
+		case 'A':
 			RotateSceneY(1.0f);
+			m_Character->State(STATE_RUNNING);
 			break;
 		case 's':
+		case 'S':
 			RotateSceneY(-1.0f);
+			m_Character->State(STATE_RUNNING);
 			break;
 		case 'd':
-			cameraRot.z += 1.f;			
+		case 'D':
+			cameraRot.z += 1.f;		
+			m_Character->State(STATE_RUNNING);
+			break;
+		case 'w':
+		case 'W':
+			m_Character->State(STATE_RUNNING);
 			break;
 		case 'e':
 			cameraRot.z -= 1.f;
@@ -155,6 +165,7 @@ void CScene::KeyboardEvent(int state, unsigned char key)
 		break;
 	case GLUT_UP:
 		switch (key) {
+			m_Character->State(STATE_IDLE);
 		default:
 			break;
 		}
@@ -418,6 +429,8 @@ std::pair<GLuint, GLsizei> CScene::InitEyes(GLuint shader)
 
 	return { VAO, static_cast<int>(data.size()) };
 }
+
+
 void CScene::RotateSceneY(float angle)
 {
 	// Rotate the scene around the Y-axis
