@@ -21,23 +21,45 @@ class CCharacter
 	glm::mat4 final_tr, final_rot; // 마지막 이동, 마지막 회전
 	float gravity = 9.8f; // 중력
 	float speed = 0.001f; // 속도
+	float animationTime;
 
+	struct Running_Animation {
+		float animationTime;
+		float bodyRotationAngle;
+		float armleftRotationAngle;
+		float armleftTranslationOffset;
+		float armrightRotationAngle;
+		float armrightTranslationOffset;
+		float legleftRotationAngle;
+		float legleftTranslationOffset;
+		float legrightRotationAngle;
+		float legrightTranslationOffset;
+		
+	};
 
-	float  animationTime;
-	float bodyRotationAngle_RUNNING;
-	float armleftRotationAngle_RUNNING;
-	float armleftTranslationOffset_RUNNING;
-	float armrightRotationAngle_RUNNING;
-	float armrightTranslationOffset_RUNNING;
-	float legleftRotationAngle_RUNNING;
-	float legleftTranslationOffset_RUNNING;
-	float legrightRotationAngle_RUNNING;
-	float legrightTranslationOffset_RUNNING;
+	struct IDLE_Animation {
+		float animationTime;
+		float bodyRotationAngle;
+		float armleftRotationAngle;
+		float armleftTranslationOffset;
+		float armrightRotationAngle;
+		float armrightTranslationOffset;
+		float legleftRotationAngle;
+		float legleftTranslationOffset;
+		float legrightRotationAngle;
+		float legrightTranslationOffset;
+		float initialLeftArmRotationAngle;
+		float initialRightArmRotationAngle;
+
+	};
+
+	IDLE_Animation idle_animation;
+	Running_Animation running_animation;
+
 	bool isLeftKeyPressed;
 	bool isRightKeyPressed;
 	bool isFrontKeyPressed;
 	bool isBackKeyPressed;
-
 
 
 	int state;
