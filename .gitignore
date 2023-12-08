@@ -36,3 +36,5 @@
 **/Release/
 **/x64/
 **/.vs/
+
+!Resources/*.obj

@@ -17,9 +17,6 @@ private:
 	glm::vec3 lightPos;
 	glm::vec3 lightColor;
 
-	// °´Ã¼ »óÅÂ
-	enum State { STATE_IDLE,STATE_RUNNING, STATE_JUMPING  };
-
 
 
 public:

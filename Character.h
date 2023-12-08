@@ -2,6 +2,9 @@
 
 #include "GameObject.h"
 
+// 객체 상태
+enum STATE { IDLE, LEFT, RIGHT, FRONT, BACK };
+
 class CCharacter
 {
 
@@ -13,18 +16,33 @@ class CCharacter
 	CGameObject* right_leg;
 	CGameObject* eyes;
 	glm::vec3 m_pos;
-	glm::mat4 final_tr;
-	float  animationTime;
+	glm::vec3 m_move;
+	float m_rot;
+	glm::mat4 final_tr, final_rot; // 마지막 이동, 마지막 회전
+	float gravity = 9.8f; // 중력
+	float speed = 0.001f; // 속도
 
-	float armRotationAngle_RUNNING;
+
+	float  animationTime;
 	float bodyRotationAngle_RUNNING;
-	float armTranslationOffset_RUNNING;
+	float armleftRotationAngle_RUNNING;
+	float armleftTranslationOffset_RUNNING;
+	float armrightRotationAngle_RUNNING;
+	float armrightTranslationOffset_RUNNING;
 	float legleftRotationAngle_RUNNING;
 	float legleftTranslationOffset_RUNNING;
 	float legrightRotationAngle_RUNNING;
 	float legrightTranslationOffset_RUNNING;
+	bool isLeftKeyPressed;
+	bool isRightKeyPressed;
+	bool isFrontKeyPressed;
+	bool isBackKeyPressed;
+
+
 
 	int state;
+	bool isJumping;
+
 public:
 	CCharacter();
 	~CCharacter();
@@ -55,13 +73,17 @@ public:
 
 	
 	// 캐릭터 상태 관련 함수
-	void State(int a);
+	void SetState(int a);
 	void State_Idle();
 	void State_Running();
 	void State_Jumping();
 	void CheckState();
-	
 
+	// 키보드 상태 관련 함수
+	void SetRightKeyPressed(bool a);
+	void SetLeftKeyPressed(bool a);
+	void SetBackKeyPressed(bool a);
+	void SetFrontKeyPressed(bool a);
 
 };
 

@@ -32,7 +32,7 @@ void main(int argc, char** argv)								//--- 윈도우 출력하고 콜백함수 설정
 	//--- 윈도우 생성하기
 	glutInit(&argc, argv);										// glut 초기화
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);	// 디스플레이 모드 설정
-	glutInitWindowPosition(100, 100);							// 윈도우의 위치 지정
+	glutInitWindowPosition(0, 0);							// 윈도우의 위치 지정
 	glutInitWindowSize(winWidth, winHeight);								// 윈도우의 크기 지정
 	glutCreateWindow(Title.c_str());									// 윈도우 생성(윈도우 이름)
 
@@ -47,6 +47,7 @@ void main(int argc, char** argv)								//--- 윈도우 출력하고 콜백함수 설정
 	}
 
 	if (glewIsSupported("GL_VERSION_3_0")) {
+		std::cout << "GLEW Version is 3.0\n";
 		std::cout << "GLEW Version is 3.0\n";
 	}
 	else {

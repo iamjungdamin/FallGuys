@@ -132,29 +132,30 @@ void CScene::MouseEvent(int button, int state, int x, int y)
 	}
 }
 
-void CScene::KeyboardEvent(int state, unsigned char key)
-{
+
+void CScene::KeyboardEvent(int state, unsigned char key) {
 	switch (state) {
 	case GLUT_DOWN:
 		switch (key) {
 		case 'a':
 		case 'A':
-			RotateSceneY(1.0f);
-			m_Character->State(STATE_RUNNING);
+			m_Character->SetState(STATE::LEFT);
+			m_Character->SetLeftKeyPressed(true);
 			break;
 		case 's':
 		case 'S':
-			RotateSceneY(-1.0f);
-			m_Character->State(STATE_RUNNING);
+			m_Character->SetState(STATE::BACK);
+			m_Character->SetBackKeyPressed(true);
 			break;
 		case 'd':
 		case 'D':
-			cameraRot.z += 1.f;		
-			m_Character->State(STATE_RUNNING);
+			m_Character->SetState(STATE::RIGHT);
+			m_Character->SetRightKeyPressed(true);
 			break;
 		case 'w':
 		case 'W':
-			m_Character->State(STATE_RUNNING);
+			m_Character->SetState(STATE::FRONT);
+			m_Character->SetFrontKeyPressed(true);
 			break;
 		case 'e':
 			cameraRot.z -= 1.f;
@@ -167,20 +168,19 @@ void CScene::KeyboardEvent(int state, unsigned char key)
 		switch (key) {
 		case 'a':
 		case 'A':
-			m_Character->State(STATE_IDLE);
+			m_Character->SetLeftKeyPressed(false);
 			break;
 		case 's':
 		case 'S':
-			m_Character->State(STATE_IDLE);
+			m_Character->SetBackKeyPressed(false);
 			break;
 		case 'd':
 		case 'D':
-			m_Character->State(STATE_IDLE);
+			m_Character->SetRightKeyPressed(false);
 			break;
 		case 'w':
 		case 'W':
-			m_Character->State(STATE_IDLE);
-			break;
+			m_Character->SetFrontKeyPressed(false);
 			break;
 		default:
 			break;
