@@ -11,7 +11,9 @@ CCharacter::CCharacter()
 	right_leg = new CGameObject;
 	eyes = new CGameObject;
 	final_tr = glm::translate(glm::mat4(1.f), m_pos);
-	state = 0;
+	
+	state = STATE::IDLE;
+	isJumping = false;
 
 	animationTime = 0.0f;
 
@@ -180,22 +182,32 @@ void CCharacter::SetPos(float x)
 	m_pos.x += x;
 }
 
-void CCharacter::CheckState() {	//	enum State {STATE_IDLE, STATE_RUNNING, STATE_JUMPING  };
+void CCharacter::CheckState() {
+	if (isJumping) {
+		State_Jumping();
+	}
+
 	switch (state)
 	{
-	case 0:
+	case STATE::IDLE:
 		State_Idle();
 		break;
-	case 1:
+	case STATE::LEFT:
 		State_Running();
 		break;
-	case 2:
-		State_Jumping();
+	case STATE::RIGHT:
+		State_Running();
+		break;
+	case STATE::FRONT:
+		State_Running();
+		break;
+	case STATE::BACK:
+		State_Running();
 		break;
 	}
 }
 
-void CCharacter::State(int a)
+void CCharacter::SetState(int a)
 {
 	state = a;
 }

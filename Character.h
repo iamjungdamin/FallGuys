@@ -2,6 +2,9 @@
 
 #include "GameObject.h"
 
+// 객체 상태
+enum STATE { IDLE, LEFT, RIGHT, FRONT, BACK };
+
 class CCharacter
 {
 
@@ -17,6 +20,8 @@ class CCharacter
 	float  animationTime;
 
 	int state;
+	bool isJumping;
+
 public:
 	CCharacter();
 	~CCharacter();
@@ -47,7 +52,7 @@ public:
 
 	
 	// 캐릭터 상태 관련 함수
-	void State(int a);
+	void SetState(int a);
 	void State_Idle();
 	void State_Running();
 	void State_Jumping();

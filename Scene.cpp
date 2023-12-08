@@ -140,21 +140,21 @@ void CScene::KeyboardEvent(int state, unsigned char key)
 		case 'a':
 		case 'A':
 			RotateSceneY(1.0f);
-			m_Character->State(STATE_RUNNING);
+			m_Character->SetState(STATE::LEFT);
 			break;
 		case 's':
 		case 'S':
 			RotateSceneY(-1.0f);
-			m_Character->State(STATE_RUNNING);
+			m_Character->SetState(STATE::BACK);
 			break;
 		case 'd':
 		case 'D':
 			cameraRot.z += 1.f;		
-			m_Character->State(STATE_RUNNING);
+			m_Character->SetState(STATE::RIGHT);
 			break;
 		case 'w':
 		case 'W':
-			m_Character->State(STATE_RUNNING);
+			m_Character->SetState(STATE::FRONT);
 			break;
 		case 'e':
 			cameraRot.z -= 1.f;
@@ -165,7 +165,7 @@ void CScene::KeyboardEvent(int state, unsigned char key)
 		break;
 	case GLUT_UP:
 		switch (key) {
-			m_Character->State(STATE_IDLE);
+			m_Character->SetState(STATE::IDLE);
 		default:
 			break;
 		}
