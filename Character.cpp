@@ -60,6 +60,28 @@ void CCharacter::Update(float ElapsedTime)
 	glm::mat4 sc;
 	glm::mat4 rot;
 
+	if (isJumpKeyPressed)
+	{
+		// 점프 중인 상태이면 수직 속도를 감소시킵니다.
+		jump_speed -= gravity * ElapsedTime;
+		printf("%lf\n", m_pos.y);
+		// 조정된 수직 속도를 계산합니다.
+		float adjusted_move_y = jump_speed * ElapsedTime;
+
+
+		//printf("%lf\n", m_pos.y);
+		// 캐릭터가 지면 아래로 내려갔을 경우
+		if (m_pos.y < 0.0f) {
+			m_pos.y = 0.0f; // 지면에 닿게 조정
+			isJumpKeyPressed = false; // 점프 중인 상태 종료
+			jump_speed = 5.f; // 원래 10동 속도로 초기화
+		}
+		else {
+
+			m_pos.y += adjusted_move_y;
+		}
+
+	}
 	
 	
 
@@ -119,6 +141,7 @@ void CCharacter::SetVao_right_leg(GLuint vao, int vertexCount)
 {
 	right_leg->SetVao(vao, vertexCount);
 }
+
 void CCharacter::SetVao_eyes(GLuint vao, int vertexCount)
 {
 	eyes->SetVao(vao, vertexCount);
@@ -188,10 +211,16 @@ void CCharacter::SetPos(float x)
 }
 
 void CCharacter::CheckState() {	//	enum STATE { IDLE, LEFT, RIGHT, FRONT, BACK }; 
+	if (isJumpKeyPressed)
+	{
+	
+		
+	}
 	if (isLeftKeyPressed || isRightKeyPressed || isFrontKeyPressed || isBackKeyPressed) {
 		State_Running();
 	}
 	else {
+		
 		State_Idle();
 	}
 }
@@ -217,9 +246,16 @@ void CCharacter::SetFrontKeyPressed(bool a)
 	isFrontKeyPressed = a;
 }
 
+void CCharacter::SetJumpKeyPressed(bool a)
+{
+	isJumpKeyPressed = a;
+}
+
+
 void CCharacter::SetState(int a)
 {
 	state = a;
+
 
 	if (a == 1) // LEFT
 	{
@@ -237,42 +273,110 @@ void CCharacter::SetState(int a)
 	{
 		m_move.z = 1;
 	}
+	
 
 }
 
 void CCharacter::State_Idle() {
 	// Stop movement
 
-	if (m_move.x != 0 || m_move.z != 0) // 전 상태가 RUNNING 일 경우
-	{
 		m_move = { 0, 0, 0 };
 
+		// 현재 방향을 유지합니다.
 	
-		idle_animation.armleftRotationAngle = idle_animation.initialLeftArmRotationAngle -90.f;
-		idle_animation.armrightRotationAngle = idle_animation.initialRightArmRotationAngle - 90.f;
+
+		float legAmplitude = 0.1f;
+		float legFrequency = 2.0f;
+
+
+		idle_animation.initialLeftArmRotationAngle = running_animation.armleftRotationAngle;
+		idle_animation.initialRightArmRotationAngle = running_animation.armrightRotationAngle;
+
+		//회전
+		float rotationAngle = glm::atan(prevMove.x, prevMove.z);
+		final_rot = glm::rotate(glm::mat4(1.f), rotationAngle, glm::vec3(0.f, 1.f, 0.f));
+
+
+		// 몸
+		idle_animation.bodyRotationAngle = glm::radians(5.f) + glm::radians(2.5f) * glm::sin(idle_animation.animationTime);
+		idle_animation.bodyRotationAngle = glm::radians(5.f) + glm::radians(2.5f) * glm::sin(idle_animation.animationTime);
+		// 팔
+		idle_animation.armleftRotationAngle = glm::radians(20.f) + glm::radians(15.f) * glm::sin(idle_animation.animationTime);
 		idle_animation.armleftTranslationOffset = 0.3f * glm::sin(idle_animation.animationTime);
+		idle_animation.armrightRotationAngle = glm::radians(20.f) + glm::radians(15.f) * glm::sin(idle_animation.animationTime);
 		idle_animation.armrightTranslationOffset = 0.3f * glm::sin(idle_animation.animationTime);
 
-		glm::mat4 rot_leftarm = glm::rotate(glm::mat4(1.f), idle_animation.armleftRotationAngle, glm::vec3(-1.f, 0.f, 0.f));
-		glm::mat4 tr_leftarm = glm::translate(glm::mat4(1.f), glm::vec3(0.0f, -0.8f + idle_animation.armleftTranslationOffset, 0.1f));
+		idle_animation.armleftTranslationOffset = legAmplitude * glm::sin(legFrequency * idle_animation.animationTime);
+		idle_animation.armrightTranslationOffset = -legAmplitude * glm::sin(legFrequency * idle_animation.animationTime);
+		// Legs animation
+		running_animation.legleftRotationAngle = glm::radians(5.f) + glm::radians(5.f) * glm::sin(running_animation.animationTime);
+		running_animation.legleftTranslationOffset = 0.3f * glm::sin(running_animation.animationTime);
+		running_animation.legrightRotationAngle = glm::radians(5.f) + glm::radians(5.f) * glm::sin(running_animation.animationTime);
+		running_animation.legrightTranslationOffset = 0.3f * glm::sin(running_animation.animationTime);
 
-		glm::mat4 rot_rightarm = glm::rotate(glm::mat4(1.f), idle_animation.armrightRotationAngle, glm::vec3(-1.f, 0.f, 0.f));
-		glm::mat4 tr_rightarm = glm::translate(glm::mat4(1.f), glm::vec3(-0.f, -0.8f + idle_animation.armrightTranslationOffset, 0.1f));
+		running_animation.legleftTranslationOffset = legAmplitude * glm::sin(legFrequency * running_animation.animationTime);
+		running_animation.legrightTranslationOffset = -legAmplitude * glm::sin(legFrequency * running_animation.animationTime);
+
+
 
 		idle_animation.animationTime += 0.001f;
 
+		// Arms animation
+		glm::mat4 rot_leftarm = glm::rotate(glm::mat4(1.f), idle_animation.armleftRotationAngle, glm::vec3(-1.f, 0.f, 0.f));
+		glm::mat4 tr_leftarm = glm::translate(glm::mat4(1.f), glm::vec3(0.f, -0.3f + idle_animation.armleftTranslationOffset, 0.1f));
+		glm::mat4 rot_rightarm = glm::rotate(glm::mat4(1.f), idle_animation.armrightRotationAngle, glm::vec3(-1.f, 0.f, 0.f));
+		glm::mat4 tr_rightarm = glm::translate(glm::mat4(1.f), glm::vec3(0.f, -0.3f + idle_animation.armrightTranslationOffset, 0.1f));
 		left_arm->SetModelMat(final_tr * final_rot * rot_leftarm * tr_leftarm);
 		right_arm->SetModelMat(final_tr * final_rot * rot_rightarm * tr_rightarm);
-	}
+
+		// Legs animation
+		glm::mat4 tr_leftleg = glm::translate(glm::mat4(1.f), glm::vec3(0.f, 0.2f, running_animation.legleftTranslationOffset));
+		glm::mat4 tr_rightleg = glm::translate(glm::mat4(1.f), glm::vec3(0.f, 0.2f, running_animation.legrightTranslationOffset));
+		left_leg->SetModelMat(final_tr * final_rot * tr_leftleg);
+		right_leg->SetModelMat(final_tr * final_rot * tr_rightleg);
+
+		// Body and eyes animation
+		glm::mat4 rot_body = glm::rotate(glm::mat4(1.f), idle_animation.bodyRotationAngle, glm::vec3(-1.f, 0.f, 0.f));
+		body->SetModelMat(final_tr * final_rot * rot_body);
+		face->SetModelMat(final_tr * final_rot * rot_body);
+		eyes->SetModelMat(final_tr * final_rot * rot_body);
+
+
+	
 
 
 }
 
-
-
 void CCharacter::State_Running()
 {
+
+	//if (isLeftKeyPressed== true && isRightKeyPressed == false && isFrontKeyPressed== false&& isBackKeyPressed == false)
+	//{
+	//		m_move.x = -1;
+	//		m_move.z = 0;
+	//}
+	//if (isLeftKeyPressed == false && isRightKeyPressed == true && isFrontKeyPressed == false  && isBackKeyPressed== false)
+	//{
+	//		m_move.x = 1;
+	//		m_move.z = 0;
+	//	
+	//}
+	//if (isLeftKeyPressed == false && isRightKeyPressed == false && isFrontKeyPressed== true && isBackKeyPressed== false)
+	//{
+	//		m_move.x = 0;
+	//		m_move.z = -1;
+	//	
+	//}
+	//if (isLeftKeyPressed == false && isRightKeyPressed== false && isFrontKeyPressed == false && isBackKeyPressed == true)
+	//{
+	//		m_move.x = 0;
+	//		m_move.z = 1;
+	//	
+	//}
 	
+
+	prevMove = m_move;
+
 	float legAmplitude = 0.1f;
 	float legFrequency = 2.0f;
 	
@@ -280,8 +384,7 @@ void CCharacter::State_Running()
 	m_pos.x += m_move.x * speed;
 	m_pos.z += m_move.z* speed;
 
-	idle_animation.initialLeftArmRotationAngle = running_animation.armleftRotationAngle;
-	idle_animation.initialRightArmRotationAngle = running_animation.armrightRotationAngle;
+	
 
 	//회전
 	float rotationAngle = glm::atan(m_move.x, m_move.z);
@@ -342,5 +445,56 @@ void CCharacter::State_Running()
 
 void CCharacter::State_Jumping()
 {
+
+	float legAmplitude = 0.1f;
+	float legFrequency = 2.0f;
+
+
+	// Rotation
+	float rotationAngle = glm::atan(m_move.x, m_move.z);
+	final_rot = glm::rotate(glm::mat4(1.f), rotationAngle, glm::vec3(0.f, 1.f, 0.f));
+
+	// Body animation
+	running_animation.bodyRotationAngle = glm::radians(5.f) + glm::radians(2.5f) * glm::sin(running_animation.animationTime);
+
+	// Arms animation
+	running_animation.armleftRotationAngle = glm::radians(90.f) + glm::radians(15.f) * glm::sin(running_animation.animationTime);
+	running_animation.armleftTranslationOffset = 0.3f * glm::sin(running_animation.animationTime);
+	running_animation.armrightRotationAngle = glm::radians(90.f) + glm::radians(15.f) * glm::sin(running_animation.animationTime);
+	running_animation.armrightTranslationOffset = 0.3f * glm::sin(running_animation.animationTime);
+
+	running_animation.armleftTranslationOffset = legAmplitude * glm::sin(legFrequency * running_animation.animationTime);
+	running_animation.armrightTranslationOffset = -legAmplitude * glm::sin(legFrequency * running_animation.animationTime);
 	
+	// Legs animation
+	running_animation.legleftRotationAngle = glm::radians(5.f) + glm::radians(5.f) * glm::sin(running_animation.animationTime);
+	running_animation.legleftTranslationOffset = 0.3f * glm::sin(running_animation.animationTime);
+	running_animation.legrightRotationAngle = glm::radians(5.f) + glm::radians(5.f) * glm::sin(running_animation.animationTime);
+	running_animation.legrightTranslationOffset = 0.3f * glm::sin(running_animation.animationTime);
+
+	running_animation.legleftTranslationOffset = legAmplitude * glm::sin(legFrequency * running_animation.animationTime);
+	running_animation.legrightTranslationOffset = -legAmplitude * glm::sin(legFrequency * running_animation.animationTime);
+
+	// Update animation time
+	running_animation.animationTime += 0.001f;
+
+	// Arms animation
+	glm::mat4 rot_leftarm = glm::rotate(glm::mat4(1.f), running_animation.armleftRotationAngle, glm::vec3(-1.f, 0.f, 0.f));
+	glm::mat4 tr_leftarm = glm::translate(glm::mat4(1.f), glm::vec3(0.2f, -0.8f + running_animation.armleftTranslationOffset, 0.1f));
+	glm::mat4 rot_rightarm = glm::rotate(glm::mat4(1.f), running_animation.armrightRotationAngle, glm::vec3(-1.f, 0.f, 0.f));
+	glm::mat4 tr_rightarm = glm::translate(glm::mat4(1.f), glm::vec3(-0.2f, -0.8f + running_animation.armrightTranslationOffset, 0.1f));
+	left_arm->SetModelMat(final_tr * final_rot * rot_leftarm * tr_leftarm);
+	right_arm->SetModelMat(final_tr * final_rot * rot_rightarm * tr_rightarm);
+
+	// Legs animation
+	glm::mat4 tr_leftleg = glm::translate(glm::mat4(1.f), glm::vec3(0.f, 0.2f, running_animation.legleftTranslationOffset));
+	glm::mat4 tr_rightleg = glm::translate(glm::mat4(1.f), glm::vec3(0.f, 0.2f, running_animation.legrightTranslationOffset));
+	left_leg->SetModelMat(final_tr * final_rot * tr_leftleg);
+	right_leg->SetModelMat(final_tr * final_rot * tr_rightleg);
+
+	// Body and eyes animation
+	glm::mat4 rot_body = glm::rotate(glm::mat4(1.f), running_animation.bodyRotationAngle, glm::vec3(-1.f, 0.f, 0.f));
+	body->SetModelMat(final_tr * final_rot * rot_body);
+	face->SetModelMat(final_tr * final_rot * rot_body);
+	eyes->SetModelMat(final_tr * final_rot * rot_body);
 }

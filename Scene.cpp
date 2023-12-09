@@ -157,6 +157,9 @@ void CScene::KeyboardEvent(int state, unsigned char key) {
 			m_Character->SetState(STATE::FRONT);
 			m_Character->SetFrontKeyPressed(true);
 			break;
+		case ' ':
+			m_Character->SetJumpKeyPressed(true);
+			break;
 		case 'e':
 			cameraRot.z -= 1.f;
 			break;
@@ -182,6 +185,7 @@ void CScene::KeyboardEvent(int state, unsigned char key) {
 		case 'W':
 			m_Character->SetFrontKeyPressed(false);
 			break;
+	
 		default:
 			break;
 		}
@@ -194,6 +198,8 @@ void CScene::SpecialKeyEvent(int state, int key)
 	switch (state) {
 	case GLUT_DOWN:
 		switch (key) {
+		
+			break;
 		default:
 			break;
 		}
