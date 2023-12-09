@@ -16,6 +16,9 @@ private:
 	int index;
 	float type;
 
+	glm::vec3 scale = { 1.f, 1.f, 1.f };
+	float rotateY;
+
 public:
 	CFloorObject();
 	virtual ~CFloorObject();

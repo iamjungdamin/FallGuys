@@ -42,7 +42,7 @@ void CScene::Initialize()
 	auto e_vao = InitEyes(shader);
 	m_Character->SetVao_eyes(e_vao.first, e_vao.second);
 
-	for (int i = 0; i < 5; ++i) {
+	for (int i = 0; i < 5 * 5; ++i) {
 		vFloors.push_back({ });
 	}
 
@@ -185,6 +185,9 @@ void CScene::KeyboardEvent(int state, unsigned char key) {
 			break;
 		case 'e':
 			cameraRot.z -= 1.f;
+			break;
+		case 'E':
+			cameraRot.z += 1.f;
 			break;
 		default:
 			break;
