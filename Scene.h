@@ -1,6 +1,8 @@
 #pragma once
 class CCharacter;
 class CGameObject;
+class CFloorObject;
+
 class CScene
 {
 private:
@@ -9,6 +11,7 @@ private:
 	//°´Ã¼
 	CGameObject* m_Cube;
 	CCharacter* m_Character;
+	std::vector<CFloorObject> vFloors;
 	// Ä«¸Þ¶ó
 	glm::vec3 cameraPos;
 	glm::vec3 cameraLook;
@@ -41,5 +44,8 @@ public:
 	std::pair<GLuint, GLsizei> Initleft_leg(GLuint shader);
 	std::pair<GLuint, GLsizei> InitRight_leg(GLuint shader);
 	std::pair<GLuint, GLsizei> InitEyes(GLuint shader);
+	
+	std::pair<GLuint, GLsizei> InitFloor(GLuint shader);
+
 	void RotateSceneY(float angle);
 };

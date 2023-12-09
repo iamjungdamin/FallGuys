@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CubeObject.cpp" />
+    <ClCompile Include="FloorObject.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="Sample_8_2.cpp" />
     <ClCompile Include="Scene.cpp" />
@@ -30,6 +31,7 @@
   <ItemGroup>
     <ClInclude Include="Character.h" />
     <ClInclude Include="CubeObject.h" />
+    <ClInclude Include="FloorObject.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="stdafx.h" />

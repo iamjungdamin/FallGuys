@@ -2,6 +2,7 @@
 #include "Scene.h"
 #include "CubeObject.h"
 #include "Character.h"
+#include "FloorObject.h"
 #include <iostream>
 
 CScene::CScene(int& width, int& height) : w_width{ width }, w_height{ height }
@@ -41,6 +42,14 @@ void CScene::Initialize()
 	m_Character->SetVao_right_leg(rl_vao.first, rl_vao.second);
 	auto e_vao = InitEyes(shader);
 	m_Character->SetVao_eyes(e_vao.first, e_vao.second);
+
+	vFloors.push_back({ });
+	auto floor_vao = InitFloor(shader);
+	for (int i = 0; i < vFloors.size(); ++i) {
+		vFloors[i].SetShader(shader);
+		vFloors[i].SetVao(floor_vao.first, floor_vao.second);
+	}
+	// set vao
 	
 	cameraRot.x = 0.f, cameraRot.y = 10.f, cameraRot.z = 20.f;
 	cameraPos = glm::vec3{ cameraRot.x, cameraRot.y, cameraRot.z };
@@ -78,6 +87,14 @@ void CScene::Update(float ElapsedTime)
 		m_Character->Update(ElapsedTime);
 	}
 
+	for (int i = 0; i < vFloors.size(); ++i) {
+		vFloors[i].SetCameraMat(cameraMat);
+		vFloors[i].SetProjectMat(projectMat);
+		vFloors[i].SetCameraPos(cameraPos);
+		vFloors[i].SetLightPos(lightPos);
+		vFloors[i].SetLightColor(lightColor);
+		vFloors[i].Update(ElapsedTime);
+	}
 }
 
 void CScene::FixedUpdate()
@@ -93,6 +110,10 @@ void CScene::Render()
 	if (m_Character) {
 		m_Character->Render();
 	}
+
+	for (int i = 0; i < vFloors.size(); ++i) {
+		vFloors[i].Render();
+	}
 }
 
 void CScene::Release()
@@ -103,6 +124,7 @@ void CScene::Release()
 	delete m_Character;
 	m_Character = nullptr;
 
+	vFloors.clear();
 }
 
 void CScene::MouseEvent(int button, int state, int x, int y)
@@ -112,7 +134,7 @@ void CScene::MouseEvent(int button, int state, int x, int y)
 	case GLUT_DOWN:
 		switch (button) {
 		case GLUT_LEFT_BUTTON:
-			
+			vFloors[0].SetPos(0, 0, 0);
 			break;
 		case GLUT_RIGHT_BUTTON:
 			
@@ -410,6 +432,36 @@ std::pair<GLuint, GLsizei> CScene::InitEyes(GLuint shader)
 
 	glm::vec3 fixedColor = { 0.0f, 0.0f, 0.f }; // 검은색
 	std::vector<glm::vec3> data = ReadObjWithRColorNormal("./Resources/eyes.obj", fixedColor);
+
+	glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(glm::vec3), data.data(), GL_STATIC_DRAW);	// VBO(GPU)로 정점 데이터 복사
+
+	GLint AttribPosLoc = glGetAttribLocation(shader, "vPos");						// 셰이더에서 vPos의 위치 가져온다.
+	GLint AttribColorLoc = glGetAttribLocation(shader, "vColor");					// 셰이더에서 vColor의 위치 가져온다.
+	GLint AttribNormalLoc = glGetAttribLocation(shader, "vNormal");					// 셰이더에서 vNormal의 위치 가져온다.
+	if (AttribPosLoc < 0 or AttribColorLoc < 0 or AttribNormalLoc < 0) {
+		std::cerr << "AttribLoc 찾기 실패" << std::endl;
+	}
+	// glVertexAttribPointer(attrib 위치, vertex 몇개씩 읽을건지, gl_float, gl_false, stride(간격), 시작 위치(포인터));
+	glVertexAttribPointer(AttribPosLoc, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), reinterpret_cast<void*>(0));	// 현재 VBO에 있는 데이터 속성 정의
+	glEnableVertexAttribArray(AttribPosLoc);										// Attribute 활성화
+	glVertexAttribPointer(AttribColorLoc, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), reinterpret_cast<void*>(3 * sizeof(float)));
+	glEnableVertexAttribArray(AttribColorLoc);										// Attribute 활성화
+	glVertexAttribPointer(AttribNormalLoc, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), reinterpret_cast<void*>(6 * sizeof(float)));
+	glEnableVertexAttribArray(AttribNormalLoc);										// Attribute 활성화
+
+	return { VAO, static_cast<int>(data.size()) };
+}
+
+std::pair<GLuint, GLsizei> CScene::InitFloor(GLuint shader)
+{
+	GLuint VAO, VBO;					// 정점 데이터를 GPU에 넘겨줄 VAO, VBO 생성
+	glGenVertexArrays(1, &VAO);
+	glBindVertexArray(VAO);
+	glGenBuffers(1, &VBO);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);	// VBO를 정점버퍼로 설정 및 바인딩
+
+	glm::vec3 fixedColor = { 0.0f, 0.0f, 0.f }; // 검은색
+	std::vector<glm::vec3> data = ReadObjWithRColorNormal("./Resources/Cube.obj", fixedColor);
 
 	glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(glm::vec3), data.data(), GL_STATIC_DRAW);	// VBO(GPU)로 정점 데이터 복사
 
