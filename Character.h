@@ -3,7 +3,7 @@
 #include "GameObject.h"
 
 // 객체 상태
-enum STATE { IDLE, LEFT, RIGHT, FRONT, BACK };
+enum STATE { IDLE, LEFT, RIGHT, FRONT, BACK,JUMP };
 
 class CCharacter
 {
@@ -16,11 +16,56 @@ class CCharacter
 	CGameObject* right_leg;
 	CGameObject* eyes;
 	glm::vec3 m_pos;
-	glm::mat4 final_tr;
-	float  animationTime;
+	glm::vec3 m_move;
+	glm::vec3 prevMove;
+	float m_rot;
+	glm::mat4 final_tr, final_rot; // 마지막 이동, 마지막 회전
+	float gravity = 5.f; // 중력
+	float speed = 0.001f; // 속도
+	float jump_speed = 5.f;
+	float animationTime;
+
+	struct Running_Animation {
+		float animationTime;
+		float bodyRotationAngle;
+		float armleftRotationAngle;
+		float armleftTranslationOffset;
+		float armrightRotationAngle;
+		float armrightTranslationOffset;
+		float legleftRotationAngle;
+		float legleftTranslationOffset;
+		float legrightRotationAngle;
+		float legrightTranslationOffset;
+		
+	};
+
+	struct IDLE_Animation {
+		float animationTime;
+		float bodyRotationAngle;
+		float armleftRotationAngle;
+		float armleftTranslationOffset;
+		float armrightRotationAngle;
+		float armrightTranslationOffset;
+		float legleftRotationAngle;
+		float legleftTranslationOffset;
+		float legrightRotationAngle;
+		float legrightTranslationOffset;
+		float initialLeftArmRotationAngle;
+		float initialRightArmRotationAngle;
+
+	};
+
+	IDLE_Animation idle_animation;
+	Running_Animation running_animation;
+
+	bool isLeftKeyPressed;
+	bool isRightKeyPressed;
+	bool isFrontKeyPressed;
+	bool isBackKeyPressed;
+	bool isJumpKeyPressed;
 
 	int state;
-	bool isJumping;
+
 
 public:
 	CCharacter();
@@ -57,8 +102,12 @@ public:
 	void State_Running();
 	void State_Jumping();
 	void CheckState();
-	
 
-
+	// 키보드 상태 관련 함수
+	void SetRightKeyPressed(bool a);
+	void SetLeftKeyPressed(bool a);
+	void SetBackKeyPressed(bool a);
+	void SetFrontKeyPressed(bool a);
+	void SetJumpKeyPressed(bool a);
 };
 
