@@ -15,7 +15,8 @@ private:
 	// 카메라
 	glm::vec3 cameraPos;
 	glm::vec3 cameraLook;
-	glm::vec3 cameraRot;
+	glm::vec2 preMousePos { -1.f, -1.f };
+	float cameraRotateY;
 	//조명
 	glm::vec3 lightPos;
 	glm::vec3 lightColor;
@@ -33,6 +34,7 @@ public:
 	void Release();					//소멸될 때 할 일
 
 	void MouseEvent(int button, int state, int x, int y);
+	void MouseMotionEvent(int x, int y);
 	void KeyboardEvent(int state, unsigned char key);
 	void SpecialKeyEvent(int state, int key);
 
@@ -47,5 +49,4 @@ public:
 	
 	std::pair<GLuint, GLsizei> InitFloor(GLuint shader);
 
-	void RotateSceneY(float angle);
 };

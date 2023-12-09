@@ -19,7 +19,7 @@ void CFloorObject::Initialize()
 
 	m_pos = { index % 5 * 2.f, -1.5f, index / 5 * -2.f};
 	scale = { 3.f, 0.1f, 3.f };
-	roteteY = 0.f;
+	rotateY = 0.f;
 }
 
 void CFloorObject::Update(float ElapsedTime)

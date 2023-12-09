@@ -10,6 +10,8 @@
 #pragma comment(lib, "glew32.lib")
 #pragma comment(lib, "freeglut.lib")
 
+extern GLint winWidth;
+extern GLint winHeight;
 
 std::string ReadFile(std::string fileName);
 GLuint CreateShaderProgram(std::string vertexFile, std::string fragmentFile);

@@ -154,7 +154,8 @@ GLvoid Mouse(int button, int state, int x, int y)
 
 GLvoid Motion(int x, int y)
 {
-	return GLvoid();
+	if (g_pscene)
+		g_pscene->MouseMotionEvent(x, y);
 }
 
 GLvoid PassiveMotion(int x, int y)

@@ -53,9 +53,8 @@ void CScene::Initialize()
 	}
 	// set vao
 	
-	cameraRot.x = 0.f, cameraRot.y = 10.f, cameraRot.z = 20.f;
-	cameraPos = glm::vec3{ cameraRot.x, cameraRot.y, cameraRot.z };
-	cameraLook = glm::vec3{ 0.f ,4.f,0.f};
+	cameraPos = m_Character->GetPos() + glm::vec3(0.f, 5.f, 20.f);
+	cameraLook = glm::normalize(m_Character->GetPos() - cameraPos);
 
 	lightPos = glm::vec3{ 5.f, 5.f, 0.f };
 	lightColor = glm::vec3{ 1.f, 1.f, 1.f };
@@ -66,9 +65,13 @@ void CScene::Initialize()
 void CScene::Update(float ElapsedTime)
 {
 	// 카메라
-	cameraPos = glm::vec3{ cameraRot.x, cameraRot.y, cameraRot.z };
+	cameraPos = m_Character->GetPos() + glm::vec3(0.f, 5.f, 20.f);
+	cameraLook = glm::normalize(m_Character->GetPos() - cameraPos);
 
 	glm::mat4 cameraMat = glm::lookAt(cameraPos, cameraLook, glm::vec3{ 0.f, 1.f, 0.f });
+	cameraMat = glm::translate(cameraMat, m_Character->GetPos());
+	cameraMat = glm::rotate(cameraMat, glm::radians(cameraRotateY), glm::vec3(0.f, 1.f, 0.f));
+	cameraMat = glm::translate(cameraMat, -m_Character->GetPos());
 	glm::mat4 projectMat = glm::perspective(glm::radians(45.f), (float)w_width / (float)w_height, 0.1f, 1000.f);
 
 	//if (m_Cube) {
@@ -136,6 +139,7 @@ void CScene::MouseEvent(int button, int state, int x, int y)
 	case GLUT_DOWN:
 		switch (button) {
 		case GLUT_LEFT_BUTTON:
+			preMousePos = { x, y };
 			break;
 		case GLUT_RIGHT_BUTTON:
 			
@@ -149,9 +153,31 @@ void CScene::MouseEvent(int button, int state, int x, int y)
 		}
 		break;
 	case GLUT_UP:
+		switch (button) {
+		case GLUT_LEFT_BUTTON:
+			preMousePos = { -1.f, -1.f };
+			break;
+		}
 		break;
 	default:
 		break;
+	}
+}
+
+void CScene::MouseMotionEvent(int x, int y)
+{
+	float sens = 0.02f;		//회전 시 민감도
+	glm::vec2 currMousePos{ -1.f, -1.f };
+	
+	if (preMousePos.x > -1 && preMousePos.y > -1) {
+		currMousePos.x = x;
+		currMousePos.y = y;
+
+		if (currMousePos.x != preMousePos.x) {
+			cameraRotateY += (currMousePos.x - preMousePos.x) * sens;
+			currMousePos.x = preMousePos.x;
+			currMousePos.y = preMousePos.y;
+		}
 	}
 }
 
@@ -182,12 +208,6 @@ void CScene::KeyboardEvent(int state, unsigned char key) {
 			break;
 		case ' ':
 			m_Character->SetJumpKeyPressed(true);
-			break;
-		case 'e':
-			cameraRot.z -= 1.f;
-			break;
-		case 'E':
-			cameraRot.z += 1.f;
 			break;
 		default:
 			break;
@@ -508,17 +528,3 @@ std::pair<GLuint, GLsizei> CScene::InitFloor(GLuint shader)
 	return { VAO, static_cast<int>(data.size()) };
 }
 
-
-void CScene::RotateSceneY(float angle)
-{
-	// Rotate the scene around the Y-axis
-	glm::mat4 rotationMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(angle), glm::vec3(0.0f, 1.0f, 0.0f));
-
-	// Apply the rotation to the camera position
-	glm::vec4 rotatedCameraPos = rotationMatrix * glm::vec4(cameraRot.x, cameraRot.y, cameraRot.z, 1.0f);
-
-	// Update the camera position
-	cameraRot.x = rotatedCameraPos.x;
-	cameraRot.y = rotatedCameraPos.y;
-	cameraRot.z = rotatedCameraPos.z;
-}

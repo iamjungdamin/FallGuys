@@ -94,6 +94,7 @@ public:
 	void SetLightColor(glm::vec3 lightColor);
 
 	void SetPos(float x);
+	glm::vec3 GetPos() const;
 
 	
 	// 캐릭터 상태 관련 함수
