@@ -3,6 +3,7 @@
 #include "OpenGL/glew.h"
 #include "OpenGL/freeglut.h"
 #include "OpenGL/glm/ext.hpp"
+#include <iostream>
 #include <string>
 #include <vector>
 

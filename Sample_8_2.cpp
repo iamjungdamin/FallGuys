@@ -57,6 +57,8 @@ void main(int argc, char** argv)								//--- 윈도우 출력하고 콜백함수 설정
 	// 씬을 생성한다.
 	g_pscene = new CScene{ winWidth, winHeight };
 
+	srand(unsigned int(time(NULL)));
+
 
 	//	콜백함수 설정
 	glutDisplayFunc(Display);									// 출력 함수의 지정

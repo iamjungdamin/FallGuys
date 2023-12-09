@@ -12,7 +12,10 @@ CFloorObject::~CFloorObject()
 
 void CFloorObject::Initialize()
 {
-	type = 0;
+	index = FloorCount;
+	type = TYPE::TRANSLATE;
+
+	++FloorCount;
 }
 
 void CFloorObject::Update(float ElapsedTime)

@@ -3,7 +3,6 @@
 #include "CubeObject.h"
 #include "Character.h"
 #include "FloorObject.h"
-#include <iostream>
 
 CScene::CScene(int& width, int& height) : w_width{ width }, w_height{ height }
 {
@@ -43,7 +42,10 @@ void CScene::Initialize()
 	auto e_vao = InitEyes(shader);
 	m_Character->SetVao_eyes(e_vao.first, e_vao.second);
 
-	vFloors.push_back({ });
+	for (int i = 0; i < 5; ++i) {
+		vFloors.push_back({ });
+	}
+
 	auto floor_vao = InitFloor(shader);
 	for (int i = 0; i < vFloors.size(); ++i) {
 		vFloors[i].SetShader(shader);
@@ -134,7 +136,6 @@ void CScene::MouseEvent(int button, int state, int x, int y)
 	case GLUT_DOWN:
 		switch (button) {
 		case GLUT_LEFT_BUTTON:
-			vFloors[0].SetPos(0, 0, 0);
 			break;
 		case GLUT_RIGHT_BUTTON:
 			
@@ -460,7 +461,7 @@ std::pair<GLuint, GLsizei> CScene::InitFloor(GLuint shader)
 	glGenBuffers(1, &VBO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);	// VBO를 정점버퍼로 설정 및 바인딩
 
-	glm::vec3 fixedColor = { 0.0f, 0.0f, 0.f }; // 검은색
+	glm::vec3 fixedColor = { (rand() % 255) / 255.f, (rand() % 255) / 255.f, (rand() % 255) / 255.f };
 	std::vector<glm::vec3> data = ReadObjWithRColorNormal("./Resources/Cube.obj", fixedColor);
 
 	glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(glm::vec3), data.data(), GL_STATIC_DRAW);	// VBO(GPU)로 정점 데이터 복사
