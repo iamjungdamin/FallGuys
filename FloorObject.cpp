@@ -13,7 +13,7 @@ CFloorObject::~CFloorObject()
 void CFloorObject::Initialize()
 {
 	index = FloorCount;
-	type = TYPE::TRANSLATE;
+	type = rand() % 4;	// enum TYPE
 
 	++FloorCount;
 
@@ -49,4 +49,25 @@ void CFloorObject::Render()
 void CFloorObject::Release()
 {
 	CGameObject::Release();
+}
+
+void CFloorObject::Drop()
+{
+	if (type == TYPE::SHAKE) {
+	
+	}
+	else if (type == TYPE::TRANSLATE) {
+
+	}
+	else if (type == TYPE::ROTATE) {
+	
+	}
+	else if (type == TYPE::SCALE) {
+	
+	}
+}
+
+void CFloorObject::Delete()
+{
+	--FloorCount;
 }

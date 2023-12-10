@@ -42,6 +42,7 @@ void CScene::Initialize()
 	auto e_vao = InitEyes(shader);
 	m_Character->SetVao_eyes(e_vao.first, e_vao.second);
 
+	vFloors.reserve(40);
 	for (int i = 0; i < 5 * 5; ++i) {
 		vFloors.push_back({ });
 	}
@@ -506,7 +507,7 @@ std::pair<GLuint, GLsizei> CScene::InitFloor(GLuint shader)
 	glGenBuffers(1, &VBO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);	// VBO를 정점버퍼로 설정 및 바인딩
 
-	glm::vec3 fixedColor = { (rand() % 255) / 255.f, (rand() % 255) / 255.f, (rand() % 255) / 255.f };
+	glm::vec3 fixedColor = { 0.3f, 0.8f, 1.f };
 	std::vector<glm::vec3> data = ReadObjWithRColorNormal("./Resources/Cube.obj", fixedColor);
 
 	glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(glm::vec3), data.data(), GL_STATIC_DRAW);	// VBO(GPU)로 정점 데이터 복사

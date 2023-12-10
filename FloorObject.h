@@ -14,7 +14,7 @@ class CFloorObject : public CGameObject
 {
 private:
 	int index;
-	float type;
+	int type;
 
 	glm::vec3 scale = { 1.f, 1.f, 1.f };
 	float rotateY;
@@ -28,5 +28,8 @@ public:
 	virtual void FixedUpdate() override;
 	virtual void Render() override;
 	virtual void Release() override;
+
+	void Drop();
+	void Delete();
 };
 
