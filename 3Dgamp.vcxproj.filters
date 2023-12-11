@@ -19,6 +19,9 @@
     <Filter Include="Character">
       <UniqueIdentifier>{5acbaadc-fff1-4882-a248-baaf05bf5e17}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Map">
+      <UniqueIdentifier>{23ca6edd-bf38-448e-b63d-aacd84f641f5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CubeObject.cpp">
@@ -42,6 +45,9 @@
     <ClCompile Include="Character.cpp">
       <Filter>Character</Filter>
     </ClCompile>
+    <ClCompile Include="Map.cpp">
+      <Filter>Map</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CubeObject.h">
@@ -61,6 +67,9 @@
     </ClInclude>
     <ClInclude Include="Character.h">
       <Filter>Character</Filter>
+    </ClInclude>
+    <ClInclude Include="Map.h">
+      <Filter>Map</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

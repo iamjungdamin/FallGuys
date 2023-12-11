@@ -1,6 +1,7 @@
 #pragma once
 class CCharacter;
 class CGameObject;
+class CMap;
 class CScene
 {
 private:
@@ -9,6 +10,7 @@ private:
 	//°´Ã¼
 	CGameObject* m_Cube;
 	CCharacter* m_Character;
+	CMap* m_Map;
 	// Ä«¸Þ¶ó
 	glm::vec3 cameraPos;
 	glm::vec3 cameraLook;
@@ -17,6 +19,7 @@ private:
 	glm::vec3 lightPos;
 	glm::vec3 lightColor;
 
+	
 
 
 public:
@@ -41,5 +44,6 @@ public:
 	std::pair<GLuint, GLsizei> Initleft_leg(GLuint shader);
 	std::pair<GLuint, GLsizei> InitRight_leg(GLuint shader);
 	std::pair<GLuint, GLsizei> InitEyes(GLuint shader);
+	std::pair<GLuint, GLsizei> InitMap(GLuint shader);
 	void RotateSceneY(float angle);
 };
