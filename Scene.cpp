@@ -62,8 +62,8 @@ void CScene::Initialize()
 	}
 	// set vao
 	
-	cameraPos = m_Character->GetPos() + glm::vec3(0.f, 5.f, 20.f);
-	cameraLook = glm::normalize(m_Character->GetPos() - cameraPos);
+	cameraPos = { 0.f, 0.f, 1.f };
+	cameraLook = { 0.f, 0.f, 0.f };
 
 	lightPos = glm::vec3{ 5.f, 5.f, 0.f };
 	lightColor = glm::vec3{ 1.f, 1.f, 1.f };
@@ -75,7 +75,7 @@ void CScene::Update(float ElapsedTime)
 {
 	// ī�޶�
 	cameraPos = m_Character->GetPos() + glm::vec3(0.f, 5.f, 20.f);
-	cameraLook = glm::normalize(m_Character->GetPos() - cameraPos);
+	cameraLook = m_Character->GetPos();
 
 	glm::mat4 cameraMat = glm::lookAt(cameraPos, cameraLook, glm::vec3{ 0.f, 1.f, 0.f });
 	cameraMat = glm::translate(cameraMat, m_Character->GetPos());
