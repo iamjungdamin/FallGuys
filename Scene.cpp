@@ -100,6 +100,12 @@ void CScene::Update(float ElapsedTime)
 		vFloors[i].SetLightPos(lightPos);
 		vFloors[i].SetLightColor(lightColor);
 		vFloors[i].Update(ElapsedTime);
+
+		if (vFloors[i].GetIsDeleted()) {
+			vFloors.erase(std::remove_if(vFloors.begin(), vFloors.end(), [&i](const CFloorObject& f) {
+				return f.GetIndex() == i;
+				}), vFloors.end());
+		}
 	}
 }
 
@@ -209,6 +215,11 @@ void CScene::KeyboardEvent(int state, unsigned char key) {
 			break;
 		case ' ':
 			m_Character->SetJumpKeyPressed(true);
+			break;
+		case 'v':
+			for (int i = 0; i < vFloors.size(); ++i) {
+				vFloors[i].Drop();
+			}
 			break;
 		default:
 			break;

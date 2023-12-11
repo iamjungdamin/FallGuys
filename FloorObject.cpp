@@ -14,6 +14,7 @@ void CFloorObject::Initialize()
 {
 	index = FloorCount;
 	type = rand() % 4;	// enum TYPE
+	isDeleted = false;
 
 	++FloorCount;
 
@@ -67,7 +68,12 @@ void CFloorObject::Drop()
 	}
 }
 
-void CFloorObject::Delete()
+int CFloorObject::GetIndex() const
 {
-	--FloorCount;
+	return index;
+}
+
+bool CFloorObject::GetIsDeleted() const
+{
+	return isDeleted;
 }

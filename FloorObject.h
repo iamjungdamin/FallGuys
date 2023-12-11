@@ -15,6 +15,7 @@ class CFloorObject : public CGameObject
 private:
 	int index;
 	int type;
+	bool isDeleted;
 
 	glm::vec3 scale = { 1.f, 1.f, 1.f };
 	float rotateY;
@@ -30,6 +31,7 @@ public:
 	virtual void Release() override;
 
 	void Drop();
-	void Delete();
+	int GetIndex() const;
+	bool GetIsDeleted() const;
 };
 
