@@ -49,10 +49,10 @@ void CCharacter::Render()
 
 
 	glBegin(GL_LINE_LOOP);
-	glVertex3f(m_pos.x - GetBBSize().x / 2.f, m_pos.y - GetBBSize().y / 2.f, m_pos.z - GetBBSize().z / 2.f);
-	glVertex3f(m_pos.x - GetBBSize().x / 2.f, m_pos.y + GetBBSize().y / 2.f, m_pos.z - GetBBSize().z / 2.f);
-	glVertex3f(m_pos.x + GetBBSize().x / 2.f, m_pos.y + GetBBSize().y / 2.f, m_pos.z + GetBBSize().z / 2.f);
-	glVertex3f(m_pos.x + GetBBSize().x / 2.f, m_pos.y - GetBBSize().y / 2.f, m_pos.z + GetBBSize().z / 2.f);
+	glVertex3f(-GetBBSize().x / 2.f, -GetBBSize().y / 2.f, -GetBBSize().z / 2.f);
+	glVertex3f(-GetBBSize().x / 2.f, +GetBBSize().y / 2.f, -GetBBSize().z / 2.f);
+	glVertex3f(+GetBBSize().x / 2.f, +GetBBSize().y / 2.f, +GetBBSize().z / 2.f);
+	glVertex3f(+GetBBSize().x / 2.f, -GetBBSize().y / 2.f, +GetBBSize().z / 2.f);
 	glEnd();
 }
 

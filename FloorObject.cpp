@@ -18,7 +18,7 @@ void CFloorObject::Initialize()
 
 	++FloorCount;
 
-	m_pos = { index % 5 * 2.f, 1.5f, index / 5 * -2.f};
+	m_pos = { index % 5 * 2.f, 1.5f, index / 5 * -2.f -10.f};
 	scale = { 3.f, 0.1f, 3.f };
 	rotateY = 0.f;
 }
@@ -59,9 +59,9 @@ void CFloorObject::Update(float ElapsedTime)
 			}
 		}
 
+		TransformMatrix = glm::scale(TransformMatrix, scale);
 		TransformMatrix = glm::translate(TransformMatrix, m_pos);
 		TransformMatrix = glm::rotate(TransformMatrix, glm::radians(rotateY), glm::vec3(0.f, 1.f, 0.f));
-		TransformMatrix = glm::scale(TransformMatrix, scale);
 		modelMat = TransformMatrix;
 
 		CGameObject::Update(ElapsedTime);
@@ -80,10 +80,10 @@ void CFloorObject::Render()
 
 
 	glBegin(GL_LINE_LOOP);
-	glVertex3f(m_pos.x - GetBBSize().x / 2.f, m_pos.y - GetBBSize().y / 2.f, m_pos.z - GetBBSize().z / 2.f);
-	glVertex3f(m_pos.x - GetBBSize().x / 2.f, m_pos.y + GetBBSize().y / 2.f, m_pos.z - GetBBSize().z / 2.f);
-	glVertex3f(m_pos.x + GetBBSize().x / 2.f, m_pos.y + GetBBSize().y / 2.f, m_pos.z + GetBBSize().z / 2.f);
-	glVertex3f(m_pos.x + GetBBSize().x / 2.f, m_pos.y - GetBBSize().y / 2.f, m_pos.z + GetBBSize().z / 2.f);
+	glVertex3f(-GetBBSize().x / 2.f, -GetBBSize().y / 2.f, -GetBBSize().z / 2.f);
+	glVertex3f(-GetBBSize().x / 2.f, +GetBBSize().y / 2.f, -GetBBSize().z / 2.f);
+	glVertex3f(+GetBBSize().x / 2.f, +GetBBSize().y / 2.f, +GetBBSize().z / 2.f);
+	glVertex3f(+GetBBSize().x / 2.f, -GetBBSize().y / 2.f, +GetBBSize().z / 2.f);
 	glEnd();
 }
 
