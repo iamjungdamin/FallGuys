@@ -1,5 +1,4 @@
 #include "GameObject.h"
-#include <iostream>
 
 CGameObject::CGameObject()
 {

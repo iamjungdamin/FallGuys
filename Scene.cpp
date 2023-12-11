@@ -3,7 +3,7 @@
 #include "CubeObject.h"
 #include "Character.h"
 #include "Map.h"
-#include <iostream>
+#include "FloorObject.h"
 
 CScene::CScene(int& width, int& height) : w_width{ width }, w_height{ height }
 {
@@ -17,7 +17,7 @@ CScene::~CScene()
 
 void CScene::Initialize()
 {
-	GLuint shader = CreateShaderProgram("./Shader/vertex.glsl", "./Shader/fragment.glsl");	// ¼ÎÀÌ´õ ÇÁ·Î±×·¥ »ý¼º
+	GLuint shader = CreateShaderProgram("./Shader/vertex.glsl", "./Shader/fragment.glsl");	// ï¿½ï¿½ï¿½Ì´ï¿½ ï¿½ï¿½ï¿½Î±×·ï¿½ ï¿½ï¿½ï¿½ï¿½
 
 	//m_Cube = new CCubeObject;
 	//m_Cube->SetShader(shader);
@@ -49,10 +49,21 @@ void CScene::Initialize()
 	m_Character->SetVao_right_leg(rl_vao.first, rl_vao.second);
 	auto e_vao = InitEyes(shader);
 	m_Character->SetVao_eyes(e_vao.first, e_vao.second);
+
+	vFloors.reserve(40);
+	for (int i = 0; i < 5 * 5; ++i) {
+		vFloors.push_back({ });
+	}
+
+	auto floor_vao = InitFloor(shader);
+	for (int i = 0; i < vFloors.size(); ++i) {
+		vFloors[i].SetShader(shader);
+		vFloors[i].SetVao(floor_vao.first, floor_vao.second);
+	}
+	// set vao
 	
-	cameraRot.x = 0.f, cameraRot.y = 10.f, cameraRot.z = 20.f;
-	cameraPos = glm::vec3{ cameraRot.x, cameraRot.y, cameraRot.z };
-	cameraLook = glm::vec3{ 0.f ,4.f,0.f};
+	cameraPos = m_Character->GetPos() + glm::vec3(0.f, 5.f, 20.f);
+	cameraLook = glm::normalize(m_Character->GetPos() - cameraPos);
 
 	lightPos = glm::vec3{ 5.f, 5.f, 0.f };
 	lightColor = glm::vec3{ 1.f, 1.f, 1.f };
@@ -62,10 +73,14 @@ void CScene::Initialize()
 
 void CScene::Update(float ElapsedTime)
 {
-	// Ä«¸Þ¶ó
-	cameraPos = glm::vec3{ cameraRot.x, cameraRot.y, cameraRot.z };
+	// Ä«ï¿½Þ¶ï¿½
+	cameraPos = m_Character->GetPos() + glm::vec3(0.f, 5.f, 20.f);
+	cameraLook = glm::normalize(m_Character->GetPos() - cameraPos);
 
 	glm::mat4 cameraMat = glm::lookAt(cameraPos, cameraLook, glm::vec3{ 0.f, 1.f, 0.f });
+	cameraMat = glm::translate(cameraMat, m_Character->GetPos());
+	cameraMat = glm::rotate(cameraMat, glm::radians(cameraRotateY), glm::vec3(0.f, 1.f, 0.f));
+	cameraMat = glm::translate(cameraMat, -m_Character->GetPos());
 	glm::mat4 projectMat = glm::perspective(glm::radians(45.f), (float)w_width / (float)w_height, 0.1f, 1000.f);
 
 
@@ -87,6 +102,20 @@ void CScene::Update(float ElapsedTime)
 		m_Map->Update(ElapsedTime);
 	}
 
+	for (int i = 0; i < vFloors.size(); ++i) {
+		vFloors[i].SetCameraMat(cameraMat);
+		vFloors[i].SetProjectMat(projectMat);
+		vFloors[i].SetCameraPos(cameraPos);
+		vFloors[i].SetLightPos(lightPos);
+		vFloors[i].SetLightColor(lightColor);
+		vFloors[i].Update(ElapsedTime);
+
+		if (vFloors[i].GetIsDeleted()) {
+			//vFloors.erase(std::remove_if(vFloors.begin(), vFloors.end(), [&i](const CFloorObject& f) {
+			//	return f.GetIndex() == i;
+			//	}), vFloors.end());
+		}
+	}
 
 }
 
@@ -105,6 +134,10 @@ void CScene::Render()
 	if (m_Map) {
 		m_Map->Render();
 	}
+
+	for (int i = 0; i < vFloors.size(); ++i) {
+		vFloors[i].Render();
+	}
 }
 
 void CScene::Release()
@@ -118,6 +151,7 @@ void CScene::Release()
 	delete m_Map;
 	m_Map = nullptr;
 
+	vFloors.clear();
 }
 
 void CScene::MouseEvent(int button, int state, int x, int y)
@@ -127,7 +161,7 @@ void CScene::MouseEvent(int button, int state, int x, int y)
 	case GLUT_DOWN:
 		switch (button) {
 		case GLUT_LEFT_BUTTON:
-			
+			preMousePos = { x, y };
 			break;
 		case GLUT_RIGHT_BUTTON:
 			
@@ -141,9 +175,31 @@ void CScene::MouseEvent(int button, int state, int x, int y)
 		}
 		break;
 	case GLUT_UP:
+		switch (button) {
+		case GLUT_LEFT_BUTTON:
+			preMousePos = { -1.f, -1.f };
+			break;
+		}
 		break;
 	default:
 		break;
+	}
+}
+
+void CScene::MouseMotionEvent(int x, int y)
+{
+	float sens = 0.02f;		//È¸ï¿½ï¿½ ï¿½ï¿½ ï¿½Î°ï¿½ï¿½ï¿½
+	glm::vec2 currMousePos{ -1.f, -1.f };
+	
+	if (preMousePos.x > -1 && preMousePos.y > -1) {
+		currMousePos.x = x;
+		currMousePos.y = y;
+
+		if (currMousePos.x != preMousePos.x) {
+			cameraRotateY += (currMousePos.x - preMousePos.x) * sens;
+			currMousePos.x = preMousePos.x;
+			currMousePos.y = preMousePos.y;
+		}
 	}
 }
 
@@ -175,8 +231,10 @@ void CScene::KeyboardEvent(int state, unsigned char key) {
 		case ' ':
 			m_Character->SetJumpKeyPressed(true);
 			break;
-		case 'e':
-			cameraRot.z -= 1.f;
+		case 'v':
+			for (int i = 0; i < vFloors.size(); ++i) {
+				vFloors[i].Drop();
+			}
 			break;
 		default:
 			break;
@@ -230,283 +288,300 @@ void CScene::SpecialKeyEvent(int state, int key)
 
 std::pair<GLuint, GLsizei> CScene::InitCube(GLuint shader)
 {
-	GLuint VAO, VBO;					// Á¤Á¡ µ¥ÀÌÅÍ¸¦ GPU¿¡ ³Ñ°ÜÁÙ VAO, VBO »ý¼º
+	GLuint VAO, VBO;					// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Í¸ï¿½ GPUï¿½ï¿½ ï¿½Ñ°ï¿½ï¿½ï¿½ VAO, VBO ï¿½ï¿½ï¿½ï¿½
 	glGenVertexArrays(1, &VAO);
 	glBindVertexArray(VAO);
 	glGenBuffers(1, &VBO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);	// VBO¸¦ Á¤Á¡¹öÆÛ·Î ¼³Á¤ ¹× ¹ÙÀÎµù
-	glm::vec3 fixedColor = { 0.0f, 0.0f, 0.0f }; // Èò»ö
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);	// VBOï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Û·ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½Îµï¿½
+	glm::vec3 fixedColor = { 0.0f, 0.0f, 0.0f }; // ï¿½ï¿½ï¿½
 	std::vector<glm::vec3> data = ReadObjWithRColorNormal("./Resources/left_leg.obj", fixedColor);
 
-	glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(glm::vec3), data.data(), GL_STATIC_DRAW);	// VBO(GPU)·Î Á¤Á¡ µ¥ÀÌÅÍ º¹»ç
+	glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(glm::vec3), data.data(), GL_STATIC_DRAW);	// VBO(GPU)ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 
-	GLint AttribPosLoc = glGetAttribLocation(shader, "vPos");						// ¼ÎÀÌ´õ¿¡¼­ vPosÀÇ À§Ä¡ °¡Á®¿Â´Ù.
-	GLint AttribColorLoc = glGetAttribLocation(shader, "vColor");					// ¼ÎÀÌ´õ¿¡¼­ vColorÀÇ À§Ä¡ °¡Á®¿Â´Ù.
-	GLint AttribNormalLoc = glGetAttribLocation(shader, "vNormal");					// ¼ÎÀÌ´õ¿¡¼­ vNormalÀÇ À§Ä¡ °¡Á®¿Â´Ù.
+	GLint AttribPosLoc = glGetAttribLocation(shader, "vPos");						// ï¿½ï¿½ï¿½Ì´ï¿½ï¿½ï¿½ï¿½ï¿½ vPosï¿½ï¿½ ï¿½ï¿½Ä¡ ï¿½ï¿½ï¿½ï¿½ï¿½Â´ï¿½.
+	GLint AttribColorLoc = glGetAttribLocation(shader, "vColor");					// ï¿½ï¿½ï¿½Ì´ï¿½ï¿½ï¿½ï¿½ï¿½ vColorï¿½ï¿½ ï¿½ï¿½Ä¡ ï¿½ï¿½ï¿½ï¿½ï¿½Â´ï¿½.
+	GLint AttribNormalLoc = glGetAttribLocation(shader, "vNormal");					// ï¿½ï¿½ï¿½Ì´ï¿½ï¿½ï¿½ï¿½ï¿½ vNormalï¿½ï¿½ ï¿½ï¿½Ä¡ ï¿½ï¿½ï¿½ï¿½ï¿½Â´ï¿½.
 	if (AttribPosLoc < 0 or AttribColorLoc < 0 or AttribNormalLoc < 0) {
-		std::cerr << "AttribLoc Ã£±â ½ÇÆÐ" << std::endl;
+		std::cerr << "AttribLoc Ã£ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½" << std::endl;
 	}
-	// glVertexAttribPointer(attrib À§Ä¡, vertex ¸î°³¾¿ ÀÐÀ»°ÇÁö, gl_float, gl_false, stride(°£°Ý), ½ÃÀÛ À§Ä¡(Æ÷ÀÎÅÍ));
-	glVertexAttribPointer(AttribPosLoc, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), reinterpret_cast<void*>(0));	// ÇöÀç VBO¿¡ ÀÖ´Â µ¥ÀÌÅÍ ¼Ó¼º Á¤ÀÇ
-	glEnableVertexAttribArray(AttribPosLoc);										// Attribute È°¼ºÈ­
+	// glVertexAttribPointer(attrib ï¿½ï¿½Ä¡, vertex ï¿½î°³ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½, gl_float, gl_false, stride(ï¿½ï¿½ï¿½ï¿½), ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡(ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½));
+	glVertexAttribPointer(AttribPosLoc, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), reinterpret_cast<void*>(0));	// ï¿½ï¿½ï¿½ï¿½ VBOï¿½ï¿½ ï¿½Ö´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ó¼ï¿½ ï¿½ï¿½ï¿½ï¿½
+	glEnableVertexAttribArray(AttribPosLoc);										// Attribute È°ï¿½ï¿½È­
 	glVertexAttribPointer(AttribColorLoc, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), reinterpret_cast<void*>(3 * sizeof(float)));
-	glEnableVertexAttribArray(AttribColorLoc);										// Attribute È°¼ºÈ­
+	glEnableVertexAttribArray(AttribColorLoc);										// Attribute È°ï¿½ï¿½È­
 	glVertexAttribPointer(AttribNormalLoc, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), reinterpret_cast<void*>(6 * sizeof(float)));
-	glEnableVertexAttribArray(AttribNormalLoc);										// Attribute È°¼ºÈ­
+	glEnableVertexAttribArray(AttribNormalLoc);										// Attribute È°ï¿½ï¿½È­
 
 	return { VAO, static_cast<int>(data.size()) };
 }
 
 std::pair<GLuint, GLsizei> CScene::InitFace(GLuint shader)
 {
-	GLuint VAO, VBO;					// Á¤Á¡ µ¥ÀÌÅÍ¸¦ GPU¿¡ ³Ñ°ÜÁÙ VAO, VBO »ý¼º
+	GLuint VAO, VBO;					// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Í¸ï¿½ GPUï¿½ï¿½ ï¿½Ñ°ï¿½ï¿½ï¿½ VAO, VBO ï¿½ï¿½ï¿½ï¿½
 	glGenVertexArrays(1, &VAO);
 	glBindVertexArray(VAO);
 	glGenBuffers(1, &VBO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);	// VBO¸¦ Á¤Á¡¹öÆÛ·Î ¼³Á¤ ¹× ¹ÙÀÎµù
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);	// VBOï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Û·ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½Îµï¿½
 
-	glm::vec3 fixedColor = { 1.0f, 1.0f, 1.0f }; // Èò»ö
+	glm::vec3 fixedColor = { 1.0f, 1.0f, 1.0f }; // ï¿½ï¿½ï¿½
 	std::vector<glm::vec3> data = ReadObjWithRColorNormal("./Resources/face.obj", fixedColor);
 
-	glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(glm::vec3), data.data(), GL_STATIC_DRAW);	// VBO(GPU)·Î Á¤Á¡ µ¥ÀÌÅÍ º¹»ç
+	glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(glm::vec3), data.data(), GL_STATIC_DRAW);	// VBO(GPU)ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 
-	GLint AttribPosLoc = glGetAttribLocation(shader, "vPos");						// ¼ÎÀÌ´õ¿¡¼­ vPosÀÇ À§Ä¡ °¡Á®¿Â´Ù.
-	GLint AttribColorLoc = glGetAttribLocation(shader, "vColor");					// ¼ÎÀÌ´õ¿¡¼­ vColorÀÇ À§Ä¡ °¡Á®¿Â´Ù.
-	GLint AttribNormalLoc = glGetAttribLocation(shader, "vNormal");					// ¼ÎÀÌ´õ¿¡¼­ vNormalÀÇ À§Ä¡ °¡Á®¿Â´Ù.
+	GLint AttribPosLoc = glGetAttribLocation(shader, "vPos");						// ï¿½ï¿½ï¿½Ì´ï¿½ï¿½ï¿½ï¿½ï¿½ vPosï¿½ï¿½ ï¿½ï¿½Ä¡ ï¿½ï¿½ï¿½ï¿½ï¿½Â´ï¿½.
+	GLint AttribColorLoc = glGetAttribLocation(shader, "vColor");					// ï¿½ï¿½ï¿½Ì´ï¿½ï¿½ï¿½ï¿½ï¿½ vColorï¿½ï¿½ ï¿½ï¿½Ä¡ ï¿½ï¿½ï¿½ï¿½ï¿½Â´ï¿½.
+	GLint AttribNormalLoc = glGetAttribLocation(shader, "vNormal");					// ï¿½ï¿½ï¿½Ì´ï¿½ï¿½ï¿½ï¿½ï¿½ vNormalï¿½ï¿½ ï¿½ï¿½Ä¡ ï¿½ï¿½ï¿½ï¿½ï¿½Â´ï¿½.
 	if (AttribPosLoc < 0 or AttribColorLoc < 0 or AttribNormalLoc < 0) {
-		std::cerr << "AttribLoc Ã£±â ½ÇÆÐ" << std::endl;
+		std::cerr << "AttribLoc Ã£ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½" << std::endl;
 	}
-	// glVertexAttribPointer(attrib À§Ä¡, vertex ¸î°³¾¿ ÀÐÀ»°ÇÁö, gl_float, gl_false, stride(°£°Ý), ½ÃÀÛ À§Ä¡(Æ÷ÀÎÅÍ));
-	glVertexAttribPointer(AttribPosLoc, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), reinterpret_cast<void*>(0));	// ÇöÀç VBO¿¡ ÀÖ´Â µ¥ÀÌÅÍ ¼Ó¼º Á¤ÀÇ
-	glEnableVertexAttribArray(AttribPosLoc);										// Attribute È°¼ºÈ­
+	// glVertexAttribPointer(attrib ï¿½ï¿½Ä¡, vertex ï¿½î°³ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½, gl_float, gl_false, stride(ï¿½ï¿½ï¿½ï¿½), ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡(ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½));
+	glVertexAttribPointer(AttribPosLoc, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), reinterpret_cast<void*>(0));	// ï¿½ï¿½ï¿½ï¿½ VBOï¿½ï¿½ ï¿½Ö´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ó¼ï¿½ ï¿½ï¿½ï¿½ï¿½
+	glEnableVertexAttribArray(AttribPosLoc);										// Attribute È°ï¿½ï¿½È­
 	glVertexAttribPointer(AttribColorLoc, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), reinterpret_cast<void*>(3 * sizeof(float)));
-	glEnableVertexAttribArray(AttribColorLoc);										// Attribute È°¼ºÈ­
+	glEnableVertexAttribArray(AttribColorLoc);										// Attribute È°ï¿½ï¿½È­
 	glVertexAttribPointer(AttribNormalLoc, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), reinterpret_cast<void*>(6 * sizeof(float)));
-	glEnableVertexAttribArray(AttribNormalLoc);										// Attribute È°¼ºÈ­
+	glEnableVertexAttribArray(AttribNormalLoc);										// Attribute È°ï¿½ï¿½È­
 
 	return { VAO, static_cast<int>(data.size()) };
 }
 
 std::pair<GLuint, GLsizei> CScene::InitBody(GLuint shader)
 {
-	GLuint VAO, VBO;					// Á¤Á¡ µ¥ÀÌÅÍ¸¦ GPU¿¡ ³Ñ°ÜÁÙ VAO, VBO »ý¼º
+	GLuint VAO, VBO;					// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Í¸ï¿½ GPUï¿½ï¿½ ï¿½Ñ°ï¿½ï¿½ï¿½ VAO, VBO ï¿½ï¿½ï¿½ï¿½
 	glGenVertexArrays(1, &VAO);
 	glBindVertexArray(VAO);
 	glGenBuffers(1, &VBO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);	// VBO¸¦ Á¤Á¡¹öÆÛ·Î ¼³Á¤ ¹× ¹ÙÀÎµù
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);	// VBOï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Û·ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½Îµï¿½
 
-	glm::vec3 fixedColor = { 1.0f, 0.6f, 0.6f }; // ºÐÈ«»ö
+	glm::vec3 fixedColor = { 1.0f, 0.6f, 0.6f }; // ï¿½ï¿½È«ï¿½ï¿½
 	std::vector<glm::vec3> data = ReadObjWithRColorNormal("./Resources/body.obj", fixedColor);
 
-	glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(glm::vec3), data.data(), GL_STATIC_DRAW);	// VBO(GPU)·Î Á¤Á¡ µ¥ÀÌÅÍ º¹»ç
+	glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(glm::vec3), data.data(), GL_STATIC_DRAW);	// VBO(GPU)ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 
-	GLint AttribPosLoc = glGetAttribLocation(shader, "vPos");						// ¼ÎÀÌ´õ¿¡¼­ vPosÀÇ À§Ä¡ °¡Á®¿Â´Ù.
-	GLint AttribColorLoc = glGetAttribLocation(shader, "vColor");					// ¼ÎÀÌ´õ¿¡¼­ vColorÀÇ À§Ä¡ °¡Á®¿Â´Ù.
-	GLint AttribNormalLoc = glGetAttribLocation(shader, "vNormal");					// ¼ÎÀÌ´õ¿¡¼­ vNormalÀÇ À§Ä¡ °¡Á®¿Â´Ù.
+	GLint AttribPosLoc = glGetAttribLocation(shader, "vPos");						// ï¿½ï¿½ï¿½Ì´ï¿½ï¿½ï¿½ï¿½ï¿½ vPosï¿½ï¿½ ï¿½ï¿½Ä¡ ï¿½ï¿½ï¿½ï¿½ï¿½Â´ï¿½.
+	GLint AttribColorLoc = glGetAttribLocation(shader, "vColor");					// ï¿½ï¿½ï¿½Ì´ï¿½ï¿½ï¿½ï¿½ï¿½ vColorï¿½ï¿½ ï¿½ï¿½Ä¡ ï¿½ï¿½ï¿½ï¿½ï¿½Â´ï¿½.
+	GLint AttribNormalLoc = glGetAttribLocation(shader, "vNormal");					// ï¿½ï¿½ï¿½Ì´ï¿½ï¿½ï¿½ï¿½ï¿½ vNormalï¿½ï¿½ ï¿½ï¿½Ä¡ ï¿½ï¿½ï¿½ï¿½ï¿½Â´ï¿½.
 	if (AttribPosLoc < 0 or AttribColorLoc < 0 or AttribNormalLoc < 0) {
-		std::cerr << "AttribLoc Ã£±â ½ÇÆÐ" << std::endl;
+		std::cerr << "AttribLoc Ã£ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½" << std::endl;
 	}
-	// glVertexAttribPointer(attrib À§Ä¡, vertex ¸î°³¾¿ ÀÐÀ»°ÇÁö, gl_float, gl_false, stride(°£°Ý), ½ÃÀÛ À§Ä¡(Æ÷ÀÎÅÍ));
-	glVertexAttribPointer(AttribPosLoc, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), reinterpret_cast<void*>(0));	// ÇöÀç VBO¿¡ ÀÖ´Â µ¥ÀÌÅÍ ¼Ó¼º Á¤ÀÇ
-	glEnableVertexAttribArray(AttribPosLoc);										// Attribute È°¼ºÈ­
+	// glVertexAttribPointer(attrib ï¿½ï¿½Ä¡, vertex ï¿½î°³ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½, gl_float, gl_false, stride(ï¿½ï¿½ï¿½ï¿½), ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡(ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½));
+	glVertexAttribPointer(AttribPosLoc, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), reinterpret_cast<void*>(0));	// ï¿½ï¿½ï¿½ï¿½ VBOï¿½ï¿½ ï¿½Ö´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ó¼ï¿½ ï¿½ï¿½ï¿½ï¿½
+	glEnableVertexAttribArray(AttribPosLoc);										// Attribute È°ï¿½ï¿½È­
 	glVertexAttribPointer(AttribColorLoc, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), reinterpret_cast<void*>(3 * sizeof(float)));
-	glEnableVertexAttribArray(AttribColorLoc);										// Attribute È°¼ºÈ­
+	glEnableVertexAttribArray(AttribColorLoc);										// Attribute È°ï¿½ï¿½È­
 	glVertexAttribPointer(AttribNormalLoc, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), reinterpret_cast<void*>(6 * sizeof(float)));
-	glEnableVertexAttribArray(AttribNormalLoc);										// Attribute È°¼ºÈ­
+	glEnableVertexAttribArray(AttribNormalLoc);										// Attribute È°ï¿½ï¿½È­
 
 	return { VAO, static_cast<int>(data.size()) };
 }
 
 std::pair<GLuint, GLsizei> CScene::InitLeft_arm(GLuint shader)
 {
-	GLuint VAO, VBO;					// Á¤Á¡ µ¥ÀÌÅÍ¸¦ GPU¿¡ ³Ñ°ÜÁÙ VAO, VBO »ý¼º
+	GLuint VAO, VBO;					// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Í¸ï¿½ GPUï¿½ï¿½ ï¿½Ñ°ï¿½ï¿½ï¿½ VAO, VBO ï¿½ï¿½ï¿½ï¿½
 	glGenVertexArrays(1, &VAO);
 	glBindVertexArray(VAO);
 	glGenBuffers(1, &VBO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);	// VBO¸¦ Á¤Á¡¹öÆÛ·Î ¼³Á¤ ¹× ¹ÙÀÎµù
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);	// VBOï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Û·ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½Îµï¿½
 
-	glm::vec3 fixedColor = { 1.0f, 0.6f, 0.6f }; // ºÐÈ«»ö
+	glm::vec3 fixedColor = { 1.0f, 0.6f, 0.6f }; // ï¿½ï¿½È«ï¿½ï¿½
 	std::vector<glm::vec3> data = ReadObjWithRColorNormal("./Resources/left_arm.obj", fixedColor);
 
-	glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(glm::vec3), data.data(), GL_STATIC_DRAW);	// VBO(GPU)·Î Á¤Á¡ µ¥ÀÌÅÍ º¹»ç
+	glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(glm::vec3), data.data(), GL_STATIC_DRAW);	// VBO(GPU)ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 
-	GLint AttribPosLoc = glGetAttribLocation(shader, "vPos");						// ¼ÎÀÌ´õ¿¡¼­ vPosÀÇ À§Ä¡ °¡Á®¿Â´Ù.
-	GLint AttribColorLoc = glGetAttribLocation(shader, "vColor");					// ¼ÎÀÌ´õ¿¡¼­ vColorÀÇ À§Ä¡ °¡Á®¿Â´Ù.
-	GLint AttribNormalLoc = glGetAttribLocation(shader, "vNormal");					// ¼ÎÀÌ´õ¿¡¼­ vNormalÀÇ À§Ä¡ °¡Á®¿Â´Ù.
+	GLint AttribPosLoc = glGetAttribLocation(shader, "vPos");						// ï¿½ï¿½ï¿½Ì´ï¿½ï¿½ï¿½ï¿½ï¿½ vPosï¿½ï¿½ ï¿½ï¿½Ä¡ ï¿½ï¿½ï¿½ï¿½ï¿½Â´ï¿½.
+	GLint AttribColorLoc = glGetAttribLocation(shader, "vColor");					// ï¿½ï¿½ï¿½Ì´ï¿½ï¿½ï¿½ï¿½ï¿½ vColorï¿½ï¿½ ï¿½ï¿½Ä¡ ï¿½ï¿½ï¿½ï¿½ï¿½Â´ï¿½.
+	GLint AttribNormalLoc = glGetAttribLocation(shader, "vNormal");					// ï¿½ï¿½ï¿½Ì´ï¿½ï¿½ï¿½ï¿½ï¿½ vNormalï¿½ï¿½ ï¿½ï¿½Ä¡ ï¿½ï¿½ï¿½ï¿½ï¿½Â´ï¿½.
 	if (AttribPosLoc < 0 or AttribColorLoc < 0 or AttribNormalLoc < 0) {
-		std::cerr << "AttribLoc Ã£±â ½ÇÆÐ" << std::endl;
+		std::cerr << "AttribLoc Ã£ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½" << std::endl;
 	}
-	// glVertexAttribPointer(attrib À§Ä¡, vertex ¸î°³¾¿ ÀÐÀ»°ÇÁö, gl_float, gl_false, stride(°£°Ý), ½ÃÀÛ À§Ä¡(Æ÷ÀÎÅÍ));
-	glVertexAttribPointer(AttribPosLoc, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), reinterpret_cast<void*>(0));	// ÇöÀç VBO¿¡ ÀÖ´Â µ¥ÀÌÅÍ ¼Ó¼º Á¤ÀÇ
-	glEnableVertexAttribArray(AttribPosLoc);										// Attribute È°¼ºÈ­
+	// glVertexAttribPointer(attrib ï¿½ï¿½Ä¡, vertex ï¿½î°³ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½, gl_float, gl_false, stride(ï¿½ï¿½ï¿½ï¿½), ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡(ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½));
+	glVertexAttribPointer(AttribPosLoc, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), reinterpret_cast<void*>(0));	// ï¿½ï¿½ï¿½ï¿½ VBOï¿½ï¿½ ï¿½Ö´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ó¼ï¿½ ï¿½ï¿½ï¿½ï¿½
+	glEnableVertexAttribArray(AttribPosLoc);										// Attribute È°ï¿½ï¿½È­
 	glVertexAttribPointer(AttribColorLoc, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), reinterpret_cast<void*>(3 * sizeof(float)));
-	glEnableVertexAttribArray(AttribColorLoc);										// Attribute È°¼ºÈ­
+	glEnableVertexAttribArray(AttribColorLoc);										// Attribute È°ï¿½ï¿½È­
 	glVertexAttribPointer(AttribNormalLoc, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), reinterpret_cast<void*>(6 * sizeof(float)));
-	glEnableVertexAttribArray(AttribNormalLoc);										// Attribute È°¼ºÈ­
+	glEnableVertexAttribArray(AttribNormalLoc);										// Attribute È°ï¿½ï¿½È­
 
 	return { VAO, static_cast<int>(data.size()) };
 }
 
 std::pair<GLuint, GLsizei> CScene::InitRight_arm(GLuint shader)
 {
-	GLuint VAO, VBO;					// Á¤Á¡ µ¥ÀÌÅÍ¸¦ GPU¿¡ ³Ñ°ÜÁÙ VAO, VBO »ý¼º
+	GLuint VAO, VBO;					// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Í¸ï¿½ GPUï¿½ï¿½ ï¿½Ñ°ï¿½ï¿½ï¿½ VAO, VBO ï¿½ï¿½ï¿½ï¿½
 	glGenVertexArrays(1, &VAO);
 	glBindVertexArray(VAO);
 	glGenBuffers(1, &VBO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);	// VBO¸¦ Á¤Á¡¹öÆÛ·Î ¼³Á¤ ¹× ¹ÙÀÎµù
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);	// VBOï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Û·ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½Îµï¿½
 
-	glm::vec3 fixedColor = { 1.0f, 0.6f, 0.6f }; // ºÐÈ«»ö
+	glm::vec3 fixedColor = { 1.0f, 0.6f, 0.6f }; // ï¿½ï¿½È«ï¿½ï¿½
 	std::vector<glm::vec3> data = ReadObjWithRColorNormal("./Resources/right_arm.obj", fixedColor);
 
-	glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(glm::vec3), data.data(), GL_STATIC_DRAW);	// VBO(GPU)·Î Á¤Á¡ µ¥ÀÌÅÍ º¹»ç
+	glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(glm::vec3), data.data(), GL_STATIC_DRAW);	// VBO(GPU)ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 
-	GLint AttribPosLoc = glGetAttribLocation(shader, "vPos");						// ¼ÎÀÌ´õ¿¡¼­ vPosÀÇ À§Ä¡ °¡Á®¿Â´Ù.
-	GLint AttribColorLoc = glGetAttribLocation(shader, "vColor");					// ¼ÎÀÌ´õ¿¡¼­ vColorÀÇ À§Ä¡ °¡Á®¿Â´Ù.
-	GLint AttribNormalLoc = glGetAttribLocation(shader, "vNormal");					// ¼ÎÀÌ´õ¿¡¼­ vNormalÀÇ À§Ä¡ °¡Á®¿Â´Ù.
+	GLint AttribPosLoc = glGetAttribLocation(shader, "vPos");						// ï¿½ï¿½ï¿½Ì´ï¿½ï¿½ï¿½ï¿½ï¿½ vPosï¿½ï¿½ ï¿½ï¿½Ä¡ ï¿½ï¿½ï¿½ï¿½ï¿½Â´ï¿½.
+	GLint AttribColorLoc = glGetAttribLocation(shader, "vColor");					// ï¿½ï¿½ï¿½Ì´ï¿½ï¿½ï¿½ï¿½ï¿½ vColorï¿½ï¿½ ï¿½ï¿½Ä¡ ï¿½ï¿½ï¿½ï¿½ï¿½Â´ï¿½.
+	GLint AttribNormalLoc = glGetAttribLocation(shader, "vNormal");					// ï¿½ï¿½ï¿½Ì´ï¿½ï¿½ï¿½ï¿½ï¿½ vNormalï¿½ï¿½ ï¿½ï¿½Ä¡ ï¿½ï¿½ï¿½ï¿½ï¿½Â´ï¿½.
 	if (AttribPosLoc < 0 or AttribColorLoc < 0 or AttribNormalLoc < 0) {
-		std::cerr << "AttribLoc Ã£±â ½ÇÆÐ" << std::endl;
+		std::cerr << "AttribLoc Ã£ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½" << std::endl;
 	}
-	// glVertexAttribPointer(attrib À§Ä¡, vertex ¸î°³¾¿ ÀÐÀ»°ÇÁö, gl_float, gl_false, stride(°£°Ý), ½ÃÀÛ À§Ä¡(Æ÷ÀÎÅÍ));
-	glVertexAttribPointer(AttribPosLoc, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), reinterpret_cast<void*>(0));	// ÇöÀç VBO¿¡ ÀÖ´Â µ¥ÀÌÅÍ ¼Ó¼º Á¤ÀÇ
-	glEnableVertexAttribArray(AttribPosLoc);										// Attribute È°¼ºÈ­
+	// glVertexAttribPointer(attrib ï¿½ï¿½Ä¡, vertex ï¿½î°³ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½, gl_float, gl_false, stride(ï¿½ï¿½ï¿½ï¿½), ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡(ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½));
+	glVertexAttribPointer(AttribPosLoc, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), reinterpret_cast<void*>(0));	// ï¿½ï¿½ï¿½ï¿½ VBOï¿½ï¿½ ï¿½Ö´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ó¼ï¿½ ï¿½ï¿½ï¿½ï¿½
+	glEnableVertexAttribArray(AttribPosLoc);										// Attribute È°ï¿½ï¿½È­
 	glVertexAttribPointer(AttribColorLoc, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), reinterpret_cast<void*>(3 * sizeof(float)));
-	glEnableVertexAttribArray(AttribColorLoc);										// Attribute È°¼ºÈ­
+	glEnableVertexAttribArray(AttribColorLoc);										// Attribute È°ï¿½ï¿½È­
 	glVertexAttribPointer(AttribNormalLoc, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), reinterpret_cast<void*>(6 * sizeof(float)));
-	glEnableVertexAttribArray(AttribNormalLoc);										// Attribute È°¼ºÈ­
+	glEnableVertexAttribArray(AttribNormalLoc);										// Attribute È°ï¿½ï¿½È­
 
 	return { VAO, static_cast<int>(data.size()) };
 }
 
 std::pair<GLuint, GLsizei> CScene::Initleft_leg(GLuint shader)
 {
-	GLuint VAO, VBO;					// Á¤Á¡ µ¥ÀÌÅÍ¸¦ GPU¿¡ ³Ñ°ÜÁÙ VAO, VBO »ý¼º
+	GLuint VAO, VBO;					// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Í¸ï¿½ GPUï¿½ï¿½ ï¿½Ñ°ï¿½ï¿½ï¿½ VAO, VBO ï¿½ï¿½ï¿½ï¿½
 	glGenVertexArrays(1, &VAO);
 	glBindVertexArray(VAO);
 	glGenBuffers(1, &VBO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);	// VBO¸¦ Á¤Á¡¹öÆÛ·Î ¼³Á¤ ¹× ¹ÙÀÎµù
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);	// VBOï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Û·ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½Îµï¿½
 
-	glm::vec3 fixedColor = { 1.0f, 0.6f, 0.6f }; // ºÐÈ«»ö
+	glm::vec3 fixedColor = { 1.0f, 0.6f, 0.6f }; // ï¿½ï¿½È«ï¿½ï¿½
 	std::vector<glm::vec3> data = ReadObjWithRColorNormal("./Resources/left_leg.obj", fixedColor);
 
-	glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(glm::vec3), data.data(), GL_STATIC_DRAW);	// VBO(GPU)·Î Á¤Á¡ µ¥ÀÌÅÍ º¹»ç
+	glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(glm::vec3), data.data(), GL_STATIC_DRAW);	// VBO(GPU)ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 
-	GLint AttribPosLoc = glGetAttribLocation(shader, "vPos");						// ¼ÎÀÌ´õ¿¡¼­ vPosÀÇ À§Ä¡ °¡Á®¿Â´Ù.
-	GLint AttribColorLoc = glGetAttribLocation(shader, "vColor");					// ¼ÎÀÌ´õ¿¡¼­ vColorÀÇ À§Ä¡ °¡Á®¿Â´Ù.
-	GLint AttribNormalLoc = glGetAttribLocation(shader, "vNormal");					// ¼ÎÀÌ´õ¿¡¼­ vNormalÀÇ À§Ä¡ °¡Á®¿Â´Ù.
+	GLint AttribPosLoc = glGetAttribLocation(shader, "vPos");						// ï¿½ï¿½ï¿½Ì´ï¿½ï¿½ï¿½ï¿½ï¿½ vPosï¿½ï¿½ ï¿½ï¿½Ä¡ ï¿½ï¿½ï¿½ï¿½ï¿½Â´ï¿½.
+	GLint AttribColorLoc = glGetAttribLocation(shader, "vColor");					// ï¿½ï¿½ï¿½Ì´ï¿½ï¿½ï¿½ï¿½ï¿½ vColorï¿½ï¿½ ï¿½ï¿½Ä¡ ï¿½ï¿½ï¿½ï¿½ï¿½Â´ï¿½.
+	GLint AttribNormalLoc = glGetAttribLocation(shader, "vNormal");					// ï¿½ï¿½ï¿½Ì´ï¿½ï¿½ï¿½ï¿½ï¿½ vNormalï¿½ï¿½ ï¿½ï¿½Ä¡ ï¿½ï¿½ï¿½ï¿½ï¿½Â´ï¿½.
 	if (AttribPosLoc < 0 or AttribColorLoc < 0 or AttribNormalLoc < 0) {
-		std::cerr << "AttribLoc Ã£±â ½ÇÆÐ" << std::endl;
+		std::cerr << "AttribLoc Ã£ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½" << std::endl;
 	}
-	// glVertexAttribPointer(attrib À§Ä¡, vertex ¸î°³¾¿ ÀÐÀ»°ÇÁö, gl_float, gl_false, stride(°£°Ý), ½ÃÀÛ À§Ä¡(Æ÷ÀÎÅÍ));
-	glVertexAttribPointer(AttribPosLoc, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), reinterpret_cast<void*>(0));	// ÇöÀç VBO¿¡ ÀÖ´Â µ¥ÀÌÅÍ ¼Ó¼º Á¤ÀÇ
-	glEnableVertexAttribArray(AttribPosLoc);										// Attribute È°¼ºÈ­
+	// glVertexAttribPointer(attrib ï¿½ï¿½Ä¡, vertex ï¿½î°³ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½, gl_float, gl_false, stride(ï¿½ï¿½ï¿½ï¿½), ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡(ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½));
+	glVertexAttribPointer(AttribPosLoc, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), reinterpret_cast<void*>(0));	// ï¿½ï¿½ï¿½ï¿½ VBOï¿½ï¿½ ï¿½Ö´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ó¼ï¿½ ï¿½ï¿½ï¿½ï¿½
+	glEnableVertexAttribArray(AttribPosLoc);										// Attribute È°ï¿½ï¿½È­
 	glVertexAttribPointer(AttribColorLoc, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), reinterpret_cast<void*>(3 * sizeof(float)));
-	glEnableVertexAttribArray(AttribColorLoc);										// Attribute È°¼ºÈ­
+	glEnableVertexAttribArray(AttribColorLoc);										// Attribute È°ï¿½ï¿½È­
 	glVertexAttribPointer(AttribNormalLoc, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), reinterpret_cast<void*>(6 * sizeof(float)));
-	glEnableVertexAttribArray(AttribNormalLoc);										// Attribute È°¼ºÈ­
+	glEnableVertexAttribArray(AttribNormalLoc);										// Attribute È°ï¿½ï¿½È­
 
 	return { VAO, static_cast<int>(data.size()) };
 }
 
 std::pair<GLuint, GLsizei> CScene::InitRight_leg(GLuint shader)
 {
-	GLuint VAO, VBO;					// Á¤Á¡ µ¥ÀÌÅÍ¸¦ GPU¿¡ ³Ñ°ÜÁÙ VAO, VBO »ý¼º
+	GLuint VAO, VBO;					// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Í¸ï¿½ GPUï¿½ï¿½ ï¿½Ñ°ï¿½ï¿½ï¿½ VAO, VBO ï¿½ï¿½ï¿½ï¿½
 	glGenVertexArrays(1, &VAO);
 	glBindVertexArray(VAO);
 	glGenBuffers(1, &VBO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);	// VBO¸¦ Á¤Á¡¹öÆÛ·Î ¼³Á¤ ¹× ¹ÙÀÎµù
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);	// VBOï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Û·ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½Îµï¿½
 
-	glm::vec3 fixedColor = { 1.0f, 0.6f, 0.6f }; // ºÐÈ«»ö
+	glm::vec3 fixedColor = { 1.0f, 0.6f, 0.6f }; // ï¿½ï¿½È«ï¿½ï¿½
 	std::vector<glm::vec3> data = ReadObjWithRColorNormal("./Resources/right_leg.obj", fixedColor);
 
-	glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(glm::vec3), data.data(), GL_STATIC_DRAW);	// VBO(GPU)·Î Á¤Á¡ µ¥ÀÌÅÍ º¹»ç
+	glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(glm::vec3), data.data(), GL_STATIC_DRAW);	// VBO(GPU)ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 
-	GLint AttribPosLoc = glGetAttribLocation(shader, "vPos");						// ¼ÎÀÌ´õ¿¡¼­ vPosÀÇ À§Ä¡ °¡Á®¿Â´Ù.
-	GLint AttribColorLoc = glGetAttribLocation(shader, "vColor");					// ¼ÎÀÌ´õ¿¡¼­ vColorÀÇ À§Ä¡ °¡Á®¿Â´Ù.
-	GLint AttribNormalLoc = glGetAttribLocation(shader, "vNormal");					// ¼ÎÀÌ´õ¿¡¼­ vNormalÀÇ À§Ä¡ °¡Á®¿Â´Ù.
+	GLint AttribPosLoc = glGetAttribLocation(shader, "vPos");						// ï¿½ï¿½ï¿½Ì´ï¿½ï¿½ï¿½ï¿½ï¿½ vPosï¿½ï¿½ ï¿½ï¿½Ä¡ ï¿½ï¿½ï¿½ï¿½ï¿½Â´ï¿½.
+	GLint AttribColorLoc = glGetAttribLocation(shader, "vColor");					// ï¿½ï¿½ï¿½Ì´ï¿½ï¿½ï¿½ï¿½ï¿½ vColorï¿½ï¿½ ï¿½ï¿½Ä¡ ï¿½ï¿½ï¿½ï¿½ï¿½Â´ï¿½.
+	GLint AttribNormalLoc = glGetAttribLocation(shader, "vNormal");					// ï¿½ï¿½ï¿½Ì´ï¿½ï¿½ï¿½ï¿½ï¿½ vNormalï¿½ï¿½ ï¿½ï¿½Ä¡ ï¿½ï¿½ï¿½ï¿½ï¿½Â´ï¿½.
 	if (AttribPosLoc < 0 or AttribColorLoc < 0 or AttribNormalLoc < 0) {
-		std::cerr << "AttribLoc Ã£±â ½ÇÆÐ" << std::endl;
+		std::cerr << "AttribLoc Ã£ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½" << std::endl;
 	}
-	// glVertexAttribPointer(attrib À§Ä¡, vertex ¸î°³¾¿ ÀÐÀ»°ÇÁö, gl_float, gl_false, stride(°£°Ý), ½ÃÀÛ À§Ä¡(Æ÷ÀÎÅÍ));
-	glVertexAttribPointer(AttribPosLoc, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), reinterpret_cast<void*>(0));	// ÇöÀç VBO¿¡ ÀÖ´Â µ¥ÀÌÅÍ ¼Ó¼º Á¤ÀÇ
-	glEnableVertexAttribArray(AttribPosLoc);										// Attribute È°¼ºÈ­
+	// glVertexAttribPointer(attrib ï¿½ï¿½Ä¡, vertex ï¿½î°³ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½, gl_float, gl_false, stride(ï¿½ï¿½ï¿½ï¿½), ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡(ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½));
+	glVertexAttribPointer(AttribPosLoc, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), reinterpret_cast<void*>(0));	// ï¿½ï¿½ï¿½ï¿½ VBOï¿½ï¿½ ï¿½Ö´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ó¼ï¿½ ï¿½ï¿½ï¿½ï¿½
+	glEnableVertexAttribArray(AttribPosLoc);										// Attribute È°ï¿½ï¿½È­
 	glVertexAttribPointer(AttribColorLoc, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), reinterpret_cast<void*>(3 * sizeof(float)));
-	glEnableVertexAttribArray(AttribColorLoc);										// Attribute È°¼ºÈ­
+	glEnableVertexAttribArray(AttribColorLoc);										// Attribute È°ï¿½ï¿½È­
 	glVertexAttribPointer(AttribNormalLoc, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), reinterpret_cast<void*>(6 * sizeof(float)));
-	glEnableVertexAttribArray(AttribNormalLoc);										// Attribute È°¼ºÈ­
+	glEnableVertexAttribArray(AttribNormalLoc);										// Attribute È°ï¿½ï¿½È­
 
 	return { VAO, static_cast<int>(data.size()) };
 }
 
 std::pair<GLuint, GLsizei> CScene::InitEyes(GLuint shader)
 {
-	GLuint VAO, VBO;					// Á¤Á¡ µ¥ÀÌÅÍ¸¦ GPU¿¡ ³Ñ°ÜÁÙ VAO, VBO »ý¼º
+	GLuint VAO, VBO;					// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Í¸ï¿½ GPUï¿½ï¿½ ï¿½Ñ°ï¿½ï¿½ï¿½ VAO, VBO ï¿½ï¿½ï¿½ï¿½
 	glGenVertexArrays(1, &VAO);
 	glBindVertexArray(VAO);
 	glGenBuffers(1, &VBO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);	// VBO¸¦ Á¤Á¡¹öÆÛ·Î ¼³Á¤ ¹× ¹ÙÀÎµù
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);	// VBOï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Û·ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½Îµï¿½
 
-	glm::vec3 fixedColor = { 0.0f, 0.0f, 0.f }; // °ËÀº»ö
+	glm::vec3 fixedColor = { 0.0f, 0.0f, 0.f }; // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	std::vector<glm::vec3> data = ReadObjWithRColorNormal("./Resources/eyes.obj", fixedColor);
 
-	glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(glm::vec3), data.data(), GL_STATIC_DRAW);	// VBO(GPU)·Î Á¤Á¡ µ¥ÀÌÅÍ º¹»ç
+	glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(glm::vec3), data.data(), GL_STATIC_DRAW);	// VBO(GPU)ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 
-	GLint AttribPosLoc = glGetAttribLocation(shader, "vPos");						// ¼ÎÀÌ´õ¿¡¼­ vPosÀÇ À§Ä¡ °¡Á®¿Â´Ù.
-	GLint AttribColorLoc = glGetAttribLocation(shader, "vColor");					// ¼ÎÀÌ´õ¿¡¼­ vColorÀÇ À§Ä¡ °¡Á®¿Â´Ù.
-	GLint AttribNormalLoc = glGetAttribLocation(shader, "vNormal");					// ¼ÎÀÌ´õ¿¡¼­ vNormalÀÇ À§Ä¡ °¡Á®¿Â´Ù.
+	GLint AttribPosLoc = glGetAttribLocation(shader, "vPos");						// ï¿½ï¿½ï¿½Ì´ï¿½ï¿½ï¿½ï¿½ï¿½ vPosï¿½ï¿½ ï¿½ï¿½Ä¡ ï¿½ï¿½ï¿½ï¿½ï¿½Â´ï¿½.
+	GLint AttribColorLoc = glGetAttribLocation(shader, "vColor");					// ï¿½ï¿½ï¿½Ì´ï¿½ï¿½ï¿½ï¿½ï¿½ vColorï¿½ï¿½ ï¿½ï¿½Ä¡ ï¿½ï¿½ï¿½ï¿½ï¿½Â´ï¿½.
+	GLint AttribNormalLoc = glGetAttribLocation(shader, "vNormal");					// ï¿½ï¿½ï¿½Ì´ï¿½ï¿½ï¿½ï¿½ï¿½ vNormalï¿½ï¿½ ï¿½ï¿½Ä¡ ï¿½ï¿½ï¿½ï¿½ï¿½Â´ï¿½.
 	if (AttribPosLoc < 0 or AttribColorLoc < 0 or AttribNormalLoc < 0) {
-		std::cerr << "AttribLoc Ã£±â ½ÇÆÐ" << std::endl;
+		std::cerr << "AttribLoc Ã£ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½" << std::endl;
 	}
-	// glVertexAttribPointer(attrib À§Ä¡, vertex ¸î°³¾¿ ÀÐÀ»°ÇÁö, gl_float, gl_false, stride(°£°Ý), ½ÃÀÛ À§Ä¡(Æ÷ÀÎÅÍ));
-	glVertexAttribPointer(AttribPosLoc, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), reinterpret_cast<void*>(0));	// ÇöÀç VBO¿¡ ÀÖ´Â µ¥ÀÌÅÍ ¼Ó¼º Á¤ÀÇ
-	glEnableVertexAttribArray(AttribPosLoc);										// Attribute È°¼ºÈ­
+	// glVertexAttribPointer(attrib ï¿½ï¿½Ä¡, vertex ï¿½î°³ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½, gl_float, gl_false, stride(ï¿½ï¿½ï¿½ï¿½), ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡(ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½));
+	glVertexAttribPointer(AttribPosLoc, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), reinterpret_cast<void*>(0));	// ï¿½ï¿½ï¿½ï¿½ VBOï¿½ï¿½ ï¿½Ö´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ó¼ï¿½ ï¿½ï¿½ï¿½ï¿½
+	glEnableVertexAttribArray(AttribPosLoc);										// Attribute È°ï¿½ï¿½È­
 	glVertexAttribPointer(AttribColorLoc, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), reinterpret_cast<void*>(3 * sizeof(float)));
-	glEnableVertexAttribArray(AttribColorLoc);										// Attribute È°¼ºÈ­
+	glEnableVertexAttribArray(AttribColorLoc);										// Attribute È°ï¿½ï¿½È­
 	glVertexAttribPointer(AttribNormalLoc, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), reinterpret_cast<void*>(6 * sizeof(float)));
-	glEnableVertexAttribArray(AttribNormalLoc);										// Attribute È°¼ºÈ­
+	glEnableVertexAttribArray(AttribNormalLoc);										// Attribute È°ï¿½ï¿½È­
 
 	return { VAO, static_cast<int>(data.size()) };
 }
 
 std::pair<GLuint, GLsizei> CScene::InitMap(GLuint shader)
 {
-	GLuint VAO, VBO;					// Á¤Á¡ µ¥ÀÌÅÍ¸¦ GPU¿¡ ³Ñ°ÜÁÙ VAO, VBO »ý¼º
+	GLuint VAO, VBO;					// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Í¸ï¿½ GPUï¿½ï¿½ ï¿½Ñ°ï¿½ï¿½ï¿½ VAO, VBO ï¿½ï¿½ï¿½ï¿½
 	glGenVertexArrays(1, &VAO);
 	glBindVertexArray(VAO);
 	glGenBuffers(1, &VBO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);	// VBO¸¦ Á¤Á¡¹öÆÛ·Î ¼³Á¤ ¹× ¹ÙÀÎµù
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);	// VBOï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Û·ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½Îµï¿½
 
-	glm::vec3 fixedColor = { 0.3f, 0.4f, 0.f }; // °ËÀº»ö
+	glm::vec3 fixedColor = { 0.3f, 0.4f, 0.f }; // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	std::vector<glm::vec3> data = ReadObjWithRColorNormal("./Resources/map.obj", fixedColor);
 
-	glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(glm::vec3), data.data(), GL_STATIC_DRAW);	// VBO(GPU)·Î Á¤Á¡ µ¥ÀÌÅÍ º¹»ç
+	glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(glm::vec3), data.data(), GL_STATIC_DRAW);	// VBO(GPU)ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 
-	GLint AttribPosLoc = glGetAttribLocation(shader, "vPos");						// ¼ÎÀÌ´õ¿¡¼­ vPosÀÇ À§Ä¡ °¡Á®¿Â´Ù.
-	GLint AttribColorLoc = glGetAttribLocation(shader, "vColor");					// ¼ÎÀÌ´õ¿¡¼­ vColorÀÇ À§Ä¡ °¡Á®¿Â´Ù.
-	GLint AttribNormalLoc = glGetAttribLocation(shader, "vNormal");					// ¼ÎÀÌ´õ¿¡¼­ vNormalÀÇ À§Ä¡ °¡Á®¿Â´Ù.
+	GLint AttribPosLoc = glGetAttribLocation(shader, "vPos");						// ï¿½ï¿½ï¿½Ì´ï¿½ï¿½ï¿½ï¿½ï¿½ vPosï¿½ï¿½ ï¿½ï¿½Ä¡ ï¿½ï¿½ï¿½ï¿½ï¿½Â´ï¿½.
+	GLint AttribColorLoc = glGetAttribLocation(shader, "vColor");					// ï¿½ï¿½ï¿½Ì´ï¿½ï¿½ï¿½ï¿½ï¿½ vColorï¿½ï¿½ ï¿½ï¿½Ä¡ ï¿½ï¿½ï¿½ï¿½ï¿½Â´ï¿½.
+	GLint AttribNormalLoc = glGetAttribLocation(shader, "vNormal");					// ï¿½ï¿½ï¿½Ì´ï¿½ï¿½ï¿½ï¿½ï¿½ vNormalï¿½ï¿½ ï¿½ï¿½Ä¡ ï¿½ï¿½ï¿½ï¿½ï¿½Â´ï¿½.
 	if (AttribPosLoc < 0 or AttribColorLoc < 0 or AttribNormalLoc < 0) {
-		std::cerr << "AttribLoc Ã£±â ½ÇÆÐ" << std::endl;
+		std::cerr << "AttribLoc Ã£ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½" << std::endl;
 	}
-	// glVertexAttribPointer(attrib À§Ä¡, vertex ¸î°³¾¿ ÀÐÀ»°ÇÁö, gl_float, gl_false, stride(°£°Ý), ½ÃÀÛ À§Ä¡(Æ÷ÀÎÅÍ));
-	glVertexAttribPointer(AttribPosLoc, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), reinterpret_cast<void*>(0));	// ÇöÀç VBO¿¡ ÀÖ´Â µ¥ÀÌÅÍ ¼Ó¼º Á¤ÀÇ
-	glEnableVertexAttribArray(AttribPosLoc);										// Attribute È°¼ºÈ­
+	// glVertexAttribPointer(attrib ï¿½ï¿½Ä¡, vertex ï¿½î°³ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½, gl_float, gl_false, stride(ï¿½ï¿½ï¿½ï¿½), ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡(ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½));
+	glVertexAttribPointer(AttribPosLoc, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), reinterpret_cast<void*>(0));	// ï¿½ï¿½ï¿½ï¿½ VBOï¿½ï¿½ ï¿½Ö´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ó¼ï¿½ ï¿½ï¿½ï¿½ï¿½
+	glEnableVertexAttribArray(AttribPosLoc);										// Attribute È°ï¿½ï¿½È­
 	glVertexAttribPointer(AttribColorLoc, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), reinterpret_cast<void*>(3 * sizeof(float)));
-	glEnableVertexAttribArray(AttribColorLoc);										// Attribute È°¼ºÈ­
+	glEnableVertexAttribArray(AttribColorLoc);										// Attribute È°ï¿½ï¿½È­
 	glVertexAttribPointer(AttribNormalLoc, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), reinterpret_cast<void*>(6 * sizeof(float)));
-	glEnableVertexAttribArray(AttribNormalLoc);										// Attribute È°¼ºÈ­
+	glEnableVertexAttribArray(AttribNormalLoc);										// Attribute È°ï¿½ï¿½È­
 
 	return { VAO, static_cast<int>(data.size()) };
 }
 
-void CScene::RotateSceneY(float angle)
+std::pair<GLuint, GLsizei> CScene::InitFloor(GLuint shader)
 {
-	// Rotate the scene around the Y-axis
-	glm::mat4 rotationMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(angle), glm::vec3(0.0f, 1.0f, 0.0f));
+	GLuint VAO, VBO;					// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Í¸ï¿½ GPUï¿½ï¿½ ï¿½Ñ°ï¿½ï¿½ï¿½ VAO, VBO ï¿½ï¿½ï¿½ï¿½
+	glGenVertexArrays(1, &VAO);
+	glBindVertexArray(VAO);
+	glGenBuffers(1, &VBO);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);	// VBOï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Û·ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½Îµï¿½
 
-	// Apply the rotation to the camera position
-	glm::vec4 rotatedCameraPos = rotationMatrix * glm::vec4(cameraRot.x, cameraRot.y, cameraRot.z, 1.0f);
+	glm::vec3 fixedColor = { 0.3f, 0.8f, 1.f };
+	std::vector<glm::vec3> data = ReadObjWithRColorNormal("./Resources/Cube.obj", fixedColor);
 
-	// Update the camera position
-	cameraRot.x = rotatedCameraPos.x;
-	cameraRot.y = rotatedCameraPos.y;
-	cameraRot.z = rotatedCameraPos.z;
+	glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(glm::vec3), data.data(), GL_STATIC_DRAW);	// VBO(GPU)ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+
+	GLint AttribPosLoc = glGetAttribLocation(shader, "vPos");						// ï¿½ï¿½ï¿½Ì´ï¿½ï¿½ï¿½ï¿½ï¿½ vPosï¿½ï¿½ ï¿½ï¿½Ä¡ ï¿½ï¿½ï¿½ï¿½ï¿½Â´ï¿½.
+	GLint AttribColorLoc = glGetAttribLocation(shader, "vColor");					// ï¿½ï¿½ï¿½Ì´ï¿½ï¿½ï¿½ï¿½ï¿½ vColorï¿½ï¿½ ï¿½ï¿½Ä¡ ï¿½ï¿½ï¿½ï¿½ï¿½Â´ï¿½.
+	GLint AttribNormalLoc = glGetAttribLocation(shader, "vNormal");					// ï¿½ï¿½ï¿½Ì´ï¿½ï¿½ï¿½ï¿½ï¿½ vNormalï¿½ï¿½ ï¿½ï¿½Ä¡ ï¿½ï¿½ï¿½ï¿½ï¿½Â´ï¿½.
+	if (AttribPosLoc < 0 or AttribColorLoc < 0 or AttribNormalLoc < 0) {
+		std::cerr << "AttribLoc Ã£ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½" << std::endl;
+	}
+	// glVertexAttribPointer(attrib ï¿½ï¿½Ä¡, vertex ï¿½î°³ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½, gl_float, gl_false, stride(ï¿½ï¿½ï¿½ï¿½), ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡(ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½));
+	glVertexAttribPointer(AttribPosLoc, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), reinterpret_cast<void*>(0));	// ï¿½ï¿½ï¿½ï¿½ VBOï¿½ï¿½ ï¿½Ö´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ó¼ï¿½ ï¿½ï¿½ï¿½ï¿½
+	glEnableVertexAttribArray(AttribPosLoc);										// Attribute È°ï¿½ï¿½È­
+	glVertexAttribPointer(AttribColorLoc, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), reinterpret_cast<void*>(3 * sizeof(float)));
+	glEnableVertexAttribArray(AttribColorLoc);										// Attribute È°ï¿½ï¿½È­
+	glVertexAttribPointer(AttribNormalLoc, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), reinterpret_cast<void*>(6 * sizeof(float)));
+	glEnableVertexAttribArray(AttribNormalLoc);										// Attribute È°ï¿½ï¿½È­
+
+	return { VAO, static_cast<int>(data.size()) };
 }
+
