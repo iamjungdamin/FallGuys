@@ -73,7 +73,7 @@
     </ClInclude>
     <ClInclude Include="Map.h">
       <Filter>Map</Filter>
-    </ClCompile>
+    </ClInclude>
     <ClInclude Include="FloorObject.h">
       <Filter>GameObject</Filter>
     </ClInclude>
