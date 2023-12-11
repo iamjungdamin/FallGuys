@@ -210,6 +210,11 @@ void CCharacter::SetPos(float x)
 	m_pos.x += x;
 }
 
+glm::vec3 CCharacter::GetPos() const
+{
+	return m_pos;
+}
+
 void CCharacter::CheckState() {	//	enum STATE { IDLE, LEFT, RIGHT, FRONT, BACK }; 
 	if (isJumpKeyPressed)
 	{

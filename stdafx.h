@@ -3,12 +3,16 @@
 #include "OpenGL/glew.h"
 #include "OpenGL/freeglut.h"
 #include "OpenGL/glm/ext.hpp"
+#include <iostream>
 #include <string>
 #include <vector>
+#include <algorithm>
 
 #pragma comment(lib, "glew32.lib")
 #pragma comment(lib, "freeglut.lib")
 
+extern GLint winWidth;
+extern GLint winHeight;
 
 std::string ReadFile(std::string fileName);
 GLuint CreateShaderProgram(std::string vertexFile, std::string fragmentFile);

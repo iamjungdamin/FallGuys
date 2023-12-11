@@ -2,20 +2,24 @@
 class CCharacter;
 class CGameObject;
 class CMap;
+class CFloorObject;
+
 class CScene
 {
 private:
 	int& w_width;
 	int& w_height;
-	//°´Ã¼
+	//ï¿½ï¿½Ã¼
 	CGameObject* m_Cube;
 	CCharacter* m_Character;
 	CMap* m_Map;
-	// Ä«¸Þ¶ó
+	std::vector<CFloorObject> vFloors;
+	// Ä«ï¿½Þ¶ï¿½
 	glm::vec3 cameraPos;
 	glm::vec3 cameraLook;
-	glm::vec3 cameraRot;
-	//Á¶¸í
+	glm::vec2 preMousePos { -1.f, -1.f };
+	float cameraRotateY;
+	//ï¿½ï¿½ï¿½ï¿½
 	glm::vec3 lightPos;
 	glm::vec3 lightColor;
 
@@ -26,13 +30,14 @@ public:
 	CScene(int& width, int& height);
 	~CScene();
 
-	void Initialize();				//»ý¼ºµÉ ¶§ ÇÒ ÀÏ
-	void Update(float ElapsedTime);					//Å¸ÀÌ¸Ó¿¡¼­ ÇÒ ÀÏ
-	void FixedUpdate();				//Ãæµ¹Ã³¸® µî
-	void Render();					//µå·Î¿ì
-	void Release();					//¼Ò¸êµÉ ¶§ ÇÒ ÀÏ
+	void Initialize();				//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½
+	void Update(float ElapsedTime);					//Å¸ï¿½Ì¸Ó¿ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½
+	void FixedUpdate();				//ï¿½æµ¹Ã³ï¿½ï¿½ ï¿½ï¿½
+	void Render();					//ï¿½ï¿½Î¿ï¿½
+	void Release();					//ï¿½Ò¸ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½
 
 	void MouseEvent(int button, int state, int x, int y);
+	void MouseMotionEvent(int x, int y);
 	void KeyboardEvent(int state, unsigned char key);
 	void SpecialKeyEvent(int state, int key);
 
@@ -45,5 +50,6 @@ public:
 	std::pair<GLuint, GLsizei> InitRight_leg(GLuint shader);
 	std::pair<GLuint, GLsizei> InitEyes(GLuint shader);
 	std::pair<GLuint, GLsizei> InitMap(GLuint shader);
-	void RotateSceneY(float angle);
+	std::pair<GLuint, GLsizei> InitFloor(GLuint shader);
+
 };
