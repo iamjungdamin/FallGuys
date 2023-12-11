@@ -18,7 +18,7 @@ void CFloorObject::Initialize()
 
 	++FloorCount;
 
-	m_pos = { index % 5 * 2.f, -1.5f, index / 5 * -2.f};
+	m_pos = { index % 5 * 2.f, 1.5f, index / 5 * -2.f};
 	scale = { 3.f, 0.1f, 3.f };
 	rotateY = 0.f;
 }
@@ -77,6 +77,14 @@ void CFloorObject::FixedUpdate()
 void CFloorObject::Render()
 {
 	CGameObject::Render();
+
+
+	glBegin(GL_LINE_LOOP);
+	glVertex3f(m_pos.x - GetBBSize().x / 2.f, m_pos.y - GetBBSize().y / 2.f, m_pos.z - GetBBSize().z / 2.f);
+	glVertex3f(m_pos.x - GetBBSize().x / 2.f, m_pos.y + GetBBSize().y / 2.f, m_pos.z - GetBBSize().z / 2.f);
+	glVertex3f(m_pos.x + GetBBSize().x / 2.f, m_pos.y + GetBBSize().y / 2.f, m_pos.z + GetBBSize().z / 2.f);
+	glVertex3f(m_pos.x + GetBBSize().x / 2.f, m_pos.y - GetBBSize().y / 2.f, m_pos.z + GetBBSize().z / 2.f);
+	glEnd();
 }
 
 void CFloorObject::Release()
@@ -107,6 +115,16 @@ void CFloorObject::Drop()
 int CFloorObject::GetIndex() const
 {
 	return index;
+}
+
+glm::vec3 CFloorObject::GetPos() const
+{
+	return m_pos;
+}
+
+glm::vec3 CFloorObject::GetBBSize() const
+{
+	return { 1.f, 0.5f, 1.f };
 }
 
 bool CFloorObject::GetIsDeleted() const

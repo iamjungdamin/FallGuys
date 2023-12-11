@@ -1,6 +1,7 @@
 #pragma once
 
 #include "GameObject.h"
+class CFloorObject;
 
 // 객체 상태
 enum STATE { IDLE, LEFT, RIGHT, FRONT, BACK,JUMP };
@@ -95,8 +96,9 @@ public:
 
 	void SetPos(float x);
 	glm::vec3 GetPos() const;
+	glm::vec3 GetBBSize() const;
+	bool IsCollided(CFloorObject* F);
 
-	
 	// 캐릭터 상태 관련 함수
 	void SetState(int a);
 	void State_Idle();

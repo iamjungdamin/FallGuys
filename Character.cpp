@@ -1,5 +1,6 @@
 #include "Character.h"
 #include <iostream>
+#include "FloorObject.h"
 
 CCharacter::CCharacter()
 {
@@ -47,9 +48,12 @@ void CCharacter::Render()
 	eyes->Render();
 
 
-	// 처음 초기값
-
-
+	glBegin(GL_LINE_LOOP);
+	glVertex3f(m_pos.x - GetBBSize().x / 2.f, m_pos.y - GetBBSize().y / 2.f, m_pos.z - GetBBSize().z / 2.f);
+	glVertex3f(m_pos.x - GetBBSize().x / 2.f, m_pos.y + GetBBSize().y / 2.f, m_pos.z - GetBBSize().z / 2.f);
+	glVertex3f(m_pos.x + GetBBSize().x / 2.f, m_pos.y + GetBBSize().y / 2.f, m_pos.z + GetBBSize().z / 2.f);
+	glVertex3f(m_pos.x + GetBBSize().x / 2.f, m_pos.y - GetBBSize().y / 2.f, m_pos.z + GetBBSize().z / 2.f);
+	glEnd();
 }
 
 void CCharacter::Update(float ElapsedTime)
@@ -213,6 +217,36 @@ void CCharacter::SetPos(float x)
 glm::vec3 CCharacter::GetPos() const
 {
 	return m_pos;
+}
+
+glm::vec3 CCharacter::GetBBSize() const
+{
+	return { 2.5f, 4.5f, 1.5f };
+}
+
+bool CCharacter::IsCollided(CFloorObject* F)
+{
+	if (m_pos.x + GetBBSize().x / 2.f < F->GetPos().x - F->GetBBSize().x / 2.f) {
+		return false;
+	}
+	if (m_pos.y + GetBBSize().y / 2.f < F->GetPos().y - F->GetBBSize().y / 2.f) {
+		return false;
+	}
+	if (m_pos.z + GetBBSize().z / 2.f < F->GetPos().z - F->GetBBSize().z / 2.f) {
+		return false;
+	}
+
+	if (m_pos.x - GetBBSize().x / 2.f > F->GetPos().x + F->GetBBSize().x / 2.f) {
+		return false;
+	}
+	if (m_pos.y - GetBBSize().y / 2.f > F->GetPos().y + F->GetBBSize().y / 2.f) {
+		return false;
+	}
+	if (m_pos.z - GetBBSize().z / 2.f > F->GetPos().z + F->GetBBSize().z / 2.f) {
+		return false;
+	}
+	
+	return true;
 }
 
 void CCharacter::CheckState() {	//	enum STATE { IDLE, LEFT, RIGHT, FRONT, BACK }; 

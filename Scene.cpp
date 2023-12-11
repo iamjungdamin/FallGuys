@@ -117,6 +117,13 @@ void CScene::Update(float ElapsedTime)
 		}
 	}
 
+
+	// 충돌
+	for (int i = 0; i < vFloors.size(); ++i) {
+		if (m_Character->IsCollided(&vFloors[i])) {
+			std::cout << vFloors[i].GetIndex() << '\n';
+		}
+	}
 }
 
 void CScene::FixedUpdate()

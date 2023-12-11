@@ -36,6 +36,9 @@ public:
 	virtual void Render() override;
 	virtual void Release() override;
 
+	glm::vec3 GetPos() const;
+	glm::vec3 GetBBSize() const;
+
 	void Drop();
 	int GetIndex() const;
 	bool GetIsDeleted() const;
