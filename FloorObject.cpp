@@ -13,7 +13,7 @@ CFloorObject::~CFloorObject()
 void CFloorObject::Initialize()
 {
 	index = FloorCount;
-	type = rand() % 4;	// enum TYPE
+	type = TYPE::IDLE;
 	isDeleted = false;
 
 	++FloorCount;
@@ -27,8 +27,40 @@ void CFloorObject::Update(float ElapsedTime)
 {
 	if (isInitialized) {
 		glm::mat4 TransformMatrix = glm::mat4(1.f);
-		TransformMatrix = glm::rotate(TransformMatrix, glm::radians(rotateY), glm::vec3(0.f, 1.f, 0.f));
+
+		if (isDeleted == false) {
+			if (type == TYPE::SHAKE) {
+			}
+			else if (type == TYPE::TRANSLATE) {
+				m_pos.y -= 0.001f;
+				if (m_pos.y <= -1.5f - 1.f) {
+					//isDeleted = true;
+				}
+			}
+			else if (type == TYPE::ROTATE) {
+				rotateY += 0.1f;
+				if (rotateY > 180.f) {
+					type = TYPE::ROTATE2;
+				}
+			}
+			else if (type == TYPE::ROTATE2) {
+				rotateY += 0.1f;
+				m_pos.y -= 0.001f;
+				if (m_pos.y <= -1.5f - 1.f) {
+					//isDeleted = true;
+				}
+			}
+			else if (type == TYPE::SCALE) {
+				scale.x -= 0.001f;
+				scale.z -= 0.001f;
+				if (scale.x <= 0.f || scale.z <= 0.f) {
+					isDeleted = true;
+				}
+			}
+		}
+
 		TransformMatrix = glm::translate(TransformMatrix, m_pos);
+		TransformMatrix = glm::rotate(TransformMatrix, glm::radians(rotateY), glm::vec3(0.f, 1.f, 0.f));
 		TransformMatrix = glm::scale(TransformMatrix, scale);
 		modelMat = TransformMatrix;
 
@@ -54,17 +86,21 @@ void CFloorObject::Release()
 
 void CFloorObject::Drop()
 {
-	if (type == TYPE::SHAKE) {
-	
-	}
-	else if (type == TYPE::TRANSLATE) {
+	if (type == TYPE::IDLE) {
+		int r = rand() % 4;
 
-	}
-	else if (type == TYPE::ROTATE) {
-	
-	}
-	else if (type == TYPE::SCALE) {
-	
+		if (r == 0) {
+			type = TYPE::SHAKE;
+		}
+		else if (r == 1) {
+			type = TYPE::TRANSLATE;
+		}
+		else if (r == 2) {
+			type = TYPE::ROTATE;
+		}
+		else if (r == 3) {
+			type = TYPE::SCALE;
+		}
 	}
 }
 

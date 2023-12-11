@@ -102,9 +102,9 @@ void CScene::Update(float ElapsedTime)
 		vFloors[i].Update(ElapsedTime);
 
 		if (vFloors[i].GetIsDeleted()) {
-			vFloors.erase(std::remove_if(vFloors.begin(), vFloors.end(), [&i](const CFloorObject& f) {
-				return f.GetIndex() == i;
-				}), vFloors.end());
+			//vFloors.erase(std::remove_if(vFloors.begin(), vFloors.end(), [&i](const CFloorObject& f) {
+			//	return f.GetIndex() == i;
+			//	}), vFloors.end());
 		}
 	}
 }

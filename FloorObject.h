@@ -1,12 +1,18 @@
 #pragma once
 #include "GameObject.h"
 
-enum TYPE {	// 충돌 시 효과
-	SHAKE,
-	TRANSLATE,
-	ROTATE,
-	SCALE
-};
+namespace TYPE {
+	enum TYPE {	// 충돌 시 효과
+		IDLE,	// 미충돌 시
+
+		// 이하 충돌 시
+		SHAKE,
+		TRANSLATE,
+		ROTATE,
+		ROTATE2,
+		SCALE
+	};
+}
 
 static int FloorCount = 0;
 
