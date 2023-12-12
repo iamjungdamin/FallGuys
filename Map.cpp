@@ -1,73 +1,81 @@
 #include "Map.h"
-#include <iostream>
 
-CMap::CMap()
+CMap::CMap() : CGameObject()
 {
-	map = new CGameObject;
-
+	Initialize();
 }
 
 CMap::~CMap()
 {
-
+	Release();
 }
 
-void CMap::Render()
+void CMap::Initialize()
 {
-	map->Render();
-
+	m_pos = { 0.0f,0.f,0.f };
 }
 
 void CMap::Update(float ElapsedTime)
 {
-
-	map->Update(ElapsedTime);
-
-}
-
-
-void CMap::SetShader(GLuint shader)
-{
-	map->SetShader(shader);
+	if (isInitialized) {
 	
+		CGameObject::Update(ElapsedTime);
+	}
+
 }
 
-void CMap::SetVao_map(GLuint vao, int vertexCount)
+void CMap::FixedUpdate()
 {
-	map->SetVao(vao, vertexCount);
+	CGameObject::FixedUpdate();
 }
 
-
-
-void CMap::SetCameraMat(glm::mat4 cameraMat)
+void CMap::Render()
 {
-	map->SetCameraMat(cameraMat);
+	CGameObject::Render();
+
+
+
+	glBegin(GL_LINE_LOOP);
+	glVertex3f(-GetBBSize().x / 2.f, -GetBBSize().y / 2.f, -GetBBSize().z / 2.f); // -1บฮลอ -GetBBSize().x / 2.f
+	glVertex3f(-GetBBSize().x / 2.f, +GetBBSize().y / 2.f, -GetBBSize().z / 2.f);
+	glVertex3f(+GetBBSize().x / 2.f, +GetBBSize().y / 2.f, -GetBBSize().z / 2.f);
+	glVertex3f(+GetBBSize().x / 2.f, -GetBBSize().y / 2.f, -GetBBSize().z / 2.f);
+	glEnd();
+
+	glBegin(GL_LINE_LOOP);
+	glVertex3f(-GetBBSize().x / 2.f, -GetBBSize().y / 2.f, +GetBBSize().z / 2.f);
+	glVertex3f(-GetBBSize().x / 2.f, +GetBBSize().y / 2.f, +GetBBSize().z / 2.f);
+	glVertex3f(+GetBBSize().x / 2.f, +GetBBSize().y / 2.f, +GetBBSize().z / 2.f);
+	glVertex3f(+GetBBSize().x / 2.f, -GetBBSize().y / 2.f, +GetBBSize().z / 2.f);
+	glEnd();
+
+	glBegin(GL_LINES);
+	glVertex3f(-GetBBSize().x / 2.f, -GetBBSize().y / 2.f, -GetBBSize().z / 2.f);
+	glVertex3f(-GetBBSize().x / 2.f, -GetBBSize().y / 2.f, +GetBBSize().z / 2.f);
+
+	glVertex3f(-GetBBSize().x / 2.f, +GetBBSize().y / 2.f, -GetBBSize().z / 2.f);
+	glVertex3f(-GetBBSize().x / 2.f, +GetBBSize().y / 2.f, +GetBBSize().z / 2.f);
+
+	glVertex3f(+GetBBSize().x / 2.f, +GetBBSize().y / 2.f, -GetBBSize().z / 2.f);
+	glVertex3f(+GetBBSize().x / 2.f, +GetBBSize().y / 2.f, +GetBBSize().z / 2.f);
+
+	glVertex3f(+GetBBSize().x / 2.f, -GetBBSize().y / 2.f, -GetBBSize().z / 2.f);
+	glVertex3f(+GetBBSize().x / 2.f, -GetBBSize().y / 2.f, +GetBBSize().z / 2.f);
+	glEnd();
 }
 
-void CMap::SetProjectMat(glm::mat4 projectMat)
+void CMap::Release()
 {
-	map->SetProjectMat(projectMat);
-	
+	CGameObject::Release();
 }
 
-void CMap::SetCameraPos(glm::vec3 cameraPos)
+glm::vec3 CMap::GetPos() const
 {
-	map->SetCameraPos(cameraPos);
+	return m_pos;
 }
 
-void CMap::SetLightPos(glm::vec3 lightPos)
+glm::vec3 CMap::GetBBSize() const
 {
-	map->SetLightPos(lightPos);
-}
-
-void CMap::SetLightColor(glm::vec3 lightColor)
-{
-	map->SetLightColor(lightColor);
-	
-}
-
-void CMap::SetPos(float x)
-{
-	m_pos.x += x;
+	return { 2.f, 2.f, 2.f };
 }
 

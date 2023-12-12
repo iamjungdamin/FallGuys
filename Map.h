@@ -1,43 +1,25 @@
 #pragma once
-
+#pragma once
 #include "GameObject.h"
 
 
-class CMap
+class CMap : public CGameObject
 {
-
-	CGameObject* map;
-	
-	glm::vec3 m_pos;
-	glm::vec3 m_move;
-	
-
-	int state;
+private:
 
 
 public:
 	CMap();
-	~CMap();
+	virtual ~CMap();
 
+	virtual void Initialize() override;
+	virtual void Update(float ElapsedTime) override;
+	virtual void FixedUpdate() override;
+	virtual void Render() override;
+	virtual void Release() override;
 
+	glm::vec3 GetPos() const;
+	glm::vec3 GetBBSize() const;
 
-	void Render();
-	void Update(float ElapsedTime);
-
-
-	void SetShader(GLuint shader);
-	void SetVao_map(GLuint vao, int vertexCount);
-	
-
-	void SetCameraMat(glm::mat4 cameraMat);
-	void SetProjectMat(glm::mat4 projectMat);
-	void SetCameraPos(glm::vec3 cameraPos);
-	void SetLightPos(glm::vec3 lightPos);
-	void SetLightColor(glm::vec3 lightColor);
-
-	void SetPos(float x);
-
-
-	
 };
 

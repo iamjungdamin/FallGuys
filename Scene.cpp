@@ -27,7 +27,7 @@ void CScene::Initialize()
 	m_Map = new CMap;
 	m_Map->SetShader(shader);
 	auto M_vao = InitMap(shader);
-	m_Map->SetVao_map(M_vao.first, M_vao.second);
+	m_Map->SetVao(M_vao.first, M_vao.second);
 
 
 
@@ -117,11 +117,11 @@ void CScene::Update(float ElapsedTime)
 		}
 	}
 
-
+	m_Character->IsCollided_map(m_Map);
 	// 충돌
 	for (int i = 0; i < vFloors.size(); ++i) {
 		if (m_Character->IsCollided(&vFloors[i])) {
-			std::cout << vFloors[i].GetIndex() << '\n';
+		/*	std::cout << vFloors[i].GetIndex() << '\n';*/
 		}
 	}
 }

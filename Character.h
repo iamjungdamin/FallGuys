@@ -2,7 +2,7 @@
 
 #include "GameObject.h"
 class CFloorObject;
-
+class CMap;
 // 객체 상태
 enum STATE { IDLE, LEFT, RIGHT, FRONT, BACK,JUMP };
 
@@ -22,7 +22,7 @@ class CCharacter
 	float m_rot;
 	glm::mat4 final_tr, final_rot; // 마지막 이동, 마지막 회전
 	float gravity = 5.f; // 중력
-	float speed = 0.001f; // 속도
+	float speed = 0.01f; // 속도
 	float jump_speed = 5.f;
 	float animationTime;
 
@@ -98,6 +98,7 @@ public:
 	glm::vec3 GetPos() const;
 	glm::vec3 GetBBSize() const;
 	bool IsCollided(CFloorObject* F);
+	bool IsCollided_map(CMap* M);
 
 	// 캐릭터 상태 관련 함수
 	void SetState(int a);
