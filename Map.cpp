@@ -86,50 +86,50 @@ void CMap::Render()
 
 	////222222222222222222222222222222222222222
 	glBegin(GL_LINE_LOOP);
-	glVertex3f(-30.0f, 26.f, -500.f);
 	glVertex3f(-30.0f, 24.f, -500.f);
+	glVertex3f(-30.0f, 22.f, -500.f);
+	glVertex3f(30.0f, 22.f, -500.f);
 	glVertex3f(30.0f, 24.f, -500.f);
-	glVertex3f(30.0f, 26.f, -500.f);
 	glEnd();
 
 	// Rectangle 2
 	glBegin(GL_LINE_LOOP);
-	glVertex3f(-30.0f, 26.f, -680.f);
 	glVertex3f(-30.0f, 24.f, -680.f);
+	glVertex3f(-30.0f, 22.f, -680.f);
+	glVertex3f(30.0f, 22.f, -680.f);
 	glVertex3f(30.0f, 24.f, -680.f);
-	glVertex3f(30.0f, 26.f, -680.f);
 	glEnd();
 
 	// Rectangle 3
 	glBegin(GL_LINE_LOOP);
-	glVertex3f(-30.0f, 26.f, -500.f);
 	glVertex3f(-30.0f, 24.f, -500.f);
+	glVertex3f(-30.0f, 22.f, -500.f);
+	glVertex3f(-30.0f, 22.f, -680.f);
 	glVertex3f(-30.0f, 24.f, -680.f);
-	glVertex3f(-30.0f, 26.f, -680.f);
 	glEnd();
 
 	// Rectangle 4
 	glBegin(GL_LINE_LOOP);
-	glVertex3f(30.0f, 26.f, -500.f);
 	glVertex3f(30.0f, 24.f, -500.f);
+	glVertex3f(30.0f, 22.f, -500.f);
+	glVertex3f(30.0f, 22.f, -680.f);
 	glVertex3f(30.0f, 24.f, -680.f);
-	glVertex3f(30.0f, 26.f, -680.f);
 	glEnd();
 
 	// Top Rectangle
-	glBegin(GL_LINE_LOOP);
-	glVertex3f(-30.0f, 26.f, -500.f);
-	glVertex3f(-30.0f, 26.f, -680.f);
-	glVertex3f(30.0f, 26.f, -680.f);
-	glVertex3f(30.0f, 26.f, -500.f);
-	glEnd();
-
-	// Bottom Rectangle
 	glBegin(GL_LINE_LOOP);
 	glVertex3f(-30.0f, 24.f, -500.f);
 	glVertex3f(-30.0f, 24.f, -680.f);
 	glVertex3f(30.0f, 24.f, -680.f);
 	glVertex3f(30.0f, 24.f, -500.f);
+	glEnd();
+
+	// Bottom Rectangle
+	glBegin(GL_LINE_LOOP);
+	glVertex3f(-30.0f, 22.f, -500.f);
+	glVertex3f(-30.0f, 22.f, -680.f);
+	glVertex3f(30.0f, 22.f, -680.f);
+	glVertex3f(30.0f, 22.f, -500.f);
 	glEnd();
 }
 

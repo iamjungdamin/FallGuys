@@ -27,10 +27,6 @@
 		running_animation.legrightRotationAngle = 0.0f;
 		running_animation.legrightTranslationOffset = 0.0f;
 
-
-
-
-
 	}
 
 	CCharacter::~CCharacter()
@@ -64,7 +60,9 @@
 		glm::mat4 tr; 
 		glm::mat4 sc;
 		glm::mat4 rot;
-		printf("x : %lf y : %lf z : %lf \n", m_pos.x, m_pos.y, m_pos.z);
+		/*printf("x : %lf y : %lf z : %lf \n", m_pos.x, m_pos.y, m_pos.z);*/
+		
+		printf("%lf\n", min_floor);
 		if (min_floor == true) {
 			if (isJumpKeyPressed)
 			{
@@ -271,7 +269,7 @@
 
 		if (collisionX && collisionY && collisionZ)
 		{
-			if (min_floor = false)
+			if (min_floor == false)
 			{
 				m_pos.y = min_y;
 			}
@@ -289,8 +287,8 @@
 		glm::vec3 boxMin = m_pos - GetBBSize() / 2.0f;
 		glm::vec3 boxMax = m_pos + GetBBSize() / 2.0f;
 
-		glm::vec3 floorMin = { -60.0f, -4.0f, -440.0f };
-		glm::vec3 floorMax = { 60.0f, -2.0f, 40.0f };
+		glm::vec3 floorMin = { -30.0f, 22.f, -680.f };
+		glm::vec3 floorMax = { 30.0f, 24.f, -500.f };
 
 		// 충돌 체크
 		bool collisionX = boxMax.x >= floorMin.x && boxMin.x <= floorMax.x;
@@ -299,8 +297,9 @@
 
 		if (collisionX && collisionY && collisionZ)
 		{
-			if (min_floor = false)
+			if (min_floor == false)
 			{
+				min_y = 30.f;
 				m_pos.y = min_y;
 			}
 			min_floor = true;
