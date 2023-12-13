@@ -62,7 +62,7 @@
 		glm::mat4 rot;
 		/*printf("x : %lf y : %lf z : %lf \n", m_pos.x, m_pos.y, m_pos.z);*/
 		
-		printf("%lf\n", min_floor);
+		//printf("%lf\n", min_floor);
 		if (min_floor == true) {
 			if (isJumpKeyPressed)
 			{
@@ -235,7 +235,7 @@
 	}
 
 	bool CCharacter::IsCollided(int index, CGameObject* Obj) {
-		if (index == 2) {
+		if (index == 1) {
 			CMap* M = dynamic_cast<CMap*>(Obj);
 
 			glm::vec3 boxMin = m_pos - GetBBSize() / 2.0f;
@@ -253,12 +253,12 @@
 			{
 				if (min_floor == false)
 				{
-					printf("%lf\n", min_y);
+					printf("min_y: %lf\n", min_y);
 					min_y = 30.f;
 					m_pos.y = min_y;
 				}
 				min_floor = true;
-				printf("面倒");
+				printf("2面倒");
 			}
 			else {
 				min_floor = false;
@@ -266,7 +266,7 @@
 			return collisionX && collisionY && collisionZ;
 		}
 
-		else if (index == 1) {//map1
+		else if (index == 2) {//map1
 			CMap* M = dynamic_cast<CMap*>(Obj);
 
 			glm::vec3 boxMin = m_pos - GetBBSize() / 2.0f;
@@ -288,7 +288,7 @@
 					m_pos.y = min_y;
 				}
 				min_floor = true;
-				printf("面倒");
+				printf("1面倒");
 			}
 			else {
 				min_floor = false;
