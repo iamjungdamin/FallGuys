@@ -4,7 +4,6 @@
 namespace TYPE {
 	enum TYPE {	// 충돌 시 효과
 		IDLE,	// 미충돌 시
-
 		// 이하 충돌 시
 		SHAKE,
 		TRANSLATE,

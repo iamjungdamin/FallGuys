@@ -23,7 +23,7 @@ class CCharacter
 	glm::mat4 final_tr, final_rot; // 마지막 이동, 마지막 회전
 	float gravity = 8.f; // 중력
 	float speed = 0.1f; // 속도
-	float jump_speed = 5.f;
+	float jump_speed = 30.f;
 	float animationTime;
 	float min_y; // 바닥
 	bool min_floor = true;
