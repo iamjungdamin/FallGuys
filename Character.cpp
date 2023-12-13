@@ -62,8 +62,8 @@
 		glm::mat4 rot;
 		/*printf("x : %lf y : %lf z : %lf \n", m_pos.x, m_pos.y, m_pos.z);*/
 		
-		//printf("%lf\n", min_floor);
-		if (min_floor == true) {
+
+		if (isInGround == true) {
 			if (isJumpKeyPressed)
 			{
 				// 점프 중인 상태이면 수직 속도를 감소시킵니다.
@@ -71,23 +71,12 @@
 
 				// 조정된 수직 속도를 계산합니다.
 				float adjusted_move_y = jump_speed * ElapsedTime;
+				m_pos.y += adjusted_move_y;
 
-
-				//printf("%lf\n", m_pos.y);
-				// 캐릭터가 지면 아래로 내려갔을 경우
-				if (m_pos.y < min_y) {
-					m_pos.y = min_y; // 지면에 닿게 조정
-					isJumpKeyPressed = false; // 점프 중인 상태 종료
-					jump_speed = 30.f; // 원래 10동 속도로 초기화
-				}
-				else {
-
-					m_pos.y += adjusted_move_y;
-				}
-
+				
 			}
 		}
-		if(min_floor== false)
+		if(isInGround== false)
 		{
 			// 점프 중인 상태이면 수직 속도를 감소시킵니다.
 			jump_speed -= gravity * ElapsedTime;
@@ -97,8 +86,20 @@
 
 			
 			m_pos.y += adjusted_move_y;
-			
+
 		}
+
+
+		//printf("%lf\n", m_pos.y);
+			// 캐릭터가 지면 아래로 내려갔을 경우
+		if (m_pos.y < min_y) {
+			std::cout << "바닥 2 ";
+			m_pos.y = min_y; // 지면에 닿게 조정
+			isJumpKeyPressed = false; // 점프 중인 상태 종료
+			jump_speed = 30.f; // 원래 10동 속도로 초기화
+		}
+
+
 
 		//상태 따라 행동하는 함수
 		CheckState();
@@ -235,7 +236,7 @@
 	}
 
 	bool CCharacter::IsCollided(int index, CGameObject* Obj) {
-		if (index == 1) {
+		if (index == 2) {
 			CMap* M = dynamic_cast<CMap*>(Obj);
 
 			glm::vec3 boxMin = m_pos - GetBBSize() / 2.0f;
@@ -251,22 +252,23 @@
 
 			if (collisionX && collisionY && collisionZ)
 			{
-				if (min_floor == false)
+				if (isInGround == false)
 				{
-					printf("min_y: %lf\n", min_y);
+					//printf("min_y: %lf\n", min_y);
 					min_y = 30.f;
 					m_pos.y = min_y;
+					isInGround = true;
 				}
-				min_floor = true;
-				printf("2충돌");
+				//printf("2충돌 ");
 			}
 			else {
-				min_floor = false;
+				isInGround = false;
+				min_y = 0.f;
 			}
 			return collisionX && collisionY && collisionZ;
 		}
 
-		else if (index == 2) {//map1
+		else if (index == 3) {//map1
 			CMap* M = dynamic_cast<CMap*>(Obj);
 
 			glm::vec3 boxMin = m_pos - GetBBSize() / 2.0f;
@@ -282,21 +284,22 @@
 
 			if (collisionX && collisionY && collisionZ)
 			{
-				if (min_floor == false)
+				if (isInGround == false)
 				{
  					min_y = 0;
 					m_pos.y = min_y;
+					isInGround = true;
 				}
-				min_floor = true;
-				printf("1충돌");
+				//printf("1충돌 ");
 			}
 			else {
-				min_floor = false;
+				isInGround = false;
+				min_y = 0.f;
 			}
 			return collisionX && collisionY && collisionZ;
 		}
 	
-		else if (index == 3) {
+		else if (index == 1) {
 			CMap* M = dynamic_cast<CMap*>(Obj);
 
 			glm::vec3 boxMin = m_pos - GetBBSize() / 2.0f;
@@ -312,16 +315,17 @@
 
 			if (collisionX && collisionY && collisionZ)
 			{
-				if (min_floor == false)
+				if (isInGround == false)
 				{
 					min_y = 70.f;
 					m_pos.y = min_y;
+					isInGround = true;
 				}
-				min_floor = true;
-				printf("충돌");
+				//printf("3충돌 ");
 			}
 			else {
-				min_floor = false;
+				isInGround = false;
+				min_y = 0.f;
 			}
 			return collisionX && collisionY && collisionZ;
 		}
