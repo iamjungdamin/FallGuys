@@ -100,11 +100,8 @@ public:
 	void SetPos(float x);
 	glm::vec3 GetPos() const;
 	glm::vec3 GetBBSize() const;
+	bool IsCollided(int index, CGameObject* Obj);
 	bool IsCollided(CFloorObject* F);
-	bool IsCollided_map_1(CMap* M);
-	bool IsCollided_map_2(CMap* M);
-	bool IsCollided_map_3(CMap* M);
-	bool IsCollided_map_4(CMap* M);
 
 
 	// 캐릭터 상태 관련 함수

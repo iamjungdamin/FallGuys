@@ -117,8 +117,11 @@ void CScene::Update(float ElapsedTime)
 		}
 	}
 
-	m_Character->IsCollided_map_1(m_Map);
-	m_Character->IsCollided_map_2(m_Map);
+	for (int i = 0; i < 4; ++i) {
+		if (m_Character->IsCollided(i + 1, m_Map)) {
+			break;
+		}
+	}
 	// 충돌
 	for (int i = 0; i < vFloors.size(); ++i) {
 		if (m_Character->IsCollided(&vFloors[i])) {

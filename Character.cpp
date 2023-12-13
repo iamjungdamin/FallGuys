@@ -234,6 +234,122 @@
 		return { 2.5f, 4.5f, 1.5f };
 	}
 
+	bool CCharacter::IsCollided(int index, CGameObject* Obj) {
+		if (index == 1) {//map1
+			CMap* M = dynamic_cast<CMap*>(Obj);
+
+			glm::vec3 boxMin = m_pos - GetBBSize() / 2.0f;
+			glm::vec3 boxMax = m_pos + GetBBSize() / 2.0f;
+
+			glm::vec3 floorMin = { -60.0f, -4.0f, -440.0f };
+			glm::vec3 floorMax = { 60.0f, -2.0f, 40.0f };
+
+			// 面倒 眉农
+			bool collisionX = boxMax.x >= floorMin.x && boxMin.x <= floorMax.x;
+			bool collisionY = boxMax.y >= floorMin.y && boxMin.y <= floorMax.y;
+			bool collisionZ = boxMax.z >= floorMin.z && boxMin.z <= floorMax.z;
+
+			if (collisionX && collisionY && collisionZ)
+			{
+				if (min_floor == false)
+				{
+					m_pos.y = min_y;
+				}
+				min_floor = true;
+				printf("面倒");
+			}
+			else {
+				min_floor = false;
+			}
+			return collisionX && collisionY && collisionZ;
+		}
+		else if (index == 2) {
+			CMap* M = dynamic_cast<CMap*>(Obj);
+
+			glm::vec3 boxMin = m_pos - GetBBSize() / 2.0f;
+			glm::vec3 boxMax = m_pos + GetBBSize() / 2.0f;
+
+			glm::vec3 floorMin = { -30.0f, 22.f, -680.f };
+			glm::vec3 floorMax = { 30.0f, 24.f, -500.f };
+
+			// 面倒 眉农
+			bool collisionX = boxMax.x >= floorMin.x && boxMin.x <= floorMax.x;
+			bool collisionY = boxMax.y >= floorMin.y && boxMin.y <= floorMax.y;
+			bool collisionZ = boxMax.z >= floorMin.z && boxMin.z <= floorMax.z;
+
+			if (collisionX && collisionY && collisionZ)
+			{
+				if (min_floor == false)
+				{
+					min_y = 30.f;
+					m_pos.y = min_y;
+				}
+				min_floor = true;
+				printf("面倒");
+			}
+			else {
+				min_floor = false;
+			}
+			return collisionX && collisionY && collisionZ;
+		}
+		else if (index == 3) {
+			CMap* M = dynamic_cast<CMap*>(Obj);
+
+			glm::vec3 boxMin = m_pos - GetBBSize() / 2.0f;
+			glm::vec3 boxMax = m_pos + GetBBSize() / 2.0f;
+
+			glm::vec3 floorMin = { -60.0f, -4.0f, -440.0f };
+			glm::vec3 floorMax = { 60.0f, -2.0f, 40.0f };
+
+			// 面倒 眉农
+			bool collisionX = boxMax.x >= floorMin.x && boxMin.x <= floorMax.x;
+			bool collisionY = boxMax.y >= floorMin.y && boxMin.y <= floorMax.y;
+			bool collisionZ = boxMax.z >= floorMin.z && boxMin.z <= floorMax.z;
+
+			if (collisionX && collisionY && collisionZ)
+			{
+				if (min_floor = false)
+				{
+					m_pos.y = min_y;
+				}
+				min_floor = true;
+				printf("面倒");
+			}
+			else {
+				min_floor = false;
+			}
+			return collisionX && collisionY && collisionZ;
+		}
+		else if (index == 4) {
+			CMap* M = dynamic_cast<CMap*>(Obj);
+
+			glm::vec3 boxMin = m_pos - GetBBSize() / 2.0f;
+			glm::vec3 boxMax = m_pos + GetBBSize() / 2.0f;
+
+			glm::vec3 floorMin = { -60.0f, -4.0f, -440.0f };
+			glm::vec3 floorMax = { 60.0f, -2.0f, 40.0f };
+
+			// 面倒 眉农
+			bool collisionX = boxMax.x >= floorMin.x && boxMin.x <= floorMax.x;
+			bool collisionY = boxMax.y >= floorMin.y && boxMin.y <= floorMax.y;
+			bool collisionZ = boxMax.z >= floorMin.z && boxMin.z <= floorMax.z;
+
+			if (collisionX && collisionY && collisionZ)
+			{
+				if (min_floor = false)
+				{
+					m_pos.y = min_y;
+				}
+				min_floor = true;
+				printf("面倒");
+			}
+			else {
+				min_floor = false;
+			}
+			return collisionX && collisionY && collisionZ;
+		}
+	}
+
 	bool CCharacter::IsCollided(CFloorObject* F)
 	{
 		glm::vec3 boxMin = m_pos - GetBBSize() / 2.0f;
@@ -254,118 +370,6 @@
 		return collisionX && collisionY && collisionZ;
 	}
 
-	bool CCharacter::IsCollided_map_1(CMap* M)
-	{
-		glm::vec3 boxMin = m_pos - GetBBSize() / 2.0f;
-		glm::vec3 boxMax = m_pos + GetBBSize() / 2.0f;
-
-		glm::vec3 floorMin = { -60.0f, -4.0f, -440.0f };
-		glm::vec3 floorMax = { 60.0f, -2.0f, 40.0f };
-
-		// 面倒 眉农
-		bool collisionX = boxMax.x >= floorMin.x && boxMin.x <= floorMax.x;
-		bool collisionY = boxMax.y >= floorMin.y && boxMin.y <= floorMax.y;
-		bool collisionZ = boxMax.z >= floorMin.z && boxMin.z <= floorMax.z;
-
-		if (collisionX && collisionY && collisionZ)
-		{
-			if (min_floor == false)
-			{
-				m_pos.y = min_y;
-			}
-			min_floor = true;
-			printf("面倒");
-		}
-		else {
-			min_floor = false;
-		}
-		return collisionX && collisionY && collisionZ;
-	}
-
-	bool CCharacter::IsCollided_map_2(CMap* M)
-	{
-		glm::vec3 boxMin = m_pos - GetBBSize() / 2.0f;
-		glm::vec3 boxMax = m_pos + GetBBSize() / 2.0f;
-
-		glm::vec3 floorMin = { -30.0f, 22.f, -680.f };
-		glm::vec3 floorMax = { 30.0f, 24.f, -500.f };
-
-		// 面倒 眉农
-		bool collisionX = boxMax.x >= floorMin.x && boxMin.x <= floorMax.x;
-		bool collisionY = boxMax.y >= floorMin.y && boxMin.y <= floorMax.y;
-		bool collisionZ = boxMax.z >= floorMin.z && boxMin.z <= floorMax.z;
-
-		if (collisionX && collisionY && collisionZ)
-		{
-			if (min_floor == false)
-			{
-				min_y = 30.f;
-				m_pos.y = min_y;
-			}
-			min_floor = true;
-			printf("面倒");
-		}
-		else {
-			min_floor = false;
-		}
-		return collisionX && collisionY && collisionZ;
-	}
-
-	bool CCharacter::IsCollided_map_3(CMap* M)
-	{
-		glm::vec3 boxMin = m_pos - GetBBSize() / 2.0f;
-		glm::vec3 boxMax = m_pos + GetBBSize() / 2.0f;
-
-		glm::vec3 floorMin = { -60.0f, -4.0f, -440.0f };
-		glm::vec3 floorMax = { 60.0f, -2.0f, 40.0f };
-
-		// 面倒 眉农
-		bool collisionX = boxMax.x >= floorMin.x && boxMin.x <= floorMax.x;
-		bool collisionY = boxMax.y >= floorMin.y && boxMin.y <= floorMax.y;
-		bool collisionZ = boxMax.z >= floorMin.z && boxMin.z <= floorMax.z;
-
-		if (collisionX && collisionY && collisionZ)
-		{
-			if (min_floor = false)
-			{
-				m_pos.y = min_y;
-			}
-			min_floor = true;
-			printf("面倒");
-		}
-		else {
-			min_floor = false;
-		}
-		return collisionX && collisionY && collisionZ;
-	}
-
-	bool CCharacter::IsCollided_map_4(CMap* M)
-	{
-		glm::vec3 boxMin = m_pos - GetBBSize() / 2.0f;
-		glm::vec3 boxMax = m_pos + GetBBSize() / 2.0f;
-
-		glm::vec3 floorMin = { -60.0f, -4.0f, -440.0f };
-		glm::vec3 floorMax = { 60.0f, -2.0f, 40.0f };
-
-		// 面倒 眉农
-		bool collisionX = boxMax.x >= floorMin.x && boxMin.x <= floorMax.x;
-		bool collisionY = boxMax.y >= floorMin.y && boxMin.y <= floorMax.y;
-		bool collisionZ = boxMax.z >= floorMin.z && boxMin.z <= floorMax.z;
-
-		if (collisionX && collisionY && collisionZ)
-		{
-			if (min_floor = false)
-			{
-				m_pos.y = min_y;
-			}
-			min_floor = true;
-			printf("面倒");
-		}
-		else {
-			min_floor = false;
-		}
-		return collisionX && collisionY && collisionZ;
-	}
 
 
 	void CCharacter::CheckState() {	//	enum STATE { IDLE, LEFT, RIGHT, FRONT, BACK }; 
