@@ -224,7 +224,7 @@ void CScene::KeyboardEvent(int state, unsigned char key) {
 			m_Character->SetState(STATE::LEFT);
 			m_Character->SetLeftKeyPressed(true);
 			break;
-		case 's':
+		case 's':  
 		case 'S':
 			m_Character->SetState(STATE::BACK);
 			m_Character->SetBackKeyPressed(true);
@@ -240,6 +240,7 @@ void CScene::KeyboardEvent(int state, unsigned char key) {
 			m_Character->SetFrontKeyPressed(true);
 			break;
 		case ' ':
+			std::cout << "이놈";
 			m_Character->SetJumpKeyPressed(true);
 			break;
 		case 'v':

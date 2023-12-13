@@ -333,7 +333,34 @@
 			return collisionX && collisionY && collisionZ;
 		}
 		else if (index == 4) {
-			
+			CMap* M = dynamic_cast<CMap*>(Obj);
+
+			glm::vec3 boxMin = m_pos - GetBBSize() / 2.0f;
+			glm::vec3 boxMax = m_pos + GetBBSize() / 2.0f;
+
+			glm::vec3 floorMin = { -50.f, -4.0f, -900.f };
+			glm::vec3 floorMax = { 50.f, -2.0f, -750.f };
+
+			// 충돌 체크
+			bool collisionX = boxMax.x >= floorMin.x && boxMin.x <= floorMax.x;
+			bool collisionY = boxMax.y >= floorMin.y && boxMin.y <= floorMax.y;
+			bool collisionZ = boxMax.z >= floorMin.z && boxMin.z <= floorMax.z;
+
+			if (collisionX && collisionY && collisionZ)
+			{
+				if (isInGround == false)
+				{
+					min_y = 0.f;
+					m_pos.y = min_y;
+					isInGround = true;
+				}
+				//printf("3충돌 ");
+			}
+			else {
+				isInGround = false;
+				min_y = -1000.f;
+			}
+			return collisionX && collisionY && collisionZ;
 		}
 	}
 
