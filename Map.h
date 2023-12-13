@@ -6,7 +6,7 @@
 class CMap : public CGameObject
 {
 private:
-
+	float map[];
 
 public:
 	CMap();
@@ -19,7 +19,10 @@ public:
 	virtual void Release() override;
 
 	glm::vec3 GetPos() const;
-	glm::vec3 GetBBSize() const;
+	glm::vec3 GetBBSize_1() const;
+	glm::vec3 GetBBSize_2() const;
+	glm::vec3 GetBBSize_3() const;
+	glm::vec3 GetBBSize_4() const;
 
 };
 

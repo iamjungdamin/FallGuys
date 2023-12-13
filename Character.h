@@ -21,10 +21,12 @@ class CCharacter
 	glm::vec3 prevMove;
 	float m_rot;
 	glm::mat4 final_tr, final_rot; // 마지막 이동, 마지막 회전
-	float gravity = 5.f; // 중력
-	float speed = 0.01f; // 속도
-	float jump_speed = 5.f;
+	float gravity = 8.f; // 중력
+	float speed = 0.1f; // 속도
+	float jump_speed = 20.f;
 	float animationTime;
+	float min_y; // 바닥
+	bool min_floor = false;
 
 	struct Running_Animation {
 		float animationTime;
@@ -98,7 +100,11 @@ public:
 	glm::vec3 GetPos() const;
 	glm::vec3 GetBBSize() const;
 	bool IsCollided(CFloorObject* F);
-	bool IsCollided_map(CMap* M);
+	bool IsCollided_map_1(CMap* M);
+	bool IsCollided_map_2(CMap* M);
+	bool IsCollided_map_3(CMap* M);
+	bool IsCollided_map_4(CMap* M);
+
 
 	// 캐릭터 상태 관련 함수
 	void SetState(int a);

@@ -15,7 +15,7 @@
 		final_tr = glm::translate(glm::mat4(1.f), m_pos);
 		state = 0;
 		m_rot = 180.f;
-
+		min_y = 0.0f;
 		running_animation.animationTime = 0.0f;
 		running_animation.bodyRotationAngle = 0.0f;
 		running_animation.armleftRotationAngle = 0.0f;
@@ -64,32 +64,43 @@
 		glm::mat4 tr; 
 		glm::mat4 sc;
 		glm::mat4 rot;
-		//printf("x : %lf y : %lf z : %lf \n", m_pos.x, m_pos.y, m_pos.z);
-		if (isJumpKeyPressed)
+		printf("x : %lf y : %lf z : %lf \n", m_pos.x, m_pos.y, m_pos.z);
+		if (min_floor == true) {
+			if (isJumpKeyPressed)
+			{
+				// 점프 중인 상태이면 수직 속도를 감소시킵니다.
+				jump_speed -= gravity * ElapsedTime;
+
+				// 조정된 수직 속도를 계산합니다.
+				float adjusted_move_y = jump_speed * ElapsedTime;
+
+
+				//printf("%lf\n", m_pos.y);
+				// 캐릭터가 지면 아래로 내려갔을 경우
+				if (m_pos.y < min_y) {
+					m_pos.y = min_y; // 지면에 닿게 조정
+					isJumpKeyPressed = false; // 점프 중인 상태 종료
+					jump_speed = 10.f; // 원래 10동 속도로 초기화
+				}
+				else {
+
+					m_pos.y += adjusted_move_y;
+				}
+
+			}
+		}
+		if(min_floor== false)
 		{
 			// 점프 중인 상태이면 수직 속도를 감소시킵니다.
 			jump_speed -= gravity * ElapsedTime;
-			
+
 			// 조정된 수직 속도를 계산합니다.
 			float adjusted_move_y = jump_speed * ElapsedTime;
 
-
-			//printf("%lf\n", m_pos.y);
-			// 캐릭터가 지면 아래로 내려갔을 경우
-			if (m_pos.y < 0.0f) {
-				m_pos.y = 0.0f; // 지면에 닿게 조정
-				isJumpKeyPressed = false; // 점프 중인 상태 종료
-				jump_speed = 5.f; // 원래 10동 속도로 초기화
-			}
-			else {
-
-				m_pos.y += adjusted_move_y;
-			}
-
+			
+			m_pos.y += adjusted_move_y;
+			
 		}
-	
-	
-
 
 		//상태 따라 행동하는 함수
 		CheckState();
@@ -245,14 +256,13 @@
 		return collisionX && collisionY && collisionZ;
 	}
 
-	bool CCharacter::IsCollided_map(CMap* M)
+	bool CCharacter::IsCollided_map_1(CMap* M)
 	{
-
 		glm::vec3 boxMin = m_pos - GetBBSize() / 2.0f;
 		glm::vec3 boxMax = m_pos + GetBBSize() / 2.0f;
 
-		glm::vec3 floorMin = M->GetPos() - M->GetBBSize() / 2.0f;
-		glm::vec3 floorMax = M->GetPos() + M->GetBBSize() / 2.0f;
+		glm::vec3 floorMin = { -60.0f, -4.0f, -440.0f };
+		glm::vec3 floorMax = { 60.0f, -2.0f, 40.0f };
 
 		// 충돌 체크
 		bool collisionX = boxMax.x >= floorMin.x && boxMin.x <= floorMax.x;
@@ -261,10 +271,103 @@
 
 		if (collisionX && collisionY && collisionZ)
 		{
+			if (min_floor = false)
+			{
+				m_pos.y = min_y;
+			}
+			min_floor = true;
 			printf("충돌");
+		}
+		else {
+			min_floor = false;
 		}
 		return collisionX && collisionY && collisionZ;
 	}
+
+	bool CCharacter::IsCollided_map_2(CMap* M)
+	{
+		glm::vec3 boxMin = m_pos - GetBBSize() / 2.0f;
+		glm::vec3 boxMax = m_pos + GetBBSize() / 2.0f;
+
+		glm::vec3 floorMin = { -60.0f, -4.0f, -440.0f };
+		glm::vec3 floorMax = { 60.0f, -2.0f, 40.0f };
+
+		// 충돌 체크
+		bool collisionX = boxMax.x >= floorMin.x && boxMin.x <= floorMax.x;
+		bool collisionY = boxMax.y >= floorMin.y && boxMin.y <= floorMax.y;
+		bool collisionZ = boxMax.z >= floorMin.z && boxMin.z <= floorMax.z;
+
+		if (collisionX && collisionY && collisionZ)
+		{
+			if (min_floor = false)
+			{
+				m_pos.y = min_y;
+			}
+			min_floor = true;
+			printf("충돌");
+		}
+		else {
+			min_floor = false;
+		}
+		return collisionX && collisionY && collisionZ;
+	}
+
+	bool CCharacter::IsCollided_map_3(CMap* M)
+	{
+		glm::vec3 boxMin = m_pos - GetBBSize() / 2.0f;
+		glm::vec3 boxMax = m_pos + GetBBSize() / 2.0f;
+
+		glm::vec3 floorMin = { -60.0f, -4.0f, -440.0f };
+		glm::vec3 floorMax = { 60.0f, -2.0f, 40.0f };
+
+		// 충돌 체크
+		bool collisionX = boxMax.x >= floorMin.x && boxMin.x <= floorMax.x;
+		bool collisionY = boxMax.y >= floorMin.y && boxMin.y <= floorMax.y;
+		bool collisionZ = boxMax.z >= floorMin.z && boxMin.z <= floorMax.z;
+
+		if (collisionX && collisionY && collisionZ)
+		{
+			if (min_floor = false)
+			{
+				m_pos.y = min_y;
+			}
+			min_floor = true;
+			printf("충돌");
+		}
+		else {
+			min_floor = false;
+		}
+		return collisionX && collisionY && collisionZ;
+	}
+
+	bool CCharacter::IsCollided_map_4(CMap* M)
+	{
+		glm::vec3 boxMin = m_pos - GetBBSize() / 2.0f;
+		glm::vec3 boxMax = m_pos + GetBBSize() / 2.0f;
+
+		glm::vec3 floorMin = { -60.0f, -4.0f, -440.0f };
+		glm::vec3 floorMax = { 60.0f, -2.0f, 40.0f };
+
+		// 충돌 체크
+		bool collisionX = boxMax.x >= floorMin.x && boxMin.x <= floorMax.x;
+		bool collisionY = boxMax.y >= floorMin.y && boxMin.y <= floorMax.y;
+		bool collisionZ = boxMax.z >= floorMin.z && boxMin.z <= floorMax.z;
+
+		if (collisionX && collisionY && collisionZ)
+		{
+			if (min_floor = false)
+			{
+				m_pos.y = min_y;
+			}
+			min_floor = true;
+			printf("충돌");
+		}
+		else {
+			min_floor = false;
+		}
+		return collisionX && collisionY && collisionZ;
+	}
+
 
 	void CCharacter::CheckState() {	//	enum STATE { IDLE, LEFT, RIGHT, FRONT, BACK }; 
 		if (isJumpKeyPressed)
