@@ -98,6 +98,9 @@
 			isJumpKeyPressed = false; // 점프 중인 상태 종료
 			jump_speed = 30.f; // 원래 10동 속도로 초기화
 		}
+		else if (m_pos.y < -100.f) {
+			isJumpKeyPressed = false;
+		}
 
 
 
@@ -263,7 +266,7 @@
 			}
 			else {
 				isInGround = false;
-				min_y = 0.f;
+				min_y = -1000.f;
 			}
 			return collisionX && collisionY && collisionZ;
 		}
@@ -294,7 +297,7 @@
 			}
 			else {
 				isInGround = false;
-				min_y = 0.f;
+				min_y = -1000.f;
 			}
 			return collisionX && collisionY && collisionZ;
 		}
@@ -325,7 +328,7 @@
 			}
 			else {
 				isInGround = false;
-				min_y = 0.f;
+				min_y = -1000.f;
 			}
 			return collisionX && collisionY && collisionZ;
 		}
