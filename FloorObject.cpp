@@ -33,7 +33,20 @@ void CFloorObject::Initialize()
 		isDeleted[i] = false;
 
 		InitPosY[i] = 0.f;
-		m_pos[i] = { i % 5 * 5.f, InitPosY[i], i / 5 * -5.f};
+		m_pos[i] = { -10.f + (i % 5 * 5.f), InitPosY[i], -750.f + (i / 5 * -5.f)};
+		if (i < 25) {
+			SetPosY(i, 75);
+		}
+		else if (i < 50) {
+			SetPosY(i, 50);
+		}
+		else if (i < 75) {
+			SetPosY(i, 25);
+		}
+		else {
+			SetPosY(i, 0);
+		}
+
 		Floor[i]->SetPos(m_pos[i]);
 		scale[i] = {3.f, 0.1f, 3.f};
 		Floor[i]->SetScale(scale[i]);
@@ -172,6 +185,12 @@ glm::vec3 CFloorObject::GetPos(int i) const
 	return m_pos[i];
 }
 
+void CFloorObject::SetPosY(int i, float y)
+{
+	InitPosY[i] = y;
+	m_pos[i] = { m_pos[i].x, InitPosY[i], m_pos[i].z };
+}
+
 glm::vec3 CFloorObject::GetBBSize() const
 {
 	return { 1.f, 0.5f, 1.f };
@@ -180,4 +199,9 @@ glm::vec3 CFloorObject::GetBBSize() const
 bool CFloorObject::GetIsDeleted(int i) const
 {
 	return isDeleted[i];
+}
+
+float CFloorObject::GetInitPosY(int i) const
+{
+	return InitPosY[i];
 }

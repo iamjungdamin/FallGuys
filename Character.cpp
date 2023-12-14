@@ -443,6 +443,7 @@
 
 			glm::vec3 floorMin = F->GetPos(i) - glm::vec3(2.f, 0.5f, 2.f);
 			glm::vec3 floorMax = F->GetPos(i) + glm::vec3(2.f, 0.5f, 2.f);
+			float originFloorY = F->GetInitPosY(i) + 1.f;
 
 			// 충돌 체크
 			bool collisionX = boxMax.x >= floorMin.x && boxMin.x <= floorMax.x;
@@ -455,7 +456,7 @@
 			{
 				if (isInGround == false)
 				{
-					min_y = floorMax.y;
+					min_y = originFloorY;
 					m_pos.y = min_y;
 					isInGround = true;
 				}

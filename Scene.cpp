@@ -96,6 +96,7 @@ void CScene::Update(float ElapsedTime)
 	glm::mat4 cameraMat = glm::lookAt(cameraPos, cameraLook, glm::vec3{ 0.f, 1.f, 0.f });
 	cameraMat = glm::translate(cameraMat, m_Character->GetPos());
 	cameraMat = glm::rotate(cameraMat, glm::radians(cameraRotateY), glm::vec3(0.f, 1.f, 0.f));
+	cameraMat = glm::rotate(cameraMat, glm::radians(cameraRotateZ), glm::vec3(1.f, 0.f, 0.f));
 	cameraMat = glm::translate(cameraMat, -m_Character->GetPos());
 	glm::mat4 projectMat = glm::perspective(glm::radians(45.f), (float)w_width / (float)w_height, 0.1f, 1000.f);
 
@@ -274,6 +275,7 @@ void CScene::MouseMotionEvent(int x, int y)
 
 		if (currMousePos.x != preMousePos.x) {
 			cameraRotateY += (currMousePos.x - preMousePos.x) * sens;
+			cameraRotateZ += (currMousePos.y - preMousePos.y) * sens;
 			currMousePos.x = preMousePos.x;
 			currMousePos.y = preMousePos.y;
 

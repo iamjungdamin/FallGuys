@@ -27,6 +27,7 @@ private:
     glm::vec3 cameraLook;
     glm::vec2 preMousePos{ -1.f, -1.f };
     float cameraRotateY;
+    float cameraRotateZ;
 
     glm::vec3 RotatedCameraFront = { 0,0,-1 };
     glm::vec3 RotatedCameraRight = { 1,0,0 };
