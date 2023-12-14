@@ -25,6 +25,12 @@ void CScene::Initialize()
 	//auto c_vao = InitCube(shader);
 	//m_Cube->SetVao(c_vao.first, c_vao.second);
 
+	m_StartUI = new CGameObject;
+	m_StartUI->SetShader(shader);
+	auto start_vao = InitStartUI(shader);
+	m_StartUI->SetVao(start_vao.first, start_vao.second);
+
+
 	m_Map = new CMap;
 	m_Map->SetShader(shader);
 	auto M_vao = InitMap(shader);
@@ -57,7 +63,7 @@ void CScene::Initialize()
 	auto c_vao = InitDoor(shader);
 	m_Door->SetVao(c_vao.first, c_vao.second);
 
-	
+
 	m_Floor = new CFloorObject;
 	if (m_Floor) {
 		auto floor_vao = InitFloor(shader);
@@ -65,26 +71,37 @@ void CScene::Initialize()
 		m_Floor->SetVao(floor_vao.first, floor_vao.second);
 	}
 
-	cameraPos = { 0.f, 0.f, 1.f };
+	cameraPos = { 0.f, 0.f, 40.f };
 	cameraLook = { 0.f, 0.f, 0.f };
 
 	lightPos = glm::vec3{ 5.f, 40.f, 0.f };
 	lightColor = glm::vec3{ 1.f, 1.f, 1.f };
-	
+
 
 }
 
 void CScene::Update(float ElapsedTime)
 {
-	// ī�޶�
-	cameraPos = m_Character->GetPos() + glm::vec3(0.f, 5.f, 20.f);
-	cameraLook = m_Character->GetPos();
+	if (GameStart) {
+		// ī�޶�
+		cameraPos = m_Character->GetPos() + glm::vec3(0.f, 5.f, 20.f);
+		cameraLook = m_Character->GetPos();
+	}
 
 	glm::mat4 cameraMat = glm::lookAt(cameraPos, cameraLook, glm::vec3{ 0.f, 1.f, 0.f });
 	cameraMat = glm::translate(cameraMat, m_Character->GetPos());
 	cameraMat = glm::rotate(cameraMat, glm::radians(cameraRotateY), glm::vec3(0.f, 1.f, 0.f));
 	cameraMat = glm::translate(cameraMat, -m_Character->GetPos());
 	glm::mat4 projectMat = glm::perspective(glm::radians(45.f), (float)w_width / (float)w_height, 0.1f, 1000.f);
+
+	if (m_StartUI) {
+		m_StartUI->SetCameraMat(cameraMat);
+		m_StartUI->SetProjectMat(projectMat);
+		m_StartUI->SetCameraPos(cameraPos);
+		m_StartUI->SetLightPos(lightPos);
+		m_StartUI->SetLightColor(lightColor);
+		//m_StartUI->Update(ElapsedTime);
+	}
 
 
 	if (m_Character) {
@@ -114,7 +131,7 @@ void CScene::Update(float ElapsedTime)
 		m_Door->Update(ElapsedTime);
 	}
 
-	
+
 	if (m_Floor) {
 		m_Floor->SetCameraMat(cameraMat);
 		m_Floor->SetProjectMat(projectMat);
@@ -141,7 +158,7 @@ void CScene::Update(float ElapsedTime)
 		}
 	}
 
-	
+
 }
 
 void CScene::FixedUpdate()
@@ -149,26 +166,35 @@ void CScene::FixedUpdate()
 }
 
 void CScene::Render()
-{  
-	
+{
+
 
 	if (m_Character) {
 		m_Character->Render();
 	}
 
-	if (m_Map) {
-		m_Map->Render();
+
+	if (!GameStart) {
+		if (m_StartUI) {
+			m_StartUI->Render();
+		}
 	}
 
+	if (GameStart) {
+		if (m_Map) {
+			m_Map->Render();
+		}
 
-	if (m_Door) {
-		m_Door->Render();
+
+		if (m_Door) {
+			m_Door->Render();
+		}
+
+		if (m_Floor) {
+			m_Floor->Render();
+		}
+
 	}
-
-	if (m_Floor) {
-		m_Floor->Render();
-	}
-
 
 }
 
@@ -176,6 +202,9 @@ void CScene::Release()
 {
 	//delete m_Cube;
 	//m_Cube = nullptr;
+
+	delete m_StartUI;
+	m_StartUI = nullptr;
 
 	delete m_Character;
 	m_Character = nullptr;
@@ -185,7 +214,7 @@ void CScene::Release()
 
 	delete m_Door;
 	m_Door = nullptr;
-	
+
 
 	delete m_Floor;
 	m_Floor = nullptr;
@@ -198,10 +227,12 @@ void CScene::MouseEvent(int button, int state, int x, int y)
 	case GLUT_DOWN:
 		switch (button) {
 		case GLUT_LEFT_BUTTON:
-			preMousePos = { x, y };
+			if (GameStart) {
+				preMousePos = { x, y };
+			}
 			break;
 		case GLUT_RIGHT_BUTTON:
-			
+
 			break;
 		case GLUT_MIDDLE_BUTTON:
 			break;
@@ -227,7 +258,7 @@ void CScene::MouseMotionEvent(int x, int y)
 {
 	float sens = 0.02f;		//ȸ�� �� �ΰ���
 	glm::vec2 currMousePos{ -1.f, -1.f };
-	
+
 	if (preMousePos.x > -1 && preMousePos.y > -1) {
 		currMousePos.x = x;
 		currMousePos.y = y;
@@ -257,28 +288,42 @@ void CScene::KeyboardEvent(int state, unsigned char key) {
 		switch (key) {
 		case 'a':
 		case 'A':
-			m_Character->SetState(STATE::LEFT);
-			m_Character->SetLeftKeyPressed(true);
+			if (GameStart) {
+				m_Character->SetState(STATE::LEFT);
+				m_Character->SetLeftKeyPressed(true);
+			}
 			break;
-		case 's':  
+		case 's':
 		case 'S':
-			m_Character->SetState(STATE::BACK);
-			m_Character->SetBackKeyPressed(true);
+			if (GameStart) {
+				m_Character->SetState(STATE::BACK);
+				m_Character->SetBackKeyPressed(true);
+			}
 			break;
 		case 'd':
 		case 'D':
-			m_Character->SetState(STATE::RIGHT);
-			m_Character->SetRightKeyPressed(true);
+			if (GameStart) {
+				m_Character->SetState(STATE::RIGHT);
+				m_Character->SetRightKeyPressed(true);
+			}
 			break;
 		case 'w':
 		case 'W':
-			m_Character->SetState(STATE::FRONT);
-			m_Character->SetFrontKeyPressed(true);
+			if (GameStart) {
+				m_Character->SetState(STATE::FRONT);
+				m_Character->SetFrontKeyPressed(true);
+			}
 			break;
 		case ' ':
-			m_Character->SetJumpKeyPressed(true);
+			if (GameStart) {
+				m_Character->SetJumpKeyPressed(true);
+			}
 			break;
-		
+		case 'o':
+		case 'O':
+			GameStart = true;
+			m_Character->SetPos(0.f, 0.f, 25.f);
+			break;
 		default:
 			break;
 		}
@@ -301,7 +346,7 @@ void CScene::KeyboardEvent(int state, unsigned char key) {
 		case 'W':
 			m_Character->SetFrontKeyPressed(false);
 			break;
-	
+
 		default:
 			break;
 		}
@@ -314,7 +359,7 @@ void CScene::SpecialKeyEvent(int state, int key)
 	switch (state) {
 	case GLUT_DOWN:
 		switch (key) {
-		
+
 			break;
 		default:
 			break;
@@ -327,6 +372,35 @@ void CScene::SpecialKeyEvent(int state, int key)
 		}
 		break;
 	}
+}
+
+std::pair<GLuint, GLsizei> CScene::InitStartUI(GLuint shader)
+{
+	GLuint VAO, VBO;					// ���� �����͸� GPU�� �Ѱ��� VAO, VBO ����
+	glGenVertexArrays(1, &VAO);
+	glBindVertexArray(VAO);
+	glGenBuffers(1, &VBO);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);	// VBO�� �������۷� ���� �� ���ε�
+	glm::vec3 fixedColor = { 0.0f, 0.0f, 0.0f }; // ���
+	std::vector<glm::vec3> data = ReadObjWithRColorNormal("./Resources/start.obj", fixedColor);
+
+	glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(glm::vec3), data.data(), GL_STATIC_DRAW);	// VBO(GPU)�� ���� ������ ����
+
+	GLint AttribPosLoc = glGetAttribLocation(shader, "vPos");						// ���̴����� vPos�� ��ġ �����´�.
+	GLint AttribColorLoc = glGetAttribLocation(shader, "vColor");					// ���̴����� vColor�� ��ġ �����´�.
+	GLint AttribNormalLoc = glGetAttribLocation(shader, "vNormal");					// ���̴����� vNormal�� ��ġ �����´�.
+	if (AttribPosLoc < 0 or AttribColorLoc < 0 or AttribNormalLoc < 0) {
+		std::cerr << "AttribLoc ã�� ����" << std::endl;
+	}
+	// glVertexAttribPointer(attrib ��ġ, vertex ��� ��������, gl_float, gl_false, stride(����), ���� ��ġ(������));
+	glVertexAttribPointer(AttribPosLoc, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), reinterpret_cast<void*>(0));	// ���� VBO�� �ִ� ������ �Ӽ� ����
+	glEnableVertexAttribArray(AttribPosLoc);										// Attribute Ȱ��ȭ
+	glVertexAttribPointer(AttribColorLoc, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), reinterpret_cast<void*>(3 * sizeof(float)));
+	glEnableVertexAttribArray(AttribColorLoc);										// Attribute Ȱ��ȭ
+	glVertexAttribPointer(AttribNormalLoc, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), reinterpret_cast<void*>(6 * sizeof(float)));
+	glEnableVertexAttribArray(AttribNormalLoc);										// Attribute Ȱ��ȭ
+
+	return { VAO, static_cast<int>(data.size()) };
 }
 
 std::pair<GLuint, GLsizei> CScene::InitCube(GLuint shader)

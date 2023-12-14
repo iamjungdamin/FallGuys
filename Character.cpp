@@ -14,7 +14,7 @@
 		right_leg = new CGameObject;
 		eyes = new CGameObject;
 
-		m_pos = { 0.f, 0.f, 25.f };
+		m_pos = { 0.f, 0.f, 10.f };
 		final_tr = glm::translate(glm::mat4(1.f), m_pos);
 		state = 0;
 		m_rot = 180.f;
@@ -233,6 +233,11 @@
 	{
 		m_pos.x += x;
 	}
+
+	void CCharacter::SetPos(float x, float y, float z){
+		m_pos = { x,y,z };
+	}
+
 
 	glm::vec3 CCharacter::GetPos() const
 	{
