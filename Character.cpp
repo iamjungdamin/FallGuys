@@ -608,32 +608,7 @@
 
 	void CCharacter::State_Running()
 	{
-
-		//if (isLeftKeyPressed== true && isRightKeyPressed == false && isFrontKeyPressed== false&& isBackKeyPressed == false)
-		//{
-		//		m_move.x = -1;
-		//		m_move.z = 0;
-		//}
-		//if (isLeftKeyPressed == false && isRightKeyPressed == true && isFrontKeyPressed == false  && isBackKeyPressed== false)
-		//{
-		//		m_move.x = 1;
-		//		m_move.z = 0;
-		//	
-		//}
-		//if (isLeftKeyPressed == false && isRightKeyPressed == false && isFrontKeyPressed== true && isBackKeyPressed== false)
-		//{
-		//		m_move.x = 0;
-		//		m_move.z = -1;
-		//	
-		//}
-		//if (isLeftKeyPressed == false && isRightKeyPressed== false && isFrontKeyPressed == false && isBackKeyPressed == true)
-		//{
-		//		m_move.x = 0;
-		//		m_move.z = 1;
-		//	
-		//}
-	
-
+		
 		prevMove = m_move;
 
 		float legAmplitude = 0.1f;

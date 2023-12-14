@@ -236,6 +236,16 @@ void CScene::MouseMotionEvent(int x, int y)
 			cameraRotateY += (currMousePos.x - preMousePos.x) * sens;
 			currMousePos.x = preMousePos.x;
 			currMousePos.y = preMousePos.y;
+
+			glm::vec3 newFront;
+			newFront.x = sin(glm::radians(cameraRotateY)) * cos(glm::radians(0.f));
+			newFront.y = sin(glm::radians(0.f));
+			newFront.z = cos(glm::radians(cameraRotateY)) * cos(glm::radians(0.f));
+			RotatedCameraFront = glm::normalize(newFront);
+			RotatedCameraRight = glm::normalize(glm::cross(RotatedCameraFront, { 0, 1, 0 }));
+
+			//std::cout << "front - " << RotatedCameraFront.x << ", " << RotatedCameraFront.y << ", " << RotatedCameraFront.z << '\n';
+			//std::cout << "right - " << RotatedCameraRight.x << ", " << RotatedCameraRight.y << ", " << RotatedCameraRight.z << '\n';
 		}
 	}
 }
