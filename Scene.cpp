@@ -149,7 +149,7 @@ void CScene::FixedUpdate()
 }
 
 void CScene::Render()
-{
+{  
 	
 
 	if (m_Character) {

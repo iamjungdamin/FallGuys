@@ -74,7 +74,7 @@
 				jump_speed -= gravity * ElapsedTime;
 
 				// 조정된 수직 속도를 계산합니다.
-				float adjusted_move_y = jump_speed * ElapsedTime*10;
+				float adjusted_move_y = jump_speed * ElapsedTime*4;
 				m_pos.y += adjusted_move_y;
 
 				printf("%lf\n", m_pos.y);
@@ -86,7 +86,7 @@
 			jump_speed -= gravity * ElapsedTime;
 
 			// 조정된 수직 속도를 계산합니다.
-			float adjusted_move_y = jump_speed * ElapsedTime*10;
+			float adjusted_move_y = jump_speed * ElapsedTime*4;
 
 			m_pos.y += adjusted_move_y;
 		}
@@ -98,7 +98,7 @@
 			std::cout << "�ٴ� 2 ";
 			m_pos.y = min_y; // ���鿡 ��� ����
 			isJumpKeyPressed = false; // ���� ���� ���� ����
-			jump_speed = 0.1f; // ���� 10�� �ӵ��� �ʱ�ȭ
+			jump_speed = 10.f; // ���� 10�� �ӵ��� �ʱ�ȭ
 		}
 		else if (m_pos.y < -100.f) {
 			isJumpKeyPressed = false;

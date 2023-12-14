@@ -4,6 +4,53 @@ class CGameObject;
 class CMap;
 class CFloorObject;
 class CDoorObject;
+class TitleScreen {
+public:
+	TitleScreen() {
+		// Initialize title screen resources, shaders, etc.
+		// For simplicity, let's just use a text title for now
+		titleText = "My Game Title";
+	}
+
+	void Update(float ElapsedTime) {
+		// Handle title screen logic, input, etc.
+		// For simplicity, we'll just switch to the game scene if any key is pressed
+		if (keyPressed) {
+			keyHandled = true;
+		}
+	}
+
+	void Render() {
+		// Render title screen graphics
+		// For simplicity, let's just render the title text
+		glColor3f(1.0f, 1.0f, 1.0f);
+		glRasterPos2f(-0.5f, 0.0f);
+		glutBitmapString(GLUT_BITMAP_HELVETICA_18, (const unsigned char*)titleText.c_str());
+	}
+
+	void Release() {
+		// Release title screen resources
+		// For simplicity, nothing to release in this example
+	}
+
+	// Add other necessary functions...
+
+	// Function to check if a key is pressed on the title screen
+	void KeyPressed() {
+		keyPressed = true;
+	}
+
+	// Function to check if a key is handled
+	bool IsKeyHandled() const {
+		return keyHandled;
+	}
+
+private:
+	std::string titleText;
+	bool keyPressed = false;
+	bool keyHandled = false;
+	// Add members specific to the title screen
+};
 
 class CScene
 {
@@ -29,7 +76,7 @@ private:
 	glm::vec3 lightPos;
 	glm::vec3 lightColor;
 
-	
+	bool m_isTitleScreen;
 
 
 public:
