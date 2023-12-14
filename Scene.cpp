@@ -88,7 +88,7 @@ void CScene::Update(float ElapsedTime)
 
 
 	if (m_Character) {
-		m_Character->SetCameraMat(cameraMat);
+		m_Character->SetCameraMat(cameraMat, RotatedCameraFront, RotatedCameraRight);
 		m_Character->SetProjectMat(projectMat);
 		m_Character->SetCameraPos(cameraPos);
 		m_Character->SetLightPos(lightPos);
@@ -240,7 +240,7 @@ void CScene::MouseMotionEvent(int x, int y)
 			glm::vec3 newFront;
 			newFront.x = sin(glm::radians(cameraRotateY)) * cos(glm::radians(0.f));
 			newFront.y = sin(glm::radians(0.f));
-			newFront.z = cos(glm::radians(cameraRotateY)) * cos(glm::radians(0.f));
+			newFront.z = -1 * cos(glm::radians(cameraRotateY)) * cos(glm::radians(0.f));
 			RotatedCameraFront = glm::normalize(newFront);
 			RotatedCameraRight = glm::normalize(glm::cross(RotatedCameraFront, { 0, 1, 0 }));
 

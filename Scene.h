@@ -70,8 +70,8 @@ private:
 	glm::vec2 preMousePos { -1.f, -1.f };
 	float cameraRotateY;
 
-	glm::vec3 RotatedCameraFront;
-	glm::vec3 RotatedCameraRight;
+	glm::vec3 RotatedCameraFront = { 0,0,-1 };
+	glm::vec3 RotatedCameraRight = { 1,0,0 };
 	//����
 	glm::vec3 lightPos;
 	glm::vec3 lightColor;
