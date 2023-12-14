@@ -4,6 +4,7 @@
 #include "Character.h"
 #include "Map.h"
 #include "FloorObject.h"
+#include "DoorObject.h"
 
 CScene::CScene(int& width, int& height) : w_width{ width }, w_height{ height }
 {
@@ -50,17 +51,26 @@ void CScene::Initialize()
 	auto e_vao = InitEyes(shader);
 	m_Character->SetVao_eyes(e_vao.first, e_vao.second);
 
+
+	m_Door = new CDoorObject;
+	m_Door->SetShader(shader);
+	auto c_vao = InitDoor(shader);
+	m_Door->SetVao(c_vao.first, c_vao.second);
+
 	vFloors.reserve(40);
 	for (int i = 0; i < 5 * 5; ++i) {
 		vFloors.push_back({ });
 	}
 
+
+	
 	auto floor_vao = InitFloor(shader);
 	for (int i = 0; i < vFloors.size(); ++i) {
 		vFloors[i].SetShader(shader);
 		vFloors[i].SetVao(floor_vao.first, floor_vao.second);
 	}
-	// set vao
+
+	
 	
 	cameraPos = { 0.f, 0.f, 1.f };
 	cameraLook = { 0.f, 0.f, 0.f };
@@ -102,6 +112,16 @@ void CScene::Update(float ElapsedTime)
 		m_Map->Update(ElapsedTime);
 	}
 
+	if (m_Door) {
+		m_Door->SetCameraMat(cameraMat);
+		m_Door->SetProjectMat(projectMat);
+		m_Door->SetCameraPos(cameraPos);
+		m_Door->SetLightPos(lightPos);
+		m_Door->SetLightColor(lightColor);
+		m_Door->Update(ElapsedTime);
+	}
+
+	
 	for (int i = 0; i < vFloors.size(); ++i) {
 		vFloors[i].SetCameraMat(cameraMat);
 		vFloors[i].SetProjectMat(projectMat);
@@ -115,6 +135,10 @@ void CScene::Update(float ElapsedTime)
 			//	return f.GetIndex() == i;
 			//	}), vFloors.end());
 		}
+	}
+
+	if (m_Character->IsCollided(m_Door)) {
+		/*	std::cout << vFloors[i].GetIndex() << '\n';*/
 	}
 
 	for (int i = 0; i < 4; ++i) {
@@ -146,9 +170,16 @@ void CScene::Render()
 		m_Map->Render();
 	}
 
+
+	if (m_Door) {
+		m_Door->Render();
+	}
+
 	for (int i = 0; i < vFloors.size(); ++i) {
 		vFloors[i].Render();
 	}
+
+
 }
 
 void CScene::Release()
@@ -161,6 +192,10 @@ void CScene::Release()
 
 	delete m_Map;
 	m_Map = nullptr;
+
+	delete m_Door;
+	m_Door = nullptr;
+	
 
 	vFloors.clear();
 }
@@ -597,3 +632,32 @@ std::pair<GLuint, GLsizei> CScene::InitFloor(GLuint shader)
 	return { VAO, static_cast<int>(data.size()) };
 }
 
+std::pair<GLuint, GLsizei> CScene::InitDoor(GLuint shader)
+{
+	GLuint VAO, VBO;					// ���� �����͸� GPU�� �Ѱ��� VAO, VBO ����
+	glGenVertexArrays(1, &VAO);
+	glBindVertexArray(VAO);
+	glGenBuffers(1, &VBO);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);	// VBO�� �������۷� ���� �� ���ε�
+
+	glm::vec3 fixedColor = { 0.6f, 0.8f, 1.f };
+	std::vector<glm::vec3> data = ReadObjWithRColorNormal("./Resources/Door.obj", fixedColor);
+
+	glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(glm::vec3), data.data(), GL_STATIC_DRAW);	// VBO(GPU)�� ���� ������ ����
+
+	GLint AttribPosLoc = glGetAttribLocation(shader, "vPos");						// ���̴����� vPos�� ��ġ �����´�.
+	GLint AttribColorLoc = glGetAttribLocation(shader, "vColor");					// ���̴����� vColor�� ��ġ �����´�.
+	GLint AttribNormalLoc = glGetAttribLocation(shader, "vNormal");					// ���̴����� vNormal�� ��ġ �����´�.
+	if (AttribPosLoc < 0 or AttribColorLoc < 0 or AttribNormalLoc < 0) {
+		std::cerr << "AttribLoc ã�� ����" << std::endl;
+	}
+	// glVertexAttribPointer(attrib ��ġ, vertex ��� ��������, gl_float, gl_false, stride(����), ���� ��ġ(������));
+	glVertexAttribPointer(AttribPosLoc, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), reinterpret_cast<void*>(0));	// ���� VBO�� �ִ� ������ �Ӽ� ����
+	glEnableVertexAttribArray(AttribPosLoc);										// Attribute Ȱ��ȭ
+	glVertexAttribPointer(AttribColorLoc, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), reinterpret_cast<void*>(3 * sizeof(float)));
+	glEnableVertexAttribArray(AttribColorLoc);										// Attribute Ȱ��ȭ
+	glVertexAttribPointer(AttribNormalLoc, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), reinterpret_cast<void*>(6 * sizeof(float)));
+	glEnableVertexAttribArray(AttribNormalLoc);										// Attribute Ȱ��ȭ
+
+	return { VAO, static_cast<int>(data.size()) };
+}

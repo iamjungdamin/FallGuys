@@ -2,6 +2,7 @@
 	#include <iostream>
 	#include "FloorObject.h"
 	#include "Map.h"
+	#include "DoorObject.h"
 
 	CCharacter::CCharacter()
 	{
@@ -96,7 +97,7 @@
 			std::cout << "바닥 2 ";
 			m_pos.y = min_y; // 지면에 닿게 조정
 			isJumpKeyPressed = false; // 점프 중인 상태 종료
-			jump_speed = 30.f; // 원래 10동 속도로 초기화
+			jump_speed = 10.f; // 원래 10동 속도로 초기화
 		}
 		else if (m_pos.y < -100.f) {
 			isJumpKeyPressed = false;
@@ -345,7 +346,7 @@
 			bool collisionX = boxMax.x >= floorMin.x && boxMin.x <= floorMax.x;
 			bool collisionY = boxMax.y >= floorMin.y && boxMin.y <= floorMax.y;
 			bool collisionZ = boxMax.z >= floorMin.z && boxMin.z <= floorMax.z;
-
+				
 			if (collisionX && collisionY && collisionZ)
 			{
 				if (isInGround == false)
@@ -363,6 +364,51 @@
 			return collisionX && collisionY && collisionZ;
 		}
 	}
+
+	bool CCharacter::IsCollided(CDoorObject* D) {
+		bool isCollision = false;  // 충돌 여부를 저장하는 변수를 추가
+
+		for (int i = 0; i < 25; ++i) {
+			for (int j = 0; j < 2; ++j) {
+				// 현재 문에 대한 충돌 박스 계산
+				glm::vec3 boxMin = m_pos - GetBBSize() / 2.0f;
+				glm::vec3 boxMax = m_pos + GetBBSize() / 2.0f;
+
+				glm::vec3 floorMin = D->GetPos(i, j);
+				glm::vec3 floorMax = D->GetPos(i, j);
+
+				floorMin.x -= 4.f;
+				floorMin.y -= 10.f;
+				floorMin.z -= 0.5f;
+
+				floorMax.x += 4.f;
+				floorMax.y += 10.f;
+				floorMin.z += 0.5f;
+
+				// 현재 문과 캐릭터 간의 충돌 체크
+				bool collisionX = boxMax.x >= floorMin.x && boxMin.x <= floorMax.x;
+				bool collisionY = boxMax.y >= floorMin.y && boxMin.y <= floorMax.y;
+				bool collisionZ = boxMax.z >= floorMin.z && boxMin.z <= floorMax.z;
+
+				if (collisionX && collisionY && collisionZ) {
+					if (isInGround == false) {
+						m_pos.z = collisionZ;
+						isInGround = true;
+					}
+					printf("문[%d][%d] 충돌합니다\n", i, j);
+					isCollision = true;  // 충돌 발생 시 변수를 true로 설정
+				}
+				else {
+					isInGround = false;
+					min_y = -1000.f;
+				}
+			}
+		}
+
+		return isCollision;  // 모든 문에 대한 충돌 체크를 완료한 후 충돌 여부 반환
+	}
+
+
 
 	bool CCharacter::IsCollided(CFloorObject* F)
 	{

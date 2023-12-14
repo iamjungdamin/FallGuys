@@ -3,6 +3,7 @@ class CCharacter;
 class CGameObject;
 class CMap;
 class CFloorObject;
+class CDoorObject;
 
 class CScene
 {
@@ -11,6 +12,8 @@ private:
 	int& w_height;
 	//��ü
 	CGameObject* m_Cube;
+	CDoorObject* m_Door;
+
 	CCharacter* m_Character;
 	CMap* m_Map;
 	std::vector<CFloorObject> vFloors;
@@ -51,5 +54,7 @@ public:
 	std::pair<GLuint, GLsizei> InitEyes(GLuint shader);
 	std::pair<GLuint, GLsizei> InitMap(GLuint shader);
 	std::pair<GLuint, GLsizei> InitFloor(GLuint shader);
+
+	std::pair<GLuint, GLsizei> InitDoor(GLuint shader);
 
 };

@@ -19,6 +19,9 @@
     <Filter Include="Character">
       <UniqueIdentifier>{5acbaadc-fff1-4882-a248-baaf05bf5e17}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Door">
+      <UniqueIdentifier>{d977d119-8b89-4d39-b01a-3a4b2258cbb1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CubeObject.cpp">
@@ -48,6 +51,9 @@
     <ClCompile Include="Map.cpp">
       <Filter>GameObject</Filter>
     </ClCompile>
+    <ClCompile Include="DoorObject.cpp">
+      <Filter>Door</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CubeObject.h">
@@ -73,6 +79,9 @@
     </ClInclude>
     <ClInclude Include="Map.h">
       <Filter>GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="DoorObject.h">
+      <Filter>Door</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

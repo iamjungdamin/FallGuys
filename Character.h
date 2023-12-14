@@ -3,6 +3,7 @@
 #include "GameObject.h"
 class CFloorObject;
 class CMap;
+class CDoorObject;
 // 객체 상태
 enum STATE { IDLE, LEFT, RIGHT, FRONT, BACK,JUMP };
 
@@ -22,8 +23,8 @@ class CCharacter
 	float m_rot;
 	glm::mat4 final_tr, final_rot; // 마지막 이동, 마지막 회전
 	float gravity = 8.f; // 중력
-	float speed = 0.5f; // 속도
-	float jump_speed = 30.f;
+	float speed = 0.1f; // 속도
+	float jump_speed = 10.f;
 	float animationTime;
 	float min_y; // 바닥
 	bool isInGround = true;
@@ -101,6 +102,7 @@ public:
 	glm::vec3 GetPos() const;
 	glm::vec3 GetBBSize() const;
 	bool IsCollided(int index, CGameObject* Obj);
+	bool IsCollided(CDoorObject* D);
 	bool IsCollided(CFloorObject* F);
 
 
