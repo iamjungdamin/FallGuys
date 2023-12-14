@@ -74,7 +74,7 @@ void main(int argc, char** argv)								//--- 윈도우 출력하고 콜백함수 설정
 	//glutTimerFunc(16, TimerFunction, 0);						// 특정 시간마다 할 일 설정
 
 	glEnable(GL_DEPTH_TEST);	// 깊이검사 활성화
-	glEnable(GL_CULL_FACE);		// 컬링	(뒷면 제거)
+	//glEnable(GL_CULL_FACE);		// 컬링	(뒷면 제거)
 	//glFrontFace(GL_CCW);		// 컬링의 앞면 설정 (GL_CW - 시계, GL_CCW - 반시계)
 	//glCullFace(GL_BACK);		// 어떤 면을 제거할지 설정
 

@@ -256,8 +256,8 @@
 			glm::vec3 boxMin = m_pos - GetBBSize() / 2.0f;
 			glm::vec3 boxMax = m_pos + GetBBSize() / 2.0f;
 
-			glm::vec3 floorMin = { -30.0f, 26.f, -670.f };
-			glm::vec3 floorMax = { 30.0f, 28.f, -490.f };
+			glm::vec3 floorMin = { -30.0f, 26.f, -640.f };
+			glm::vec3 floorMax = { 30.0f, 28.f, -460.f };
 
 			// 충돌 체크
 			bool collisionX = boxMax.x >= floorMin.x && boxMin.x <= floorMax.x;
@@ -319,8 +319,8 @@
 			glm::vec3 boxMin = m_pos - GetBBSize() / 2.0f;
 			glm::vec3 boxMax = m_pos + GetBBSize() / 2.0f;
 
-			glm::vec3 floorMin = { -40.f, 68.f, -740.f };
-			glm::vec3 floorMax = { 40.f, 70.f, -680.f };
+			glm::vec3 floorMin = { -40.f, 56.f, -700.f };
+			glm::vec3 floorMax = { 40.f, 58.f, -640.f };
 
 			// 충돌 체크
 			bool collisionX = boxMax.x >= floorMin.x && boxMin.x <= floorMax.x;
@@ -331,7 +331,7 @@
 			{
 				if (isInGround == false)
 				{
-					min_y = 70.f;
+					min_y = 58.f;
 					m_pos.y = min_y;
 					isInGround = true;
 				}

@@ -23,7 +23,7 @@ class CCharacter
 	float m_rot;
 	glm::mat4 final_tr, final_rot; // ������ �̵�, ������ ȸ��
 	float gravity = 5.f; // �߷�
-	float speed = 0.01f; // �ӵ�
+	float speed = 0.1f; // �ӵ�
 	float jump_speed = 10.f;
 	float animationTime;
 	float min_y; // �ٴ�

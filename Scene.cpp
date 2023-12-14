@@ -6,6 +6,7 @@
 #include "FloorObject.h"
 #include "DoorObject.h"
 
+
 CScene::CScene(int& width, int& height) : w_width{ width }, w_height{ height }
 {
 	Initialize();
@@ -76,6 +77,10 @@ void CScene::Initialize()
 
 	lightPos = glm::vec3{ 5.f, 40.f, 0.f };
 	lightColor = glm::vec3{ 1.f, 1.f, 1.f };
+
+	
+
+
 
 
 }
@@ -158,7 +163,6 @@ void CScene::Update(float ElapsedTime)
 		}
 	}
 
-
 }
 
 void CScene::FixedUpdate()
@@ -167,7 +171,7 @@ void CScene::FixedUpdate()
 
 void CScene::Render()
 {
-
+	
 
 	if (m_Character) {
 		m_Character->Render();
@@ -202,7 +206,12 @@ void CScene::Release()
 {
 	//delete m_Cube;
 	//m_Cube = nullptr;
-
+	for (int i = 0; i < 3; ++i) {
+		if (m_Rect[i]) {
+			delete m_Rect[i];
+			m_Rect[i] = nullptr;
+		}
+	}
 	delete m_StartUI;
 	m_StartUI = nullptr;
 
@@ -731,3 +740,4 @@ std::pair<GLuint, GLsizei> CScene::InitDoor(GLuint shader)
 
 	return { VAO, static_cast<int>(data.size()) };
 }
+

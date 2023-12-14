@@ -133,50 +133,50 @@ void CMap::Render()
 	//glEnd();
 	///333
 	glBegin(GL_LINE_LOOP);
-	glVertex3f(-30.0f, 24.f, -490.f);
-	glVertex3f(-30.0f, 22.f, -490.f);
-	glVertex3f(30.0f, 22.f, -490.f);
-	glVertex3f(30.0f, 24.f, -490.f);
+	glVertex3f(-30.0f, 24.f, -460.f);
+	glVertex3f(-30.0f, 22.f, -460.f);
+	glVertex3f(30.0f, 22.f, -460.f);
+	glVertex3f(30.0f, 24.f, -460.f);
 	glEnd();
 
 	// Rectangle 2
 	glBegin(GL_LINE_LOOP);
-	glVertex3f(-30.0f, 24.f, -670.f);
-	glVertex3f(-30.0f, 22.f, -670.f);
-	glVertex3f(30.0f, 22.f, -670.f);
-	glVertex3f(30.0f, 24.f, -670.f);
+	glVertex3f(-30.0f, 24.f, -640.f);
+	glVertex3f(-30.0f, 22.f, -640.f);
+	glVertex3f(30.0f, 22.f, -640.f);
+	glVertex3f(30.0f, 24.f, -640.f);
 	glEnd();
 
 	// Rectangle 3
 	glBegin(GL_LINE_LOOP);
-	glVertex3f(-30.0f, 24.f, -490.f);
-	glVertex3f(-30.0f, 22.f, -490.f);
-	glVertex3f(-30.0f, 22.f, -670.f);
-	glVertex3f(-30.0f, 24.f, -670.f);
+	glVertex3f(-30.0f, 24.f, -460.f);
+	glVertex3f(-30.0f, 22.f, -460.f);
+	glVertex3f(-30.0f, 22.f, -640.f);
+	glVertex3f(-30.0f, 24.f, -640.f);
 	glEnd();
 
 	// Rectangle 4
 	glBegin(GL_LINE_LOOP);
-	glVertex3f(30.0f, 24.f, -490.f);
-	glVertex3f(30.0f, 22.f, -490.f);
-	glVertex3f(30.0f, 22.f, -670.f);
-	glVertex3f(30.0f, 24.f, -670.f);
+	glVertex3f(30.0f, 24.f, -460.f);
+	glVertex3f(30.0f, 22.f, -460.f);
+	glVertex3f(30.0f, 22.f, -640.f);
+	glVertex3f(30.0f, 24.f, -640.f);
 	glEnd();
 
 	// Top Rectangle
 	glBegin(GL_LINE_LOOP);
-	glVertex3f(-30.0f, 24.f, -490.f);
-	glVertex3f(-30.0f, 24.f, -670.f);
-	glVertex3f(30.0f, 24.f, -670.f);
-	glVertex3f(30.0f, 24.f, -490.f);
+	glVertex3f(-30.0f, 24.f, -460.f);
+	glVertex3f(-30.0f, 24.f, -640.f);
+	glVertex3f(30.0f, 24.f, -640.f);
+	glVertex3f(30.0f, 24.f, -460.f);
 	glEnd();
 
 	// Bottom Rectangle
 	glBegin(GL_LINE_LOOP);
-	glVertex3f(-30.0f, 22.f, -490.f);
-	glVertex3f(-30.0f, 22.f, -670.f);
-	glVertex3f(30.0f, 22.f, -670.f);
-	glVertex3f(30.0f, 22.f, -490.f);
+	glVertex3f(-30.0f, 22.f, -460.f);
+	glVertex3f(-30.0f, 22.f, -640.f);
+	glVertex3f(30.0f, 22.f, -640.f);
+	glVertex3f(30.0f, 22.f, -460.f);
 	glEnd();
 }
 
