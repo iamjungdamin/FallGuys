@@ -67,31 +67,28 @@
 		glm::mat4 rot;
 		/*printf("x : %lf y : %lf z : %lf \n", m_pos.x, m_pos.y, m_pos.z);*/
 		
-
 		if (isInGround == true) {
 			if (isJumpKeyPressed)
 			{
-				// ���� ���� �����̸� ���� �ӵ��� ���ҽ�ŵ�ϴ�.
+				// 점프 중인 상태이면 수직 속도를 감소시킵니다.
 				jump_speed -= gravity * ElapsedTime;
 
-				// ������ ���� �ӵ��� ����մϴ�.
-				float adjusted_move_y = jump_speed * ElapsedTime;
+				// 조정된 수직 속도를 계산합니다.
+				float adjusted_move_y = jump_speed * ElapsedTime*10;
 				m_pos.y += adjusted_move_y;
-				printf("%lf\n", m_pos.y);
 
+				printf("%lf\n", m_pos.y);
 			}
 		}
-		if (isInGround == false)
+		else
 		{
-			// ���� ���� �����̸� ���� �ӵ��� ���ҽ�ŵ�ϴ�.
+			// 중력을 더해줍니다. (음수로 빼는 대신 양수로 더해줌)
 			jump_speed -= gravity * ElapsedTime;
 
-			// ������ ���� �ӵ��� ����մϴ�.
-			float adjusted_move_y = jump_speed * ElapsedTime;
-
+			// 조정된 수직 속도를 계산합니다.
+			float adjusted_move_y = jump_speed * ElapsedTime*10;
 
 			m_pos.y += adjusted_move_y;
-
 		}
 
 
@@ -101,7 +98,7 @@
 			std::cout << "�ٴ� 2 ";
 			m_pos.y = min_y; // ���鿡 ��� ����
 			isJumpKeyPressed = false; // ���� ���� ���� ����
-			jump_speed = 30.f; // ���� 10�� �ӵ��� �ʱ�ȭ
+			jump_speed = 0.1f; // ���� 10�� �ӵ��� �ʱ�ȭ
 		}
 		else if (m_pos.y < -100.f) {
 			isJumpKeyPressed = false;

@@ -22,9 +22,9 @@ class CCharacter
 	glm::vec3 prevMove;
 	float m_rot;
 	glm::mat4 final_tr, final_rot; // ������ �̵�, ������ ȸ��
-	float gravity = 11.f; // �߷�
+	float gravity = 5.f; // �߷�
 	float speed = 0.01f; // �ӵ�
-	float jump_speed = 0.1f;
+	float jump_speed = 15.f;
 	float animationTime;
 	float min_y; // �ٴ�
 	bool isInGround = true;
