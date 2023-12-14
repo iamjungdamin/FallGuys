@@ -4,7 +4,7 @@
 class CFloorObject;
 class CMap;
 class CDoorObject;
-// °´Ã¼ »óÅÂ
+// ï¿½ï¿½Ã¼ ï¿½ï¿½ï¿½ï¿½
 enum STATE { IDLE, LEFT, RIGHT, FRONT, BACK,JUMP };
 
 class CCharacter
@@ -21,12 +21,12 @@ class CCharacter
 	glm::vec3 m_move;
 	glm::vec3 prevMove;
 	float m_rot;
-	glm::mat4 final_tr, final_rot; // ¸¶Áö¸· ÀÌµ¿, ¸¶Áö¸· È¸Àü
-	float gravity = 8.f; // Áß·Â
-	float speed = 0.1f; // ¼Óµµ
-	float jump_speed = 10.f;
+	glm::mat4 final_tr, final_rot; // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ìµï¿½, ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ È¸ï¿½ï¿½
+	float gravity = 8.f; // ï¿½ß·ï¿½
+	float speed = 0.01f; // ï¿½Óµï¿½
+	float jump_speed = 30.f;
 	float animationTime;
-	float min_y; // ¹Ù´Ú
+	float min_y; // ï¿½Ù´ï¿½
 	bool isInGround = true;
 	
 
@@ -106,14 +106,14 @@ public:
 	bool IsCollided(CFloorObject* F);
 
 
-	// Ä³¸¯ÅÍ »óÅÂ °ü·Ã ÇÔ¼ö
+	// Ä³ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ô¼ï¿½
 	void SetState(int a);
 	void State_Idle();
 	void State_Running();
 	void State_Jumping();
 	void CheckState();
 
-	// Å°º¸µå »óÅÂ °ü·Ã ÇÔ¼ö
+	// Å°ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ô¼ï¿½
 	void SetRightKeyPressed(bool a);
 	void SetLeftKeyPressed(bool a);
 	void SetBackKeyPressed(bool a);

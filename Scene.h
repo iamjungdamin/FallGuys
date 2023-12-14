@@ -16,7 +16,7 @@ private:
 
 	CCharacter* m_Character;
 	CMap* m_Map;
-	std::vector<CFloorObject> vFloors;
+	CFloorObject* m_Floor;
 	// ī�޶�
 	glm::vec3 cameraPos;
 	glm::vec3 cameraLook;

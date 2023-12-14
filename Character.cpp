@@ -420,22 +420,40 @@
 
 	bool CCharacter::IsCollided(CFloorObject* F)
 	{
-		glm::vec3 boxMin = m_pos - GetBBSize() / 2.0f;
-		glm::vec3 boxMax = m_pos + GetBBSize() / 2.0f;
+		bool result;
 
-		glm::vec3 floorMin = F->GetPos() - F->GetBBSize() / 2.0f;
-		glm::vec3 floorMax = F->GetPos() + F->GetBBSize() / 2.0f;
+		for (int i = 0; i < 25; ++i) {
+			glm::vec3 boxMin = m_pos - GetBBSize() / 2.0f;
+			glm::vec3 boxMax = m_pos + GetBBSize() / 2.0f;
 
-		// 충돌 체크
-		bool collisionX = boxMax.x >= floorMin.x && boxMin.x <= floorMax.x;
-		bool collisionY = boxMax.y >= floorMin.y && boxMin.y <= floorMax.y;
-		bool collisionZ = boxMax.z >= floorMin.z && boxMin.z <= floorMax.z;
+			glm::vec3 floorMin = F->GetPos(i) - glm::vec3(0.5f, 0.05f, 0.5f);
+			glm::vec3 floorMax = F->GetPos(i) + glm::vec3(0.5f, 0.05f, 0.5f);
 
-		if (collisionX || collisionY || collisionZ)
-		{
-			/*printf("충돌");*/
+			// 충돌 체크
+			bool collisionX = boxMax.x >= floorMin.x && boxMin.x <= floorMax.x;
+			bool collisionY = boxMax.y >= floorMin.y && boxMin.y <= floorMax.y;
+			bool collisionZ = boxMax.z >= floorMin.z && boxMin.z <= floorMax.z;
+
+			result = collisionX && collisionY && collisionZ;
+
+			if (result)
+			{
+				//if (isInGround == false)
+				//{
+				//	min_y = floorMax.y;
+				//	m_pos.y = min_y;
+				//	isInGround = true;
+				//}
+				//std::cout << i << " coll!!\n";
+				F->Drop(i);
+				return true;
+			}
 		}
-		return collisionX && collisionY && collisionZ;
+
+		// 25개 다 검사 후 false 이면
+		if (result == false) {
+			return false;
+		}
 	}
 
 
@@ -613,7 +631,7 @@
 		// 이동
 		m_pos.x += m_move.x * speed;
 		m_pos.z += m_move.z* speed;
-
+		//printf("character move: %f, %f, %f\n", m_pos.x, m_pos.y, m_pos.z);
 	
 
 		//회전
