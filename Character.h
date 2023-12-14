@@ -28,7 +28,10 @@ class CCharacter
 	float animationTime;
 	float min_y; // �ٴ�
 	bool isInGround = true;
-	
+
+	// scene에서 전달받은 카메라 정보
+	glm::vec3 RotatedCameraFront;
+	glm::vec3 RotatedCameraRight;
 
 	struct Running_Animation {
 		float animationTime;
@@ -92,7 +95,7 @@ public:
 	void SetVao_right_arm(GLuint vao, int vertexCount);
 
 
-	void SetCameraMat(glm::mat4 cameraMat);
+	void SetCameraMat(glm::mat4 cameraMat, glm::vec3 frontVec, glm::vec3 rightVec);
 	void SetProjectMat(glm::mat4 projectMat);
 	void SetCameraPos(glm::vec3 cameraPos);
 	void SetLightPos(glm::vec3 lightPos);

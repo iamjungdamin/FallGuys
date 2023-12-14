@@ -172,7 +172,8 @@
 
 
 
-	void CCharacter::SetCameraMat(glm::mat4 cameraMat)
+
+	void CCharacter::SetCameraMat(glm::mat4 cameraMat, glm::vec3 frontVec, glm::vec3 rightVec)
 	{
 		face->SetCameraMat(cameraMat);
 		body->SetCameraMat(cameraMat);
@@ -181,6 +182,9 @@
 		left_leg->SetCameraMat(cameraMat);
 		right_leg->SetCameraMat(cameraMat);
 		eyes->SetCameraMat(cameraMat);
+
+		RotatedCameraFront = frontVec;
+		RotatedCameraRight = rightVec;
 
 	}
 
@@ -518,19 +522,17 @@
 
 		if (a == 1) // LEFT
 		{
-			m_move.x = -1;
 		}
 		if (a == 2) //RIGHT
 		{
-			m_move.x = 1;
 		}
 		if (a == 3) // FRONT
 		{
-			m_move.z = -1;
+			m_move.x = RotatedCameraFront.x;
+			m_move.z = RotatedCameraFront.z;
 		}
 		if (a == 4) // BACK
 		{
-			m_move.z = 1;
 		}
 	
 
@@ -613,7 +615,7 @@
 
 		float legAmplitude = 0.1f;
 		float legFrequency = 2.0f;
-	
+		
 		// ¿Ãµø
 		m_pos.x += m_move.x * speed;
 		m_pos.z += m_move.z* speed;
