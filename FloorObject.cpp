@@ -181,3 +181,8 @@ bool CFloorObject::GetIsDeleted(int i) const
 {
 	return isDeleted[i];
 }
+
+float CFloorObject::GetInitPosY(int i) const
+{
+	return InitPosY[i];
+}

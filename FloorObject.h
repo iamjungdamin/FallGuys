@@ -52,5 +52,6 @@ public:
 	void Drop(int i);
 	int GetIndex() const;
 	bool GetIsDeleted(int i) const;
+	float GetInitPosY(int i) const;
 };
 
