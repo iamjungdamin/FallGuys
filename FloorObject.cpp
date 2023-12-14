@@ -19,6 +19,7 @@ void CFloorObject::Initialize()
 	++FloorCount;
 
 	m_pos = { index % 5 * 2.f, 1.5f, index / 5 * -2.f -10.f};
+	printf("%f, %f, %f\n", m_pos.x, m_pos.y, m_pos.z);
 	scale = { 3.f, 0.1f, 3.f };
 	rotateY = 0.f;
 }
