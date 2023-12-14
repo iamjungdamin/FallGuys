@@ -369,18 +369,14 @@
 		glm::vec3 boxMin = m_pos - GetBBSize() / 2.0f;
 		glm::vec3 boxMax = m_pos + GetBBSize() / 2.0f;
 
-		glm::vec3 floorMin = F->GetPos() - F->GetBBSize() / 2.0f;
-		glm::vec3 floorMax = F->GetPos() + F->GetBBSize() / 2.0f;
+		glm::vec3 floorMin = F->GetPos() - glm::vec3(0.1f, 0.1f, 0.1f);//{ -50.f, -4.0f, -900.f };
+		glm::vec3 floorMax = F->GetPos() + glm::vec3(0.1f, 0.1f, 0.1f); //{ 50.f, -2.0f, -750.f };
 
 		// 충돌 체크
 		bool collisionX = boxMax.x >= floorMin.x && boxMin.x <= floorMax.x;
 		bool collisionY = boxMax.y >= floorMin.y && boxMin.y <= floorMax.y;
 		bool collisionZ = boxMax.z >= floorMin.z && boxMin.z <= floorMax.z;
 
-		if (collisionX || collisionY || collisionZ)
-		{
-			/*printf("충돌");*/
-		}
 		return collisionX && collisionY && collisionZ;
 	}
 

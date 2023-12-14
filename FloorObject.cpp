@@ -38,13 +38,13 @@ void CFloorObject::Update(float ElapsedTime)
 				}
 			}
 			else if (type == TYPE::ROTATE) {
-				rotateY += 0.1f;
+				rotateY += 0.5f;
 				if (rotateY > 180.f) {
 					type = TYPE::ROTATE2;
 				}
 			}
 			else if (type == TYPE::ROTATE2) {
-				rotateY += 0.1f;
+				rotateY += 0.5f;
 				m_pos.y -= 0.001f;
 				if (m_pos.y <= -1.5f - 1.f) {
 					//isDeleted = true;
@@ -59,8 +59,8 @@ void CFloorObject::Update(float ElapsedTime)
 			}
 		}
 
-		TransformMatrix = glm::scale(TransformMatrix, scale);
 		TransformMatrix = glm::translate(TransformMatrix, m_pos);
+		TransformMatrix = glm::scale(TransformMatrix, scale);
 		TransformMatrix = glm::rotate(TransformMatrix, glm::radians(rotateY), glm::vec3(0.f, 1.f, 0.f));
 		modelMat = TransformMatrix;
 
@@ -98,7 +98,7 @@ void CFloorObject::Drop()
 		int r = rand() % 4;
 
 		if (r == 0) {
-			type = TYPE::SHAKE;
+			type = TYPE::ROTATE;
 		}
 		else if (r == 1) {
 			type = TYPE::TRANSLATE;
