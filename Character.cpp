@@ -366,24 +366,7 @@
 
 	bool CCharacter::IsCollided(CFloorObject* F)
 	{
-		bool result = false;
-
-		glm::vec3 boxMin = m_pos - GetBBSize() / 2.0f;
-		glm::vec3 boxMax = m_pos + GetBBSize() / 2.0f;
-
-		glm::vec3 floorMin = { F->GetPos().x - 0.01f, F->GetPos().y - 0.01f, F->GetPos().z - 0.01f };//F->GetPos() - glm::vec3(0.05f, 0.05f, 0.05f);//{ -50.f, -4.0f, -900.f };
-		glm::vec3 floorMax = { F->GetPos().x + 0.01f, F->GetPos().y + 0.01f, F->GetPos().z + 0.01f };//F->GetPos() + glm::vec3(0.05f, 0.05f, 0.05f); //{ 50.f, -2.0f, -750.f };
-
-		// 충돌 체크
-		bool collisionX = boxMax.x >= floorMin.x && boxMin.x <= floorMax.x;
-		bool collisionY = boxMax.y >= floorMin.y && boxMin.y <= floorMax.y;
-		bool collisionZ = boxMax.z >= floorMin.z && boxMin.z <= floorMax.z;
-
-		
-		if (collisionX && collisionY && collisionZ) {
-			result = true;
-		}
-		return result;
+		return false;
 	}
 
 
@@ -561,7 +544,7 @@
 		// 이동
 		m_pos.x += m_move.x * speed;
 		m_pos.z += m_move.z* speed;
-		printf("character move: %f, %f, %f\n", m_pos.x, m_pos.y, m_pos.z);
+		//printf("character move: %f, %f, %f\n", m_pos.x, m_pos.y, m_pos.z);
 	
 
 		//회전

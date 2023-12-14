@@ -50,18 +50,13 @@ void CScene::Initialize()
 	auto e_vao = InitEyes(shader);
 	m_Character->SetVao_eyes(e_vao.first, e_vao.second);
 
-	vFloors.reserve(40);
-	for (int i = 0; i < 5 * 5; ++i) {
-		vFloors.push_back({ });
+	m_Floor = new CFloorObject;
+	if (m_Floor) {
+		auto floor_vao = InitFloor(shader);
+		m_Floor->SetShader(shader);
+		m_Floor->SetVao(floor_vao.first, floor_vao.second);
 	}
 
-	auto floor_vao = InitFloor(shader);
-	for (int i = 0; i < vFloors.size(); ++i) {
-		vFloors[i].SetShader(shader);
-		vFloors[i].SetVao(floor_vao.first, floor_vao.second);
-	}
-	// set vao
-	
 	cameraPos = { 0.f, 0.f, 1.f };
 	cameraLook = { 0.f, 0.f, 0.f };
 
@@ -102,19 +97,15 @@ void CScene::Update(float ElapsedTime)
 		m_Map->Update(ElapsedTime);
 	}
 
-	for (int i = 0; i < vFloors.size(); ++i) {
-		vFloors[i].SetCameraMat(cameraMat);
-		vFloors[i].SetProjectMat(projectMat);
-		vFloors[i].SetCameraPos(cameraPos);
-		vFloors[i].SetLightPos(lightPos);
-		vFloors[i].SetLightColor(lightColor);
-		vFloors[i].Update(ElapsedTime);
+	if (m_Floor) {
+		m_Floor->SetCameraMat(cameraMat);
+		m_Floor->SetProjectMat(projectMat);
+		m_Floor->SetCameraPos(cameraPos);
+		m_Floor->SetLightPos(lightPos);
+		m_Floor->SetLightColor(lightColor);
+		m_Floor->Update(ElapsedTime);
 
-		if (vFloors[i].GetIsDeleted()) {
-			//vFloors.erase(std::remove_if(vFloors.begin(), vFloors.end(), [&i](const CFloorObject& f) {
-			//	return f.GetIndex() == i;
-			//	}), vFloors.end());
-		}
+
 	}
 
 	for (int i = 0; i < 4; ++i) {
@@ -122,13 +113,10 @@ void CScene::Update(float ElapsedTime)
 			break;
 		}
 	}
-	// 충돌
-	for (int i = 0; i < vFloors.size(); ++i) {
-		if (m_Character->IsCollided(&vFloors[i])) {
-			printf("%d: %f, %f, %f\n", i, vFloors[i].GetPos().x, vFloors[i].GetPos().y, vFloors[i].GetPos().z);
-			//vFloors[i].Drop();
-		}
+
+	if (m_Character->IsCollided(m_Floor)) {
 	}
+	
 }
 
 void CScene::FixedUpdate()
@@ -147,8 +135,8 @@ void CScene::Render()
 		m_Map->Render();
 	}
 
-	for (int i = 0; i < vFloors.size(); ++i) {
-		vFloors[i].Render();
+	if (m_Floor) {
+		m_Floor->Render();
 	}
 }
 
@@ -163,7 +151,8 @@ void CScene::Release()
 	delete m_Map;
 	m_Map = nullptr;
 
-	vFloors.clear();
+	delete m_Floor;
+	m_Floor = nullptr;
 }
 
 void CScene::MouseEvent(int button, int state, int x, int y)
@@ -241,14 +230,9 @@ void CScene::KeyboardEvent(int state, unsigned char key) {
 			m_Character->SetFrontKeyPressed(true);
 			break;
 		case ' ':
-			std::cout << "이놈";
 			m_Character->SetJumpKeyPressed(true);
 			break;
-		case 'v':
-			for (int i = 0; i < vFloors.size(); ++i) {
-				vFloors[i].Drop();
-			}
-			break;
+		
 		default:
 			break;
 		}
