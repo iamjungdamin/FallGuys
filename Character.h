@@ -33,6 +33,8 @@ class CCharacter
 	glm::vec3 RotatedCameraFront = { 0,0,-1 };
 	glm::vec3 RotatedCameraRight = { 1,0,0 };
 
+	int score;
+
 	struct Running_Animation {
 		float animationTime;
 		float bodyRotationAngle;
@@ -123,5 +125,8 @@ public:
 	void SetBackKeyPressed(bool a);
 	void SetFrontKeyPressed(bool a);
 	void SetJumpKeyPressed(bool a);
+
+	int GetScore() const;
+	void IncreaseScore(int amount);
 };
 

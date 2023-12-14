@@ -460,6 +460,7 @@
 					isInGround = true;
 				}
 				F->Drop(i);
+				IncreaseScore(10);
 				return true;
 			}
 
@@ -516,7 +517,17 @@
 		isJumpKeyPressed = a;
 	}
 
+	int CCharacter::GetScore() const
+	{
+		return score;
+	}
 
+	void CCharacter::IncreaseScore(int amount)
+	{
+		score + amount;
+	}
+
+	
 	void CCharacter::SetState(int a)
 	{
 		state = a;
