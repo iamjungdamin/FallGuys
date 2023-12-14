@@ -33,7 +33,9 @@ void CFloorObject::Initialize()
 		isDeleted[i] = false;
 
 		m_pos[i] = {i % 5 * 2.f, 1.5f, i / 5 * -2.f - 10.f};
+		Floor[i]->SetPos(m_pos[i]);
 		scale[i] = {3.f, 0.1f, 3.f};
+		Floor[i]->SetScale(scale[i]);
 		rotateY[i] = 0.f;
 	}
 }
@@ -74,13 +76,14 @@ void CFloorObject::Update(float ElapsedTime)
 				}
 			}
 
-			TransformMatrix = glm::translate(TransformMatrix, m_pos[i]);
 			TransformMatrix = glm::scale(TransformMatrix, scale[i]);
+
+			TransformMatrix = glm::translate(TransformMatrix, m_pos[i]);
 			TransformMatrix = glm::rotate(TransformMatrix, glm::radians(rotateY[i]), glm::vec3(0.f, 1.f, 0.f));
 
 			Floor[i]->SetModelMat(TransformMatrix);
-			Floor[i]->Update(ElapsedTime);
 		}
+
 	}
 	
 }
