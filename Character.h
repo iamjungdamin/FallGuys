@@ -30,8 +30,8 @@ class CCharacter
 	bool isInGround = true;
 
 	// scene에서 전달받은 카메라 정보
-	glm::vec3 RotatedCameraFront;
-	glm::vec3 RotatedCameraRight;
+	glm::vec3 RotatedCameraFront = { 0,0,-1 };
+	glm::vec3 RotatedCameraRight = { 1,0,0 };
 
 	struct Running_Animation {
 		float animationTime;
