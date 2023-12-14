@@ -136,8 +136,7 @@ void CScene::Update(float ElapsedTime)
 		}
 	}
 
-	if (m_Character->IsCollided(m_Floor)) {
-	}
+	m_Character->IsCollided(m_Floor);
 	
 }
 

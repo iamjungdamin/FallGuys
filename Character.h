@@ -24,7 +24,7 @@ class CCharacter
 	glm::mat4 final_tr, final_rot; // ������ �̵�, ������ ȸ��
 	float gravity = 8.f; // �߷�
 	float speed = 0.01f; // �ӵ�
-	float jump_speed = 30.f;
+	float jump_speed = 10.f;
 	float animationTime;
 	float min_y; // �ٴ�
 	bool isInGround = true;

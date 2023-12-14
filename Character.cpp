@@ -422,7 +422,11 @@
 	{
 		bool result;
 
-		for (int i = 0; i < 25; ++i) {
+		for (int i = 0; i < num; ++i) {
+			if (F->GetIsDeleted(i)) {
+				continue;
+			}
+
 			glm::vec3 boxMin = m_pos - GetBBSize() / 2.0f;
 			glm::vec3 boxMax = m_pos + GetBBSize() / 2.0f;
 
@@ -438,20 +442,22 @@
 
 			if (result)
 			{
-				//if (isInGround == false)
-				//{
-				//	min_y = floorMax.y;
-				//	m_pos.y = min_y;
-				//	isInGround = true;
-				//}
-				//std::cout << i << " coll!!\n";
+				if (isInGround == false)
+				{
+					//min_y = floorMax.y;
+					//m_pos.y = min_y;
+					//isInGround = true;
+				}
 				F->Drop(i);
 				return true;
 			}
+
 		}
 
 		// 25개 다 검사 후 false 이면
 		if (result == false) {
+			isInGround = false;
+			min_y = -1000.f;
 			return false;
 		}
 	}

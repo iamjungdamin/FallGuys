@@ -32,7 +32,8 @@ void CFloorObject::Initialize()
 		type[i] = TYPE::IDLE;
 		isDeleted[i] = false;
 
-		m_pos[i] = { i % 5 * 5.f, 0.f, i / 5 * -5.f };
+		InitPosY[i] = 0.f;
+		m_pos[i] = { i % 5 * 5.f, InitPosY[i], i / 5 * -5.f};
 		Floor[i]->SetPos(m_pos[i]);
 		scale[i] = {3.f, 0.1f, 3.f};
 		Floor[i]->SetScale(scale[i]);
@@ -51,8 +52,8 @@ void CFloorObject::Update(float ElapsedTime)
 			}
 			else if (type[i] == TYPE::TRANSLATE) {
 				m_pos[i].y -= 0.001f;
-				if (m_pos[i].y <= -1.5f - 1.f) {
-					//isDeleted = true;
+				if (m_pos[i].y <= InitPosY[i] - 2.5f) {
+					isDeleted[i] = true;
 				}
 			}
 			else if (type[i] == TYPE::ROTATE) {
@@ -64,8 +65,8 @@ void CFloorObject::Update(float ElapsedTime)
 			else if (type[i] == TYPE::ROTATE2) {
 				rotateY[i] += 0.5f;
 				m_pos[i].y -= 0.001f;
-				if (m_pos[i].y <= -1.5f - 1.f) {
-					//isDeleted = true;
+				if (m_pos[i].y <= InitPosY[i] - 2.5f) {
+					isDeleted[i] = true;
 				}
 			}
 			else if (type[i] == TYPE::SCALE) {
@@ -131,7 +132,10 @@ void CFloorObject::FixedUpdate()
 
 void CFloorObject::Render()
 {
-	for (int i = 0; i < 25; ++i) {
+	for (int i = 0; i < num; ++i) {
+		if (isDeleted[i]) {
+			continue;
+		}
 
 		Floor[i]->Render();
 	}

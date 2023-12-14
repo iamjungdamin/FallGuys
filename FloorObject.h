@@ -23,6 +23,7 @@ private:
 	int type[num];
 	bool isDeleted[num];
 
+	float InitPosY[num];
 	glm::vec3 m_pos[num];
 	glm::vec3 scale[num];
 	float rotateY[num];
