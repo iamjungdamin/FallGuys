@@ -32,29 +32,7 @@ void CFloorObject::Initialize()
 		type[i] = TYPE::IDLE;
 		isDeleted[i] = false;
 
-
-		if (i >= 0 && i <= 4) {
-			m_pos[i].x = i * 5.f;
-			m_pos[i].z = 0.f;
-		}
-		else if (i >= 5 && i <= 9) {
-			m_pos[i].x = (i - 5) * 5.f;
-			m_pos[i].z = -5.f;
-		}
-		else if (i >= 10 && i <= 14) {
-			m_pos[i].x = (i - 10) * 5.f;
-			m_pos[i].z = -10.f;
-		}
-		else if (i >= 15 && i <= 19) {
-			m_pos[i].x = (i - 15) * 5.f;
-			m_pos[i].z = -15.f;
-		}
-		else if (i >= 20 && i <= 24) {
-			m_pos[i].x = (i - 20) * 5.f;
-			m_pos[i].z = -20.f;
-		}
-		
-		m_pos[i].z -= 10.f;
+		m_pos[i] = { i % 5 * 5.f, 0.f, i / 5 * -5.f };
 		Floor[i]->SetPos(m_pos[i]);
 		scale[i] = {3.f, 0.1f, 3.f};
 		Floor[i]->SetScale(scale[i]);

@@ -93,7 +93,7 @@
 		//printf("%lf\n", m_pos.y);
 			// 캐릭터가 지면 아래로 내려갔을 경우
 		if (m_pos.y < min_y) {
-			std::cout << "바닥 2 ";
+			//std::cout << "바닥 2 ";
 			m_pos.y = min_y; // 지면에 닿게 조정
 			isJumpKeyPressed = false; // 점프 중인 상태 종료
 			jump_speed = 10.f; // 원래 10동 속도로 초기화
@@ -396,7 +396,7 @@
 							m_pos.z = collisionZ;
 							isInGround = true;
 						}
-						printf("문[%d][%d] 충돌합니다\n", i, j);
+						//printf("문[%d][%d] 충돌합니다\n", i, j);
 						isCollision = true;  // 충돌 발생 시 변수를 true로 설정
 					}
 					else if(type != 0) {
@@ -404,7 +404,7 @@
 							D->touch[i] = true;
 							isInGround = true;
 						}
-						printf("문[%d][%d] 충돌합니다\n", i, j);
+						//printf("문[%d][%d] 충돌합니다\n", i, j);
 						isCollision = true;  // 충돌 발생 시 변수를 true로 설정
 					}
 				}
