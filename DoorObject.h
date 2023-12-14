@@ -7,13 +7,13 @@ class CDoorObject
 	CGameObject* Door[25][2];
 	glm::vec3 m_pos[25][2];
 	glm::vec3 size[25][2];
-
-
+	int m_type[25][2];
+	float angle[25];
 public:
 	CDoorObject();
 	~CDoorObject();
 
-
+	bool touch[25];
 
 	void Render();
 	void Update(float ElapsedTime);
@@ -29,6 +29,7 @@ public:
 	void SetLightColor(glm::vec3 lightColor);
 
 	glm::vec3 GetPos(int i, int j);
+	int GetType(int i, int j);
 
 
 

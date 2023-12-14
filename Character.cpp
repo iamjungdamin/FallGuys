@@ -46,12 +46,12 @@
 		eyes->Render();
 
 
-	glBegin(GL_LINE_LOOP);
-	glVertex3f(-GetBBSize().x / 2.f, -GetBBSize().y / 2.f, -GetBBSize().z / 2.f);
-	glVertex3f(-GetBBSize().x / 2.f, +GetBBSize().y / 2.f, -GetBBSize().z / 2.f);
-	glVertex3f(+GetBBSize().x / 2.f, +GetBBSize().y / 2.f, +GetBBSize().z / 2.f);
-	glVertex3f(+GetBBSize().x / 2.f, -GetBBSize().y / 2.f, +GetBBSize().z / 2.f);
-	glEnd();
+	//glBegin(GL_LINE_LOOP);
+	//glVertex3f(-GetBBSize().x / 2.f, -GetBBSize().y / 2.f, -GetBBSize().z / 2.f);
+	//glVertex3f(-GetBBSize().x / 2.f, +GetBBSize().y / 2.f, -GetBBSize().z / 2.f);
+	//glVertex3f(+GetBBSize().x / 2.f, +GetBBSize().y / 2.f, +GetBBSize().z / 2.f);
+	//glVertex3f(+GetBBSize().x / 2.f, -GetBBSize().y / 2.f, +GetBBSize().z / 2.f);
+	//glEnd();
 }
 
 	void CCharacter::Update(float ElapsedTime)
@@ -85,7 +85,6 @@
 			// 조정된 수직 속도를 계산합니다.
 			float adjusted_move_y = jump_speed * ElapsedTime;
 
-			
 			m_pos.y += adjusted_move_y;
 
 		}
@@ -376,6 +375,7 @@
 
 				glm::vec3 floorMin = D->GetPos(i, j);
 				glm::vec3 floorMax = D->GetPos(i, j);
+				int type = D->GetType(i, j);
 
 				floorMin.x -= 4.f;
 				floorMin.y -= 10.f;
@@ -391,12 +391,22 @@
 				bool collisionZ = boxMax.z >= floorMin.z && boxMin.z <= floorMax.z;
 
 				if (collisionX && collisionY && collisionZ) {
-					if (isInGround == false) {
-						m_pos.z = collisionZ;
-						isInGround = true;
+					if (type == 0) {
+						if (isInGround == false) {
+							m_pos.z = collisionZ;
+							isInGround = true;
+						}
+						printf("문[%d][%d] 충돌합니다\n", i, j);
+						isCollision = true;  // 충돌 발생 시 변수를 true로 설정
 					}
-					printf("문[%d][%d] 충돌합니다\n", i, j);
-					isCollision = true;  // 충돌 발생 시 변수를 true로 설정
+					else if(type != 0) {
+						if (isInGround == false) {
+							D->touch[i] = true;
+							isInGround = true;
+						}
+						printf("문[%d][%d] 충돌합니다\n", i, j);
+						isCollision = true;  // 충돌 발생 시 변수를 true로 설정
+					}
 				}
 				else {
 					isInGround = false;
@@ -407,8 +417,6 @@
 
 		return isCollision;  // 모든 문에 대한 충돌 체크를 완료한 후 충돌 여부 반환
 	}
-
-
 
 	bool CCharacter::IsCollided(CFloorObject* F)
 	{

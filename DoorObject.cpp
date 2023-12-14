@@ -2,12 +2,23 @@
 #include <iostream>
 #include <cstdlib>
 
+namespace Door_TYPE {
+	enum TYPE {	// 충돌 시 효과
+		IDLE,	// 미충돌 시
+		TRANSLATE,
+		ROTATE,
+		ROTATE2,
+		SCALE
+	};
+}
+
 CDoorObject::CDoorObject()
 {
 	for (int i = 0; i < 25; i++) {
 		for (int j = 0; j < 2; j++)
 		{
 			Door[i][j] = new CGameObject;
+			m_type[i][j] = Door_TYPE::IDLE;
 		}
 	}
 
@@ -58,18 +69,37 @@ CDoorObject::CDoorObject()
 		}
 	}
 	
+	
+	std::srand(static_cast<unsigned int>(std::time(0)));
+
+	for (int k = 0; k < 5; k++) {
+		int t = rand() % 5;
+		for (int i = 0 ; i+k*5< 5+k*5; i++)
+		{
+			if (i == t) {
+			
+				m_type[i + k * 5][0] = 1+rand() % 4;
+				m_type[i + k * 5][1] = m_type[i + k * 5][0];
+			}
+		}
+
+	}
+	
 	for (int i = 0; i < 25; i++)
 	{
 
 		for (int j = 0; j < 2; j++) {
-			printf("[%d][%d] : x : %lf, y: %lf, z:%lf\n", i, j , m_pos[i][j].x, m_pos[i][j].y, m_pos[i][j].z);
+			printf("[%d][%d] : x : %lf, y: %lf, z:%lf\n", i, j, m_pos[i][j].x, m_pos[i][j].y, m_pos[i][j].z);
+			printf("[%d][%d] : %d타입\n", i,j,m_type[i][j]);
 		}
 	}
-
-	std::srand(static_cast<unsigned int>(std::time(0)));
-
 	
-
+	for (int i = 0; i < 25; i++)
+	{
+		angle[i] = 0;
+	
+	}
+	
 
 }
 
@@ -103,19 +133,68 @@ void CDoorObject::Update(float ElapsedTime)
 	glm::mat4 tr;
 	glm::mat4 sc;
 	glm::mat4 rot;
-
-
+	glm::mat4 final_tr;
+	
 
 	for (int i = 0; i < 25; i++) {
-		for (int j = 0; j < 2; j++) {
-			glm::mat4 final_tr = glm::translate(glm::mat4(1.f), m_pos[i][j]);
-			Door[i][j]->SetModelMat(final_tr);
-			Door[i][j]->Update(ElapsedTime);
-		}
-	}
 		
+			if (touch[i] == true)
+			{
+				/*if (m_type[i][j] == Door_TYPE::ROTATE) {
+					angle[i] += 0.01f;
+					glm::mat4 final_tr = glm::translate(glm::mat4(1.f), m_pos[i][j]);
+					glm::mat4 rot_L = glm::rotate(glm::mat4(1.f), glm::radians(angle[i]), glm::vec3(0.f, -1.f, 0.f));
+					glm::mat4 rot_R = glm::rotate(glm::mat4(1.f), glm::radians(angle[i]), glm::vec3(0.f, 1.f, 0.f));
+					Door[i][0]->SetModelMat(final_tr * rot_L);
+					Door[i][1]->SetModelMat(final_tr * rot_R);
+				}*/
+				if (m_type[i][0] == Door_TYPE::TRANSLATE) {
+					m_pos[i][0].y += 0.01f;
+					m_pos[i][1].y += 0.01f;
+					final_tr = glm::translate(glm::mat4(1.f), m_pos[i][0]);
+					Door[i][0]->SetModelMat(final_tr);
+					final_tr = glm::translate(glm::mat4(1.f), m_pos[i][1]);
+					Door[i][1]->SetModelMat(final_tr);
+				}
+				else if (m_type[i][0] == Door_TYPE::ROTATE) {
+					angle[i] += 0.1f;
+					if (angle[i] >= 90)
+					{
+						angle[i] = 90;
+					}
+					glm::mat4 rot_L = glm::rotate(glm::mat4(1.f), glm::radians(angle[i]), glm::vec3(0.f, 1.f, 0.f));
+					glm::mat4 rot_R = glm::rotate(glm::mat4(1.f), glm::radians(angle[i]), glm::vec3(0.f, -1.f, 0.f));
+					final_tr = glm::translate(glm::mat4(1.f), m_pos[i][0]);
+					Door[i][0]->SetModelMat(final_tr * rot_L);
+					final_tr = glm::translate(glm::mat4(1.f), m_pos[i][1]);
+					Door[i][1]->SetModelMat(final_tr * rot_R);
+				}
+				else if (m_type[i][0] == Door_TYPE::SCALE) {
+					m_pos[i][0].y += 0.01f;
+					m_pos[i][1].y += 0.01f;
+					final_tr = glm::translate(glm::mat4(1.f), m_pos[i][0]);
+					Door[i][0]->SetModelMat(final_tr);
+					final_tr = glm::translate(glm::mat4(1.f), m_pos[i][1]);
+					Door[i][1]->SetModelMat(final_tr);
+				}
+			}
+			else {
+				final_tr = glm::translate(glm::mat4(1.f), m_pos[i][1]);
+				Door[i][1]->SetModelMat(final_tr);
+				final_tr = glm::translate(glm::mat4(1.f), m_pos[i][0]);
+				Door[i][0]->SetModelMat(final_tr);
+
+			}
+			
+			Door[i][0]->Update(ElapsedTime);
+			Door[i][1]->Update(ElapsedTime);
+	}
+	
 
 }
+		
+
+
 
 
 void CDoorObject::SetShader(GLuint shader)
@@ -204,5 +283,10 @@ void CDoorObject::SetLightColor(glm::vec3 lightColor)
 glm::vec3 CDoorObject::GetPos(int i, int j)
 {
 	return m_pos[i][j];
+}
+
+int CDoorObject::GetType(int i, int j)
+{
+	return m_type[i][j];
 }
 
