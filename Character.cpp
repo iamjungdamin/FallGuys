@@ -102,10 +102,10 @@
 		}
 		else if (m_pos.y < -100.f) {
 			isJumpKeyPressed = false;
+			m_pos = { 0.f, 20.f, m_pos.z};
 		}
 
-
-
+		
 		//상태 따라 행동하는 함수
 		CheckState();
 
