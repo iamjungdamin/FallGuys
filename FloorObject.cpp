@@ -32,7 +32,28 @@ void CFloorObject::Initialize()
 		type[i] = TYPE::IDLE;
 		isDeleted[i] = false;
 
-		m_pos[i] = {i % 5 * 2.f, 1.5f, i / 5 * -2.f - 10.f};
+		if (i >= 0 && i <= 4) {
+			m_pos[i].x = i * 2.f;
+			m_pos[i].z = 0.f;
+		}
+		else if (i >= 5 && i <= 9) {
+			m_pos[i].x = (i - 5) * 2.f;
+			m_pos[i].z = -2.f;
+		}
+		else if (i >= 10 && i <= 14) {
+			m_pos[i].x = (i - 10) * 2.f;
+			m_pos[i].z = -4.f;
+		}
+		else if (i >= 15 && i <= 19) {
+			m_pos[i].x = (i - 15) * 2.f;
+			m_pos[i].z = -6.f;
+		}
+		else if (i >= 20 && i <= 24) {
+			m_pos[i].x = (i - 20) * 2.f;
+			m_pos[i].z = -8.f;
+		}
+		
+		m_pos[i].y = -2.f;
 		Floor[i]->SetPos(m_pos[i]);
 		scale[i] = {3.f, 0.1f, 3.f};
 		Floor[i]->SetScale(scale[i]);
@@ -76,8 +97,8 @@ void CFloorObject::Update(float ElapsedTime)
 				}
 			}
 
-			TransformMatrix = glm::scale(TransformMatrix, scale[i]);
 
+			TransformMatrix = glm::scale(TransformMatrix, scale[i]);
 			TransformMatrix = glm::translate(TransformMatrix, m_pos[i]);
 			TransformMatrix = glm::rotate(TransformMatrix, glm::radians(rotateY[i]), glm::vec3(0.f, 1.f, 0.f));
 
