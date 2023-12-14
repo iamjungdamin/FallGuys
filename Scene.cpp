@@ -68,7 +68,7 @@ void CScene::Initialize()
 	cameraPos = { 0.f, 0.f, 1.f };
 	cameraLook = { 0.f, 0.f, 0.f };
 
-	lightPos = glm::vec3{ 5.f, 5.f, 0.f };
+	lightPos = glm::vec3{ 5.f, 40.f, 0.f };
 	lightColor = glm::vec3{ 1.f, 1.f, 1.f };
 	
 
