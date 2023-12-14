@@ -13,6 +13,8 @@
 		left_leg = new CGameObject;
 		right_leg = new CGameObject;
 		eyes = new CGameObject;
+
+		m_pos = { 0.f, 0.f, 25.f };
 		final_tr = glm::translate(glm::mat4(1.f), m_pos);
 		state = 0;
 		m_rot = 180.f;
@@ -56,6 +58,8 @@
 
 	void CCharacter::Update(float ElapsedTime)
 	{
+		
+
 		final_tr = glm::translate(glm::mat4(1.f), glm::vec3(m_pos.x, m_pos.y, m_pos.z));
 		final_rot = glm::rotate(glm::mat4(1.f), glm::radians(m_rot), glm::vec3(0.f, 1.f, 0.f));
 		glm::mat4 tr; 
@@ -67,6 +71,7 @@
 		if (isInGround == true) {
 			if (isJumpKeyPressed)
 			{
+				isJumpKeyPressed = false;
 				// 점프 중인 상태이면 수직 속도를 감소시킵니다.
 				jump_speed -= gravity * ElapsedTime;
 
@@ -77,7 +82,7 @@
 				
 			}
 		}
-		if(isInGround== false)
+		else if(isInGround== false)
 		{
 			// 점프 중인 상태이면 수직 속도를 감소시킵니다.
 			jump_speed -= gravity * ElapsedTime;
@@ -430,8 +435,8 @@
 			glm::vec3 boxMin = m_pos - GetBBSize() / 2.0f;
 			glm::vec3 boxMax = m_pos + GetBBSize() / 2.0f;
 
-			glm::vec3 floorMin = F->GetPos(i) - glm::vec3(0.5f, 0.05f, 0.5f);
-			glm::vec3 floorMax = F->GetPos(i) + glm::vec3(0.5f, 0.05f, 0.5f);
+			glm::vec3 floorMin = F->GetPos(i) - glm::vec3(2.f, 0.5f, 2.f);
+			glm::vec3 floorMax = F->GetPos(i) + glm::vec3(2.f, 0.5f, 2.f);
 
 			// 충돌 체크
 			bool collisionX = boxMax.x >= floorMin.x && boxMin.x <= floorMax.x;
@@ -444,9 +449,9 @@
 			{
 				if (isInGround == false)
 				{
-					//min_y = floorMax.y;
-					//m_pos.y = min_y;
-					//isInGround = true;
+					min_y = floorMax.y;
+					m_pos.y = min_y;
+					isInGround = true;
 				}
 				F->Drop(i);
 				return true;

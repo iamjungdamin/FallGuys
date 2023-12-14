@@ -130,13 +130,17 @@ void CScene::Update(float ElapsedTime)
 		/*	std::cout << vFloors[i].GetIndex() << '\n';*/
 	}
 
-	for (int i = 0; i < 4; ++i) {
-		if (m_Character->IsCollided(i + 1, m_Map)) {
-			break;
+	if (m_Character->IsCollided(m_Floor)) {
+
+	}
+	else {
+		for (int i = 0; i < 4; ++i) {
+			if (m_Character->IsCollided(i + 1, m_Map)) {
+				break;
+			}
 		}
 	}
 
-	m_Character->IsCollided(m_Floor);
 	
 }
 
