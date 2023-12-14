@@ -1,7 +1,7 @@
 #pragma once
 #include "GameObject.h"
 
-#define num 25
+#define num 25 * 4
 
 namespace TYPE {
 	enum TYPE {	// 충돌 시 효과
@@ -47,6 +47,7 @@ public:
 	virtual void Release();
 
 	glm::vec3 GetPos(int i) const;
+	void SetPosY(int i, float y);
 	glm::vec3 GetBBSize() const;
 
 	void Drop(int i);
