@@ -89,8 +89,7 @@ CDoorObject::CDoorObject()
 	{
 
 		for (int j = 0; j < 2; j++) {
-			//printf("[%d][%d] : x : %lf, y: %lf, z:%lf\n", i, j, m_pos[i][j].x, m_pos[i][j].y, m_pos[i][j].z);
-			//printf("[%d][%d] : %d타입\n", i,j,m_type[i][j]);
+		
 		}
 	}
 	

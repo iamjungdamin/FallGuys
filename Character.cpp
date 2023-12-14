@@ -1,4 +1,4 @@
-	#include "Character.h"
+ï»¿	#include "Character.h"
 	#include <iostream>
 	#include "FloorObject.h"
 	#include "Map.h"
@@ -71,24 +71,24 @@
 		if (isInGround == true) {
 			if (isJumpKeyPressed)
 			{
-				isJumpKeyPressed = false;
-				// Á¡ÇÁ ÁßÀÎ »óÅÂÀÌ¸é ¼öÁ÷ ¼Óµµ¸¦ °¨¼Ò½ÃÅµ´Ï´Ù.
+				// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ì¸ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Óµï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ò½ï¿½Åµï¿½Ï´ï¿½.
 				jump_speed -= gravity * ElapsedTime;
 
-				// Á¶Á¤µÈ ¼öÁ÷ ¼Óµµ¸¦ °è»êÇÕ´Ï´Ù.
+				// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Óµï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Õ´Ï´ï¿½.
 				float adjusted_move_y = jump_speed * ElapsedTime;
 				m_pos.y += adjusted_move_y;
+				printf("%lf\n", m_pos.y);
 
-				
 			}
 		}
-		else if(isInGround== false)
+		if (isInGround == false)
 		{
-			// Á¡ÇÁ ÁßÀÎ »óÅÂÀÌ¸é ¼öÁ÷ ¼Óµµ¸¦ °¨¼Ò½ÃÅµ´Ï´Ù.
+			// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ì¸ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Óµï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ò½ï¿½Åµï¿½Ï´ï¿½.
 			jump_speed -= gravity * ElapsedTime;
 
-			// Á¶Á¤µÈ ¼öÁ÷ ¼Óµµ¸¦ °è»êÇÕ´Ï´Ù.
+			// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Óµï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Õ´Ï´ï¿½.
 			float adjusted_move_y = jump_speed * ElapsedTime;
+
 
 			m_pos.y += adjusted_move_y;
 
@@ -96,12 +96,12 @@
 
 
 		//printf("%lf\n", m_pos.y);
-			// Ä³¸¯ÅÍ°¡ Áö¸é ¾Æ·¡·Î ³»·Á°¬À» °æ¿ì
+			// Ä³ï¿½ï¿½ï¿½Í°ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Æ·ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
 		if (m_pos.y < min_y) {
-			//std::cout << "¹Ù´Ú 2 ";
-			m_pos.y = min_y; // Áö¸é¿¡ ´ê°Ô Á¶Á¤
-			isJumpKeyPressed = false; // Á¡ÇÁ ÁßÀÎ »óÅÂ Á¾·á
-			jump_speed = 10.f; // ¿ø·¡ 10µ¿ ¼Óµµ·Î ÃÊ±âÈ­
+			std::cout << "ï¿½Ù´ï¿½ 2 ";
+			m_pos.y = min_y; // ï¿½ï¿½ï¿½é¿¡ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+			isJumpKeyPressed = false; // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+			jump_speed = 30.f; // ï¿½ï¿½ï¿½ï¿½ 10ï¿½ï¿½ ï¿½Óµï¿½ï¿½ï¿½ ï¿½Ê±ï¿½È­
 		}
 		else if (m_pos.y < -100.f) {
 			isJumpKeyPressed = false;
@@ -109,7 +109,7 @@
 
 
 
-		//»óÅÂ µû¶ó Çàµ¿ÇÏ´Â ÇÔ¼ö
+		//ìƒíƒœ ë”°ë¼ í–‰ë™í•˜ëŠ” í•¨ìˆ˜
 		CheckState();
 
 		face->Update(ElapsedTime);
@@ -257,7 +257,7 @@
 			glm::vec3 floorMin = { -30.0f, 26.f, -670.f };
 			glm::vec3 floorMax = { 30.0f, 28.f, -490.f };
 
-			// Ãæµ¹ Ã¼Å©
+			// ì¶©ëŒ ì²´í¬
 			bool collisionX = boxMax.x >= floorMin.x && boxMin.x <= floorMax.x;
 			bool collisionY = boxMax.y >= floorMin.y && boxMin.y <= floorMax.y;
 			bool collisionZ = boxMax.z >= floorMin.z && boxMin.z <= floorMax.z;
@@ -271,7 +271,7 @@
 					m_pos.y = min_y;
 					isInGround = true;
 				}
-				//printf("2Ãæµ¹ ");
+				//printf("2ì¶©ëŒ ");
 			}
 			else {
 				isInGround = false;
@@ -289,7 +289,7 @@
 			glm::vec3 floorMin = { -60.0f, -4.0f, -440.0f };
 			glm::vec3 floorMax = { 60.0f, -2.0f, 40.0f };
 
-			// Ãæµ¹ Ã¼Å©
+			// ì¶©ëŒ ì²´í¬
 			bool collisionX = boxMax.x >= floorMin.x && boxMin.x <= floorMax.x;
 			bool collisionY = boxMax.y >= floorMin.y && boxMin.y <= floorMax.y;
 			bool collisionZ = boxMax.z >= floorMin.z && boxMin.z <= floorMax.z;
@@ -302,7 +302,7 @@
 					m_pos.y = min_y;
 					isInGround = true;
 				}
-				//printf("1Ãæµ¹ ");
+				//printf("1ì¶©ëŒ ");
 			}
 			else {
 				isInGround = false;
@@ -320,7 +320,7 @@
 			glm::vec3 floorMin = { -40.f, 68.f, -740.f };
 			glm::vec3 floorMax = { 40.f, 70.f, -680.f };
 
-			// Ãæµ¹ Ã¼Å©
+			// ì¶©ëŒ ì²´í¬
 			bool collisionX = boxMax.x >= floorMin.x && boxMin.x <= floorMax.x;
 			bool collisionY = boxMax.y >= floorMin.y && boxMin.y <= floorMax.y;
 			bool collisionZ = boxMax.z >= floorMin.z && boxMin.z <= floorMax.z;
@@ -333,7 +333,7 @@
 					m_pos.y = min_y;
 					isInGround = true;
 				}
-				//printf("3Ãæµ¹ ");
+				//printf("3ì¶©ëŒ ");
 			}
 			else {
 				isInGround = false;
@@ -350,7 +350,7 @@
 			glm::vec3 floorMin = { -50.f, -4.0f, -900.f };
 			glm::vec3 floorMax = { 50.f, -2.0f, -750.f };
 
-			// Ãæµ¹ Ã¼Å©
+			// ì¶©ëŒ ì²´í¬
 			bool collisionX = boxMax.x >= floorMin.x && boxMin.x <= floorMax.x;
 			bool collisionY = boxMax.y >= floorMin.y && boxMin.y <= floorMax.y;
 			bool collisionZ = boxMax.z >= floorMin.z && boxMin.z <= floorMax.z;
@@ -363,7 +363,7 @@
 					m_pos.y = min_y;
 					isInGround = true;
 				}
-				//printf("3Ãæµ¹ ");
+				//printf("3ì¶©ëŒ ");
 			}
 			else {
 				isInGround = false;
@@ -374,11 +374,11 @@
 	}
 
 	bool CCharacter::IsCollided(CDoorObject* D) {
-		bool isCollision = false;  // Ãæµ¹ ¿©ºÎ¸¦ ÀúÀåÇÏ´Â º¯¼ö¸¦ Ãß°¡
+		bool isCollision = false;  // ì¶©ëŒ ì—¬ë¶€ë¥¼ ì €ìž¥í•˜ëŠ” ë³€ìˆ˜ë¥¼ ì¶”ê°€
 
 		for (int i = 0; i < 25; ++i) {
 			for (int j = 0; j < 2; ++j) {
-				// ÇöÀç ¹®¿¡ ´ëÇÑ Ãæµ¹ ¹Ú½º °è»ê
+				// í˜„ìž¬ ë¬¸ì— ëŒ€í•œ ì¶©ëŒ ë°•ìŠ¤ ê³„ì‚°
 				glm::vec3 boxMin = m_pos - GetBBSize() / 2.0f;
 				glm::vec3 boxMax = m_pos + GetBBSize() / 2.0f;
 
@@ -394,7 +394,7 @@
 				floorMax.y += 10.f;
 				floorMin.z += 0.5f;
 
-				// ÇöÀç ¹®°ú Ä³¸¯ÅÍ °£ÀÇ Ãæµ¹ Ã¼Å©
+				// í˜„ìž¬ ë¬¸ê³¼ ìºë¦­í„° ê°„ì˜ ì¶©ëŒ ì²´í¬
 				bool collisionX = boxMax.x >= floorMin.x && boxMin.x <= floorMax.x;
 				bool collisionY = boxMax.y >= floorMin.y && boxMin.y <= floorMax.y;
 				bool collisionZ = boxMax.z >= floorMin.z && boxMin.z <= floorMax.z;
@@ -405,16 +405,16 @@
 							m_pos.z = collisionZ;
 							isInGround = true;
 						}
-						//printf("¹®[%d][%d] Ãæµ¹ÇÕ´Ï´Ù\n", i, j);
-						isCollision = true;  // Ãæµ¹ ¹ß»ý ½Ã º¯¼ö¸¦ true·Î ¼³Á¤
+						//printf("ë¬¸[%d][%d] ì¶©ëŒí•©ë‹ˆë‹¤\n", i, j);
+						isCollision = true;  // ì¶©ëŒ ë°œìƒ ì‹œ ë³€ìˆ˜ë¥¼ trueë¡œ ì„¤ì •
 					}
 					else if(type != 0) {
 						if (isInGround == false) {
 							D->touch[i] = true;
 							isInGround = true;
 						}
-						//printf("¹®[%d][%d] Ãæµ¹ÇÕ´Ï´Ù\n", i, j);
-						isCollision = true;  // Ãæµ¹ ¹ß»ý ½Ã º¯¼ö¸¦ true·Î ¼³Á¤
+						//printf("ë¬¸[%d][%d] ì¶©ëŒí•©ë‹ˆë‹¤\n", i, j);
+						isCollision = true;  // ì¶©ëŒ ë°œìƒ ì‹œ ë³€ìˆ˜ë¥¼ trueë¡œ ì„¤ì •
 					}
 				}
 				else {
@@ -424,7 +424,7 @@
 			}
 		}
 
-		return isCollision;  // ¸ðµç ¹®¿¡ ´ëÇÑ Ãæµ¹ Ã¼Å©¸¦ ¿Ï·áÇÑ ÈÄ Ãæµ¹ ¿©ºÎ ¹ÝÈ¯
+		return isCollision;  // ëª¨ë“  ë¬¸ì— ëŒ€í•œ ì¶©ëŒ ì²´í¬ë¥¼ ì™„ë£Œí•œ í›„ ì¶©ëŒ ì—¬ë¶€ ë°˜í™˜
 	}
 
 	bool CCharacter::IsCollided(CFloorObject* F)
@@ -442,7 +442,7 @@
 			glm::vec3 floorMin = F->GetPos(i) - glm::vec3(2.f, 0.5f, 2.f);
 			glm::vec3 floorMax = F->GetPos(i) + glm::vec3(2.f, 0.5f, 2.f);
 
-			// Ãæµ¹ Ã¼Å©
+			// ì¶©ëŒ ì²´í¬
 			bool collisionX = boxMax.x >= floorMin.x && boxMin.x <= floorMax.x;
 			bool collisionY = boxMax.y >= floorMin.y && boxMin.y <= floorMax.y;
 			bool collisionZ = boxMax.z >= floorMin.z && boxMin.z <= floorMax.z;
@@ -463,7 +463,7 @@
 
 		}
 
-		// 25°³ ´Ù °Ë»ç ÈÄ false ÀÌ¸é
+		// 25ê°œ ë‹¤ ê²€ì‚¬ í›„ false ì´ë©´
 		if (result == false) {
 			isInGround = false;
 			min_y = -1000.f;
@@ -543,7 +543,7 @@
 
 			m_move = { 0, 0, 0 };
 
-			// ÇöÀç ¹æÇâÀ» À¯ÁöÇÕ´Ï´Ù.
+			// í˜„ìž¬ ë°©í–¥ì„ ìœ ì§€í•©ë‹ˆë‹¤.
 	
 
 			float legAmplitude = 0.1f;
@@ -553,15 +553,15 @@
 			idle_animation.initialLeftArmRotationAngle = running_animation.armleftRotationAngle;
 			idle_animation.initialRightArmRotationAngle = running_animation.armrightRotationAngle;
 
-			//È¸Àü
+			//íšŒì „
 			float rotationAngle = glm::atan(prevMove.x, prevMove.z);
 			final_rot = glm::rotate(glm::mat4(1.f), rotationAngle, glm::vec3(0.f, 1.f, 0.f));
 
 
-			// ¸ö
+			// ëª¸
 			idle_animation.bodyRotationAngle = glm::radians(5.f) + glm::radians(2.5f) * glm::sin(idle_animation.animationTime);
 			idle_animation.bodyRotationAngle = glm::radians(5.f) + glm::radians(2.5f) * glm::sin(idle_animation.animationTime);
-			// ÆÈ
+			// íŒ”
 			idle_animation.armleftRotationAngle = glm::radians(20.f) + glm::radians(15.f) * glm::sin(idle_animation.animationTime);
 			idle_animation.armleftTranslationOffset = 0.3f * glm::sin(idle_animation.animationTime);
 			idle_animation.armrightRotationAngle = glm::radians(20.f) + glm::radians(15.f) * glm::sin(idle_animation.animationTime);
@@ -615,22 +615,23 @@
 
 		float legAmplitude = 0.1f;
 		float legFrequency = 2.0f;
-		
-		// ÀÌµ¿
+
+	
+		// ì´ë™
 		m_pos.x += m_move.x * speed;
 		m_pos.z += m_move.z* speed;
 		//printf("character move: %f, %f, %f\n", m_pos.x, m_pos.y, m_pos.z);
 	
 
-		//È¸Àü
+		//íšŒì „
 		float rotationAngle = glm::atan(m_move.x, m_move.z);
 		final_rot = glm::rotate(glm::mat4(1.f), rotationAngle, glm::vec3(0.f, 1.f, 0.f));
 
 
-		// ¸ö
+		// ëª¸
 		running_animation.bodyRotationAngle = glm::radians(5.f) + glm::radians(2.5f) * glm::sin(running_animation.animationTime);
 		running_animation.bodyRotationAngle = glm::radians(5.f) + glm::radians(2.5f) * glm::sin(running_animation.animationTime);
-		// ÆÈ
+		// íŒ”
 		running_animation.armleftRotationAngle = glm::radians(90.f) + glm::radians(15.f) * glm::sin(running_animation.animationTime);
 		running_animation.armleftTranslationOffset = 0.3f * glm::sin(running_animation.animationTime);
 		running_animation.armrightRotationAngle= glm::radians(90.f) + glm::radians(15.f) * glm::sin(running_animation.animationTime);
@@ -641,7 +642,7 @@
 
 	
 
-		//´Ù¸®
+		//ë‹¤ë¦¬
 		running_animation.legleftRotationAngle = glm::radians(5.f) + glm::radians(5.f) * glm::sin(running_animation.animationTime);
 		running_animation.legleftTranslationOffset = 0.3f * glm::sin(running_animation.animationTime);
 		running_animation.legrightRotationAngle = glm::radians(5.f) + glm::radians(5.f) * glm::sin(running_animation.animationTime);
