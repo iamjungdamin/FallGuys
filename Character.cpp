@@ -522,9 +522,13 @@
 
 		if (a == 1) // LEFT
 		{
+			m_move.x = -1 * RotatedCameraRight.x;
+			m_move.z = -1 * RotatedCameraRight.z;
 		}
 		if (a == 2) //RIGHT
 		{
+			m_move.x = RotatedCameraRight.x;
+			m_move.z = RotatedCameraRight.z;
 		}
 		if (a == 3) // FRONT
 		{
@@ -533,6 +537,8 @@
 		}
 		if (a == 4) // BACK
 		{
+			m_move.x = -1 * RotatedCameraFront.x;
+			m_move.z = -1 * RotatedCameraFront.z;
 		}
 	
 
