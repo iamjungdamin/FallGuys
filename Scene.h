@@ -17,6 +17,9 @@ private:
 	CCharacter* m_Character;
 	CMap* m_Map;
 	CFloorObject* m_Floor;
+
+	CGameObject* m_StartUI;
+
 	// ī�޶�
 	glm::vec3 cameraPos;
 	glm::vec3 cameraLook;
@@ -29,7 +32,7 @@ private:
 	glm::vec3 lightPos;
 	glm::vec3 lightColor;
 
-	
+	bool GameStart = false;
 
 
 public:
@@ -47,6 +50,7 @@ public:
 	void KeyboardEvent(int state, unsigned char key);
 	void SpecialKeyEvent(int state, int key);
 
+	std::pair<GLuint, GLsizei> InitStartUI(GLuint shader);
 	std::pair<GLuint, GLsizei> InitCube(GLuint shader);
 	std::pair<GLuint, GLsizei> InitFace(GLuint shader);
 	std::pair<GLuint, GLsizei> InitBody(GLuint shader);

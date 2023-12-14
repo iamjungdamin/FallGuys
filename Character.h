@@ -102,6 +102,7 @@ public:
 	void SetLightColor(glm::vec3 lightColor);
 
 	void SetPos(float x);
+	void SetPos(float x, float y, float z);
 	glm::vec3 GetPos() const;
 	glm::vec3 GetBBSize() const;
 	bool IsCollided(int index, CGameObject* Obj);
