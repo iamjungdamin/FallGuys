@@ -6,9 +6,9 @@ class CDoorObject
 {
 	CGameObject* Door[25][2];
 	glm::vec3 m_pos[25][2];
-	glm::vec3 size[25][2];
 	int m_type[25][2];
 	float angle[25];
+	glm::vec3 size[25];
 public:
 	CDoorObject();
 	~CDoorObject();

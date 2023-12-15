@@ -117,6 +117,7 @@ public:
 	void State_Idle();
 	void State_Running();
 	void State_Jumping();
+	void Speed(float a);
 	void CheckState();
 
 	// Ű���� ���� ���� �Լ�
