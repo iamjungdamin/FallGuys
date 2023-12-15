@@ -361,6 +361,11 @@ void CScene::KeyboardEvent(int state, unsigned char key) {
 		case 'K':
 			m_Character->Speed(20.f);
 			break;
+
+		case 'l':
+		case 'L':
+			m_Character->Speed(5.f);
+			break;
 		default:
 			break;
 		}

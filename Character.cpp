@@ -404,7 +404,7 @@
 				if (collisionX && collisionY && collisionZ) {
 					if (type == 0) {
 						if (isInGround == false) {
-							m_pos.z = collisionZ;
+							m_pos.z = floorMin.z + 2.f;
 							isInGround = true;
 						}
 						//printf("문[%d][%d] 충돌합니다\n", i, j);
