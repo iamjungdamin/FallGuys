@@ -7,7 +7,6 @@ namespace Door_TYPE {
 		IDLE,	// 미충돌 시
 		TRANSLATE,
 		ROTATE,
-		ROTATE2,
 		SCALE
 	};
 }
@@ -78,7 +77,7 @@ CDoorObject::CDoorObject()
 		{
 			if (i == t) {
 			
-				m_type[i + k * 5][0] = 1+rand() % 4;
+				m_type[i + k * 5][0] = 1+rand() % 3;
 				m_type[i + k * 5][1] = m_type[i + k * 5][0];
 			}
 		}
@@ -88,9 +87,7 @@ CDoorObject::CDoorObject()
 	for (int i = 0; i < 25; i++)
 	{
 
-		for (int j = 0; j < 2; j++) {
-		
-		}
+		size[i] = { 1.f,1.f,1.f };
 	}
 	
 	for (int i = 0; i < 25; i++)
@@ -133,7 +130,7 @@ void CDoorObject::Update(float ElapsedTime)
 	glm::mat4 sc;
 	glm::mat4 rot;
 	glm::mat4 final_tr;
-	
+	glm::mat4 scaleMat;
 
 	for (int i = 0; i < 25; i++) {
 		
@@ -169,12 +166,12 @@ void CDoorObject::Update(float ElapsedTime)
 					Door[i][1]->SetModelMat(final_tr * rot_R);
 				}
 				else if (m_type[i][0] == Door_TYPE::SCALE) {
-					m_pos[i][0].y += 0.01f;
-					m_pos[i][1].y += 0.01f;
+					size[i] -= 0.1f;
+					scaleMat = glm::scale(glm::mat4(1.f), size[i]);
 					final_tr = glm::translate(glm::mat4(1.f), m_pos[i][0]);
-					Door[i][0]->SetModelMat(final_tr);
+					Door[i][0]->SetModelMat(final_tr* scaleMat);
 					final_tr = glm::translate(glm::mat4(1.f), m_pos[i][1]);
-					Door[i][1]->SetModelMat(final_tr);
+					Door[i][1]->SetModelMat(final_tr* scaleMat);
 				}
 			}
 			else {

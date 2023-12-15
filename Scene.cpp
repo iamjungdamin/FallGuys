@@ -355,7 +355,10 @@ void CScene::KeyboardEvent(int state, unsigned char key) {
 		case 'W':
 			m_Character->SetFrontKeyPressed(false);
 			break;
-
+		case 'k':
+		case 'K':
+			m_Character->Speed(20.f);
+			break;
 		default:
 			break;
 		}

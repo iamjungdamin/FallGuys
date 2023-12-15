@@ -74,7 +74,7 @@
 				jump_speed -= gravity * ElapsedTime;
 
 				// 조정된 수직 속도를 계산합니다.
-				float adjusted_move_y = jump_speed * ElapsedTime*4;
+				float adjusted_move_y = jump_speed * ElapsedTime*2;
 				m_pos.y += adjusted_move_y;
 
 				printf("%lf\n", m_pos.y);
@@ -86,7 +86,7 @@
 			jump_speed -= gravity * ElapsedTime;
 
 			// 조정된 수직 속도를 계산합니다.
-			float adjusted_move_y = jump_speed * ElapsedTime*4;
+			float adjusted_move_y = jump_speed * ElapsedTime*2;
 
 			m_pos.y += adjusted_move_y;
 		}
@@ -755,3 +755,7 @@
 		eyes->SetModelMat(final_tr * final_rot * rot_body);
 	}
 
+	void CCharacter::Speed(float a)
+	{
+		jump_speed =  a;
+	}
